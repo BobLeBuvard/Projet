@@ -11,4 +11,6 @@ ETAPE 4 : Quand on fait des modifs sur le code du repository, on a les modifs av
 On voit le fichier qui a été modifié et ensuite on clique sur "+"
 ETAPE 5 : On commit avec le bouton bleu
 ETAPE 6 : On met le commentaire de ce qu'on a modifié pour que ce soit plus rapide à retrouver dans l'historique
-ETAPE 7 : On  
+ETAPE 7 : On clique sur le "checkmark" (le V de ok quoi) et normalement le repo s'est mis à jour
+
+OUI je sais c'est pas clean, on peut tout coder sur VSC, c'est vrai MAIS c'est mieux d'être habitué à spyder donc on code sur Spyder, on sauvegarde le fichier, et on met à jour via GitHub
