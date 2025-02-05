@@ -1,2 +1,14 @@
 # Info_Python
 Projet d'intro aux méthodes numériques de- 2024-2025
+Utilisons un truc qui est pratique: Visual Studio Code ( en tout cas pour mettre à jour nos programmes. )
+Comment faire pour pouvoir faire du code à plusieurs: 
+
+ETAPE 1 : Installer Visual Studio Code avec l'extension GitLens ( qui a 38 mio de téléchargements)
+ETAPE 2 : Finir le tutoriel du truc ( ou skip direct)
+ETAPE 3 : Ouvrir le nouvel onglet de VSC que GitLENS a créé, et ajouter un repository github
+Se connecter avec GitHub sur Git Lens et se débrouiller pour avoir les mises à jours visibles
+ETAPE 4 : Quand on fait des modifs sur le code du repository, on a les modifs avec une ligne verte à gauche. Une fois qu'on a tout modifié, on va dans Source Control ( quand on a sauvegardé avec ctrl+S) qui vient d'avoir une pastille de notification.
+On voit le fichier qui a été modifié et ensuite on clique sur "+"
+ETAPE 5 : On commit avec le bouton bleu
+ETAPE 6 : On met le commentaire de ce qu'on a modifié pour que ce soit plus rapide à retrouver dans l'historique
+ETAPE 7 : On  
