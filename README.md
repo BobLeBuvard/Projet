@@ -14,3 +14,7 @@ ETAPE 6 : On met le commentaire de ce qu'on a modifié pour que ce soit plus rap
 ETAPE 7 : On clique sur le "checkmark" (le V de ok quoi) et normalement le repo s'est mis à jour
 
 OUI je sais c'est pas clean, on peut tout coder sur VSC, c'est vrai MAIS c'est mieux d'être habitué à spyder donc on code sur Spyder, on sauvegarde le fichier, et on met à jour via GitHub
+
+(après on appuie sur SYNC pour synchroniser)
+
+S'il y a des conflits de versions, ce qui ne devrait pas arriver, contactez moi ou envoyez le code, je vais merge tout ça (Pierre)
