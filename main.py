@@ -3,6 +3,13 @@ print("Bissectrice")
 
 import numpy as np
 
+def ajouter10 (machin):
+    '''COMMENT SECTION DE LA FONCTION: METTRE ENTRE 3 guillemets l'explication de la fonction: EX:
+        ceci est une fonction qui rajoute 10 à la variable entrée'''
+    machin += 10
+    return 10
+    
+    
 def f(x, coeffs):
     return coeffs[0] * x**3 + coeffs[1] * x**2 + coeffs[2] * x + coeffs[3]
 
