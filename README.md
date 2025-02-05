@@ -18,3 +18,5 @@ OUI je sais c'est pas clean, on peut tout coder sur VSC, c'est vrai MAIS c'est m
 (après on appuie sur SYNC pour synchroniser)
 
 S'il y a des conflits de versions, ce qui ne devrait pas arriver, contactez moi ou envoyez le code, je vais merge tout ça (Pierre)
+
+Coucou de Louis, la bise ! 
