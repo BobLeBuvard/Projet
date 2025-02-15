@@ -19,4 +19,6 @@ OUI je sais c'est pas clean, on peut tout coder sur VSC, c'est vrai MAIS c'est m
 
 S'il y a des conflits de versions, ce qui ne devrait pas arriver, contactez moi ou envoyez le code, je vais merge tout ça (Pierre)
 
+OVERLEAF: https://www.overleaf.com/read/xjxshnygpmzg#719801
+
 Coucou de Louis, la bise ! 

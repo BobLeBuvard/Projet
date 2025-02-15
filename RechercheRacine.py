@@ -1,5 +1,4 @@
 import numpy as np
-import scipy as scp
 
 def f(x):
     '''
@@ -116,7 +115,7 @@ def bissection(f, x0, x1, tol = 0.5e-7, max_iter=50): #par défaut une toléranc
     else:    
         return [x2,0]
     
-    #TODO : petit souci pour les fonctions avec plusieurs racines en nombre impair (cas négligé) 
+    #TODO : 
     #       Souci pour tester la convergence -> mauvais message d'erreur si divergence je crois
 
 
