@@ -16,7 +16,7 @@ def hasRoots(f, x0,x1,tol):
     -vérifie si les bornes sont bien de signe opposé'''
     if (f(x0) * f(x1) > 0) or (tol == 0): # le produit des images est négatif si ils possèdent une racine entre x0 et x1 car de signe opposé (règle de l'étau) Pas bon non plus si on veut une tolérance nulle au risque de diviser par zéro
         return [1984, 1]
-    #cas de base où x0 ou x1 sont racine
+    # cas de base où x0 ou x1 sont racine
     elif(f(x0) == 0 ):
         return[x0,0]
     elif(f(x1) == 0) :
@@ -25,22 +25,25 @@ def hasRoots(f, x0,x1,tol):
         x1,x0 = x0,x1
         #Le prof demande un message d'erreur ou pas ? décommenter la ligne suivante si c'est le cas, et supprimer la ligne au dessus
         # return [1984,1]
-    x_vals = np.linspace(x0, x1, 50)  # Échantillonne l'intervalle en 50 petites sections -> prend du temps je suis d'accord
+    x_vals = np.linspace(x0, x1, 50)  # echantillonne l'intervalle en 50 petites sections -> prend du temps je suis d'accord
     sign_changes = 0
-    signes = []     #liste de signes sur l'échantillon
-    for i in range(x_vals):     
-        signes.append = np.sign(f(x_vals[i]))
-        if i> 1 : # on retire la première itération car i[0] n'existe pas si i = 1
-            if signes[i-1] != signes[i]:
-                sign_changes +=1 
+    previous_sign = np.sign(f(x_vals[0]))    #liste de signes sur l'échantillon
+
+    for j in range(1, 50):  # Commence à 1 pour éviter l'erreur d'indexation
+        current_sign = np.sign(f(+x_vals[j]))  # Calcule le signe actuel 
+        if current_sign != previous_sign:  # Vérifie le changement de signe
+            sign_changes += 1
+        previous_sign = current_sign
         
     # Compter le nombre de changements de signe
 
-    if sign_changes % 2 == 1:  # Vérifier si le nombre de changements de signe est impair
-        return [x0, x1]
+    if sign_changes > 1 :  # Vérifier si le nombre de changements de signe est impair
+        print("ok, une seule racine")
+        return[0,0] #rien à dire, c'est OK
     else:
         return [1984, 1]  # Écarte les cas où il y a un nombre pair de racines
-        #on n'élimine pas tous les cas, mais en tout cas une bonne partie des cas avec 3 racines en échantillonant l'espace
+    
+        #Je n'élimine pas tous les cas, mais en tout cas une bonne partie des cas avec 2+ racines en échantillonant l'espace
     
 def secante(f, x0, x1, tol = 0.5e-7, max_iter=50):
     '''
@@ -55,9 +58,7 @@ def secante(f, x0, x1, tol = 0.5e-7, max_iter=50):
     
     Sortie sous la forme:
 
-    [x, status]
-
-    
+    [x, status]  
     '''
     retour = hasRoots(f,x0,x1,tol) #fonction qui détermine si la fonction a plus d'une racine
     if retour[1] != 0:
