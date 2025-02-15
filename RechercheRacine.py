@@ -8,21 +8,12 @@ def f(x):
     Input  la valeur de x et les coefficents dans soit une liste, soit une array
     '''
     return 5 * x**3 + 5* x**2 + 5 * x + 2 # la fonction est 5x³+5x²+ 5x +2
+def hasRoots(f, x0,x1,tol):
 
-def secante(f, x0, x1, tol):
-
-    return [x, statut]
-
-def bissection(f, x0, x1, tol = 0.5e-7): #par défaut une tolérance de 8 décimales correctes
-    '''Recherche de racine par dichotomie -> on coupe et on regarde si on se rapproche.
-    On part du principe que f est continue sur cet intervalle
-    Attention que x0 et x1 peuvent être tous les deux positifs dans certains cas ( ex dans le cas de (x-1)² en x = 0 et x = 2 tous les 2 valent y = 1 mais il existe une racine)
-    Je suppose qu'on doit prendre en compte les fonctions qui ont plus de 1 racine, c'est pourquoi j'ai émis l'hypothèse au dessus
-    
-    on s'arrête après le nombre d'itérations suffisantes pour rentrer dans les tolérances demandées -> c'est combien ?'''
-    
-    
-    #CODE EN NEGLIGEANT LES FONCTION AVEC nbr_racines > 1  en nombre pairs ( souci pour 3 racines, 5 racines,... )
+    '''vérifie si la fonction possède les conditions nécessaires pour pouvoir trouver les racines: 
+    -TODO: vérifie si la fonction possède plus de 1 racine
+    -intervertit les bornes si elles sont inversées
+    -vérifie si les bornes sont bien de signe opposé'''
     if (f(x0) * f(x1) > 0) or (tol == 0): # le produit des images est négatif si ils possèdent une racine entre x0 et x1 car de signe opposé (règle de l'étau) Pas bon non plus si on veut une tolérance nulle au risque de diviser par zéro
         return [1984, 1]
     #cas de base où x0 ou x1 sont racine
@@ -30,22 +21,91 @@ def bissection(f, x0, x1, tol = 0.5e-7): #par défaut une tolérance de 8 décim
         return[x0,0]
     elif(f(x1) == 0) :
         return[x1,0]
-    
     if x1<x0: #optionnel si on se goure et que x0>x1 (bornes inversées)
-        temp = x1
-        x1 = x0 
-        x0 = temp
-        #Le prof demande un message d'erreur ou pas ? décommenter la ligne suivante si c'est le cas, et supprimer les lignes au dessus
+        x1,x0 = x0,x1
+        #Le prof demande un message d'erreur ou pas ? décommenter la ligne suivante si c'est le cas, et supprimer la ligne au dessus
         # return [1984,1]
+    x_vals = np.linspace(x0, x1, 50)  # Échantillonne l'intervalle en 50 petites sections -> prend du temps je suis d'accord
+    sign_changes = 0
+    signes = []     #liste de signes sur l'échantillon
+    for i in range(x_vals):     
+        signes.append = np.sign(f(x_vals[i]))
+        if i> 1 : # on retire la première itération car i[0] n'existe pas si i = 1
+            if signes[i-1] != signes[i]:
+                sign_changes +=1 
+        
+    # Compter le nombre de changements de signe
 
+    if sign_changes % 2 == 1:  # Vérifier si le nombre de changements de signe est impair
+        return [x0, x1]
+    else:
+        return [1984, 1]  # Écarte les cas où il y a un nombre pair de racines
+        #on n'élimine pas tous les cas, mais en tout cas une bonne partie des cas avec 3 racines en échantillonant l'espace
+    
+def secante(f, x0, x1, tol = 0.5e-7, max_iter=50):
+    '''
+    f : fonction d'entrée
+    x0: début (ou fin) de l'intervalle de recherche de racine
+    x1: fin (ou début) de l'intervalle de recherche de racine
+    tol: tolérance de l'imprécision de la racine (par défaut 0.5e-7)
+    max_iter: nombre maximal d'itérations de la recherche
+
+    Recherche de racine par sécante -> on va créer une droite qui part de x0 et qui arrive à x2 et on va prendre son intersection avec zéro en x
+    ensuite on prend cette valeur et on compare la valeur de la fonction à ce x précis avec zéro (en prenant en compte les tolérances)
+    
+    Sortie sous la forme:
+
+    [x, status]
+
+    
+    '''
+    retour = hasRoots(f,x0,x1,tol) #fonction qui détermine si la fonction a plus d'une racine
+    if retour[1] != 0:
+        return retour   # la fonction a plus d'une racine
+
+    for i in range(max_iter):
+
+        if abs(f(x1) - f(x0)) ==0 : # on veut pas diviser par zéro
+            return [1984, -1]
+        #maintenant on calcule la formule du point de la fonction à l:
+
+        x2 = x1 - f(x1) * (x1 - x0) / (f(x1) - f(x0)) # on calcule le nouveau point x
+        if abs(x2 - x1) < tol:
+            return [x2, 0] #on a trouvé la racine correcte (avec tolérances en valeur absolue) !
+        x0, x1 = x1, x2  # on met les valeurs à jour x1 devient x0 et x2 devient x1  
+    return [x2,0]
+
+def bissection(f, x0, x1, tol = 0.5e-7, max_iter=50): #par défaut une tolérance de 8 décimales correctes, et un nombre d'itérations max de 50 
+    '''
+     f : fonction d'entrée
+    x0: début (ou fin) de l'intervalle de recherche de racine
+    x1: fin (ou début) de l'intervalle de recherche de racine
+    tol: tolérance de l'imprécision de la racine (par défaut 0.5e-7)
+    max_iter: nombre maximal d'itérations de la recherche
+
+    Recherche de racine par dichotomie -> on coupe l'intervalle en deux et on regarde le signe de ce terme pour diminuer la taille de l'intervalle d'un facteur 1/2
+    une fois que les limites de l'intervalle sont suffisamment proches de zéro, on retourne la valeur de x à cet endroit ansi qu'un code d'erreur s'il y a eu un problème.
+    
+    Sortie sous la forme:
+
+    [x, status]
+
+    '''
+    retour = hasRoots(f,x0,x1,tol)
+    if retour[1] != 0:
+        return retour
+    #CODE EN NEGLIGEANT LES FONCTION AVEC nbr_racines > 1  en nombre pairs ( souci pour 3 racines, 5 racines,... )
+    
+    
     nombre_d_iterations = round(np.log2((x1 - x0) / (2 * tol))) + 1 #arrondi supérieur
-    print(nombre_d_iterations)
-    if(nombre_d_iterations <= 0 or nombre_d_iterations>80):
+    print(nombre_d_iterations)  #DEBUG
+    if(nombre_d_iterations <= 0 or nombre_d_iterations > max_iter):
         return [1984,-1] # on a un souci de convergeance: un nombre négatif d'itérations...
 
     for i in range(nombre_d_iterations):
         x2 = (x0+x1) /2 #creation d'un point au milieu de x0 et x1 
-        if f(x2) ==0:
+
+        if f(x2) < tol:
             return [x2 , 0] #on a trouvé la racine exacte -> on quitte
         elif(f(x0) * f(x2) < 0): #on compare le signe de x0 et x2 
             x1 = x2 # f(x0) et f(x2) sont de signe contraire -> le zéro se trouve entre x0 et x2
@@ -55,7 +115,7 @@ def bissection(f, x0, x1, tol = 0.5e-7): #par défaut une tolérance de 8 décim
     else:    
         return [x2,0]
     
-    #TODO : petit souci pour les fonctions avec plusieurs racines (cas négligé) 
+    #TODO : petit souci pour les fonctions avec plusieurs racines en nombre impair (cas négligé) 
     #       Souci pour tester la convergence -> mauvais message d'erreur si divergence je crois
 
 
