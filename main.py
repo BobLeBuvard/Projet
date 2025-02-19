@@ -1,5 +1,8 @@
 import numpy as np
 import PerteEtGain
+from scipy.integrate import solve_ivp as solve
+
+
 #DEBUG VARIABLES T: A RETIRER DANS LE CODE FINAL
 T_room = 293,15 #kelvins = 20 degrés Celcius
 T_c1 = 293,15 #kelvins 
@@ -80,6 +83,7 @@ def T_w(isOn):
     else:
         return T_t #le dernier terme est annulé donc il faut que T_t - T_w = 0 -> T_w = T_t
 
+#question 3.1
 def odefunction(t, T ):
 
 dT = np.zeros[5]
@@ -112,7 +116,10 @@ def T_optimale(T_room, T_surface):
     '''calcule la température ressentie en fonction de la chaleur de la pièce et celles des surfaces'''
     return((T_room+T_surface)/2)
 
+#question 3.2 
+def calculTemperaturesEuler([t0,tf], T0, h)
 
-def calculTemperaturesIVP(FenetreDeTemperature, T0, rtol):
+#question 3.3
+def calculTemperaturesIVP(FenetreDeTemperature, T0, rtol = 10^-10):
     
     return(t,T)
