@@ -1,6 +1,6 @@
 import numpy as np
 import PerteEtGain
-#VARIABLES
+#DEBUG VARIABLES T: A RETIRER DANS LE CODE FINAL
 T_room = 293,15 #kelvins = 20 degrés Celcius
 T_c1 = 293,15 #kelvins 
 T_c2 = 293,15 #kelvins
