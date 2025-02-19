@@ -1,10 +1,10 @@
 import numpy as np
 #VARIABLES
 T_room = 293,15 #kelvins = 20 degrés Celcius
-T_c1 = 293,15 #kelvins
+T_c1 = 293,15 #kelvins 
 T_c2 = 293,15 #kelvins
 T_cc = 293,15 #kelvins
-T_t = 293,15 #kelvins
+T_t = 293,15 #Température des tubes 
 C_room = 1 # Capacité de la pièce régulée
 C_c1 = 1 # Capacité de la partie supérieure béton
 C_c2 = 1 # Capacité de la partie inférieure béton
