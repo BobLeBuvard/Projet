@@ -1,16 +1,19 @@
 import numpy as np
+import PerteEtGain
 #VARIABLES
 T_room = 293,15 #kelvins = 20 degrés Celcius
 T_c1 = 293,15 #kelvins 
 T_c2 = 293,15 #kelvins
 T_cc = 293,15 #kelvins
 T_t = 293,15 #Température des tubes 
+T = np.array([T_room, T_t, T_cc, T_c1,T_c2])
 C_room = 12 # Capacité de la pièce régulée (kJ/m²K)
 C_c1 = 50 # Capacité de la partie supérieure béton
 C_c2 = 10 # Capacité de la partie inférieure béton
 C_cc = 50 # Capacité de la partie centrale béton
 C_t = 1 # Capacité des tubes
 C_w = 30 # Capacité de l'eau
+C = np.array([C_room, C_t, C_cc, C_c1,C_c2, C_w]
 R_s = 1 #Résistance de la surface entrre le béton et la pièce régulée
 R_x = 0.025 #Résistance de contact entre les tubes & la partie centrale du béton (m²K/W)
 R_w = 0.15 #Résistance de l'eau
@@ -20,16 +23,64 @@ R_r_moins_s = 0.1
 R_s_moins_c2 = 0.183
 
 
-isOn = True        #DEBUG
-T = np.array([T_room, T_t, T_cc, T_c1,T_c2])
-C = np.array([C_room, C_t, C_cc, C_c1,C_c2, C_w])
+num_du_scenario = 1 # on a choisi le scenario 1 pour le #DEBUG
+
+def scenario1(t):
+    '''4h de refroidissement et puis le chauffage est coupé'''
+    if 0<= t <=4 :
+        isOn = 2 #refroidit
+    else:
+        isOn = 1 #éteint
+    return isOn
+def scenario2(t):
+    ''' 4h de refroidissement,10h de chauffe et puis le chauffage est coupé '''
+    if 0<= t <=4 :
+        isOn = 2 # refroidit
+    elif 4<t<=13:
+        isOn = 3 #chauffe
+    else:
+        isOn = 1 # éteint
+    return isOn
+def scenario3(t):
+    '''12h de chauffe et puis 12h de refroidissement'''
+    if 0<= t <=12 :
+        isOn = 3 #chauffe
+    else:
+        isOn = 2 #éteint
+    return isOn
+
+def scenario(num,t):
+    '''on a défini 3 scénarios, cette fonction peut nous définir lequel on va utiliser pour notre fonction:
+    
+    num -> numéro du scénario
+    
+    t -> variable du scénario 
+    '''
+    scenarios = [scenario1,scenario2,scenario3]
+
+    return scenarios[num-1](t)
+
+
 
 def T_w(isOn):
-    '''fonction qui prend un booléen en entrée et qui vaut  18 si le chauffage est éteint et 28 s'il est allumé'''
-    if isOn:
+    '''
+    prend en entrée 1 , 2 ou 3
+
+    isOn == 1 -> éteint (vaut T_t)
+
+    isOn == 2 -> refroidit (vaut 18°C)
+    
+    isOn == 3 -> en mode chauffe (vaut 28°C)
+    
+    '''
+    if isOn == 3:
         return 28
-    else: 
+    elif isOn == 2: 
         return 18
+    else:
+        return T_t #le dernier terme est annulé donc il faut que T_t - T_w = 0 -> T_w = T_t
+
+def odefunction(t, T ):
 
 dT = np.zeros[5]
 '''ici il y aura les cinq dérivées de la température, donc les cinq équations différentielles''' 
