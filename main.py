@@ -1,7 +1,8 @@
 import numpy as np
 import PerteEtGain
 #VARIABLES
-#DEBUG VARIABLES T
+
+#DEBUG VARIABLES T: A RETIRER DANS LE CODE FINAL
 T_room = 293.15 #kelvins = 20 degrés Celcius
 T_c1 = 293.15 #kelvins 
 T_c2 = 293.15 #kelvins
@@ -28,13 +29,14 @@ R_s_moins_c2 = 0.183
 num_du_scenario = 1 # on a choisi le scenario 1 pour le #DEBUG
 
 def scenario1(t):
-    '''scénario 1: le chauffage est actif entre 0 et 4h -> isOn refroidit ou est éteint en fonction de l'heure t'''
+    '''4h de refroidissement et puis le chauffage est coupé'''
     if 0<= t <=4 :
         isOn = 2 #refroidit
     else:
         isOn = 1 #éteint
     return isOn
 def scenario2(t):
+    ''' 4h de refroidissement,10h de chauffe et puis le chauffage est coupé '''
     if 0<= t <=4 :
         isOn = 2 # refroidit
     elif 4<t<=13:
@@ -43,6 +45,7 @@ def scenario2(t):
         isOn = 1 # éteint
     return isOn
 def scenario3(t):
+    '''12h de chauffe et puis 12h de refroidissement'''
     if 0<= t <=12 :
         isOn = 3 #chauffe
     else:
@@ -81,14 +84,14 @@ def T_w(isOn):
         return T_t #le dernier terme est annulé donc il faut que T_t - T_w = 0 -> T_w = T_t
 
 def odefunction(t, T ):
-    dT = np.zeros(5)
-    '''ici il y aura les cinq dérivées de la température, donc les cinq équations différentielles
+    
+    '''retourne une array contenant les cinq dérivées selon leur formule
     
     ATTENTION: LES DIVISIONS PAR ZERO NE SONT PAS ELIMINEES -> TOUTES LES TEMPERATURES DOIVENT ETRE DIFFERENTES POUR QUE CA FONCTIONNE
 
-    TOUTES LES EQUADIFFS UTILISENT DES TEMPERATURES AU PIF A RETIRER POUR LA REMISE
+    TOUTES LES EQUADIFFS UTILISENT DES TEMPERATURES AU PIF A RETIRER POUR LA REMISE ( tout ce qui concerne des valeurs fixées de T_xxx ainsi que l'array T)
     ''' 
-    
+    dT = np.zeros(5)
     #CALCUL DE dT_room
     dT[0] = (1/C[0])*((-1/(R_r_moins_s +R_s_moins_c2))*(T[0]-T[4]+ PerteEtGain.g(t)))
                     
@@ -108,16 +111,3 @@ def odefunction(t, T ):
     return(dT)
 
 
-
-def celcius_en_kelvin(Temp_celcius):
-    '''fonction qui transforme une température en degés celcius en une température en degrés kelvin'''
-    return (Temp_celcius + 273.15)
-
-def T_optimale(T_room, T_surface):
-    '''calcule la température ressentie en fonction de la chaleur de la pièce et celles des surfaces'''
-    return((T_room+T_surface)/2)
-
-
-def calculTemperaturesIVP(FenetreDeTemperature, T0, rtol):
-    
-    return(t,T)
