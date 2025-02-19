@@ -101,6 +101,8 @@ dT[3] = (1/C_[3])*(-1/R_cc_moins_c1)*(T[3]-T[2])
 #CALCUL DE dT_c2 
 dT[4] = (1/C[4])* ((-1/R_c2_moins_cc)*(T[4]-T[2])+ (1/(R_r_moins_s)+ R_s_moins_c2)/(T[0] - T[4]))
 
+return(dT)
+
 
 def celcius_en_kelvin(Temp_celcius):
     '''fonction qui transforme une température en degés celcius en une température en degrés kelvin'''
