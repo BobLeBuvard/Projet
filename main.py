@@ -2,14 +2,17 @@ import numpy as np
 import scipy as scp
 import matplotlib.pyplot as plt
 #VARIABLES
-T_room = 293,15 #kelvins
+T_room = 293,15 #kelvins = 20 degrés Celcius
 T_c1 = 293,15 #kelvins
 T_c2 = 293,15 #kelvins
 T_cc = 293,15 #kelvins
 T_t = 293,15 #kelvins
-C_room = 
-C_c1 = 
-C_c2
+C_room = 1 # pièce régulée
+C_c1 = 1 # partie supérieure béton
+C_c2 = 1 # partie inférieure béton
+s = 1 #surface entrre le béton et la pièce régulée
+x = 1 #contact entre les tubes & la partie centrale du béton
+
 T = np.array([T_room, T_t, T_cc, T_c1,T_c2])
 
 
