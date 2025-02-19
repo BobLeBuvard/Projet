@@ -26,13 +26,13 @@ def hasRoots(f, x0,x1,tol):
         # return [1984,1]
     x_vals = np.linspace(x0, x1, 50)  # echantillonne l'intervalle en 50 petites sections -> prend du temps je suis d'accord
     sign_changes = 0
-    previous_sign = np.sign(f(x_vals[0]))    #liste de signes sur l'échantillon
+    signe_precedent = np.sign(f(x_vals[0]))    #liste de signes sur l'échantillon
 
     for j in range(1, 50):  # Commence à 1 pour éviter l'erreur d'indexation
-        current_sign = np.sign(f(+x_vals[j]))  # Calcule le signe actuel 
-        if current_sign != previous_sign:  # Vérifie le changement de signe
+        signe_actuel = np.sign(f(+x_vals[j]))  # Calcule le signe actuel 
+        if signe_actuel != signe_precedent:  # Vérifie le changement de signe
             sign_changes += 1
-        previous_sign = current_sign
+        signe_precedent = signe_actuel
         
     # Compter le nombre de changements de signe
 
@@ -64,16 +64,19 @@ def secante(f, x0, x1, tol = 0.5e-7, max_iter=50):
         return retour   # la fonction a plus d'une racine
 
     for i in range(max_iter):
+        fx1 = f(x1)     #STOCKAGE DE L'ESTIMATION DE LA FONCTION A UN POINT X1
+        fx0 = f(x0)     #STOCKAGE DE L'ESTIMATION DE LA FONCTION A UN POINT X0
 
-        if abs(f(x1) - f(x0)) ==0 : # on veut pas diviser par zéro
+        if abs(fx1 - fx0) ==0 : # on veut pas diviser par zéro
             return [1984, -1]
         #maintenant on calcule la formule du point de la fonction à l:
-
-        x2 = x1 - f(x1) * (x1 - x0) / (f(x1) - f(x0)) # on calcule le nouveau point x
+        
+        x2 = x1 -  fx1* (x1 - x0) / (fx1 - fx0) # on calcule le nouveau point x
         if abs(x2 - x1) < tol:
             return [x2, 0] #on a trouvé la racine correcte (avec tolérances en valeur absolue) !
-        x0, x1 = x1, x2  # on met les valeurs à jour x1 devient x0 et x2 devient x1  
-    return [x2,0]
+        
+        x0, x1 = x1, x2  # Sinon on met les valeurs à jour x1 devient x0 et x2 devient x1  
+        return [x2,0]
 
 def bissection(f, x0, x1, tol = 0.5e-7, max_iter=50): #par défaut une tolérance de 8 décimales correctes, et un nombre d'itérations max de 50 
     '''
@@ -98,16 +101,17 @@ def bissection(f, x0, x1, tol = 0.5e-7, max_iter=50): #par défaut une toléranc
     
     
     nombre_d_iterations = round(np.log2((x1 - x0) / (2 * tol))) + 1 #arrondi supérieur
-    print(nombre_d_iterations)  #DEBUG
+    # print(nombre_d_iterations)  #DEBUG
     if(nombre_d_iterations <= 0 or nombre_d_iterations > max_iter):
         return [1984,-1] # on a un souci de convergeance: un nombre négatif d'itérations...
 
     for i in range(nombre_d_iterations):
         x2 = (x0+x1) /2 #creation d'un point au milieu de x0 et x1 
-
-        if f(x2) < tol:
+        fx2 = f(x2)     #STOCKAGE DE L'ESTIMATION DE LA FONCTION A UN POINT X2
+        fx0 = f(x0)     #STOCKAGE DE L'ESTIMATION DE LA FONCTION A UN POINT X0
+        if fx2 < tol:
             return [x2 , 0] #on a trouvé la racine exacte -> on quitte
-        elif(f(x0) * f(x2) < 0): #on compare le signe de x0 et x2 
+        elif(fx0 * fx2 < 0): #on compare le signe de x0 et x2 
             x1 = x2 # f(x0) et f(x2) sont de signe contraire -> le zéro se trouve entre x0 et x2
         else: 
             x0 = x2 # les deux nombres sont de même signe -> le zéro se trouve entre x2 et x1
@@ -117,5 +121,5 @@ def bissection(f, x0, x1, tol = 0.5e-7, max_iter=50): #par défaut une toléranc
     
     #TODO : 
     #       Souci pour tester la convergence -> mauvais message d'erreur si divergence je crois
-
+    #       PAS PRIS EN COMPTE LES RACINES DOUBLES SUR AUCUNE FONCTION
 
