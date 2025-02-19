@@ -37,7 +37,7 @@ dT = np.zeros[5]
 dT[2] = (1/C[2])*( (-1/(R_cc_moins_c1))*(T[2]-T[3])- (1/R_x)*(T[2]-T[1]) + (1/R_c2_moins_cc)*(T[4] - T[2]))
 
 #CALCUL DE dT_c1 
-dT[3] = (1/C_[3])*(-1/R_cc_moins_c1)*(T[3]-T[2])
+dT[3] = (1/C[3])*(-1/R_cc_moins_c1)*(T[3]-T[2])
 
 
 #CALCUL DE dT_c2 
