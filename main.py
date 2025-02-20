@@ -1,11 +1,14 @@
 import numpy as np
 import PerteEtGain
-#VARIABLES
+from scipy.integrate import solve_ivp as solve
+
+
 
 
 #FORME DE l'array T 
 
 # T = np.array([T_room, T_t, T_cc, T_c1,T_c2])
+
 
 
 C_room = 12 # Capacité de la pièce régulée (kJ/m²K)
@@ -23,6 +26,7 @@ R_cc_moins_c1 = 0.025
 R_c2_moins_cc = 0.02
 R_r_moins_s = 0.1
 R_s_moins_c2 = 0.183
+
 
 num_du_scenario = 1 # on a choisi le scenario 1 pour le #DEBUG
 
@@ -82,29 +86,43 @@ def T_w(isOn,T_t):
         return T_t #le dernier terme est annulé donc il faut que T_t - T_w = 0 -> T_w = T_t
 
 #question 3.1
+
 def odefunction(t, T):
     
     '''retourne une array contenant les cinq dérivées selon leur formule
 
-    TOUTES LES EQUADIFFS UTILISENT DES TEMPERATURES AU PIF A RETIRER POUR LA REMISE ( tout ce qui concerne des valeurs fixées de T_xxx ainsi que l'array T)
-    ''' 
-    dT = np.zeros(5)
+
+    dT = np.zeros[5]
+    '''calcul des 5 équations différentielles ''' 
+
+
     #CALCUL DE dT_room
-    dT[0] = (1/C[0])*((-1/(R_r_moins_s +R_s_moins_c2))*(T[0]-T[4]+ PerteEtGain.g(t)))
+    dT[0] = (1/C[0])*((-1/(R_r_moins_s +R_s_moins_c2))*(T[0]-T[4]+G(t)))  #Il manque la fonction G(t)
                     
+
     #CALCUL DE dT_t 
     dT[1] = (1/C[5])*( (-1/R_x)*(T[1]-T[2]) - (1/R_w)*(T[1] - T_w(scenario(num_du_scenario,t), T[1])) )
+
 
     #CALCUL DE dT_cc
     dT[2] = (1/C[2])*( (-1/(R_cc_moins_c1))*(T[2]-T[3])- (1/R_x)*(T[2]-T[1]) + (1/R_c2_moins_cc)*(T[4] - T[2]))
 
     #CALCUL DE dT_c1 
-    dT[3] = (1/C[3])*(-1/R_cc_moins_c1)*(T[3]-T[2])
-
+    dT[3] = (1/C_[3])*(-1/R_cc_moins_c1)*(T[3]-T[2])
 
     #CALCUL DE dT_c2 
     dT[4] = (1/C[4])* ((-1/R_c2_moins_cc)*(T[4]-T[2])+ (1/(R_r_moins_s + R_s_moins_c2))*(T[0] - T[4]))
 
     return(dT)
+
+
+def celcius_en_kelvin(Temp_celcius):
+    '''fonction qui transforme une température en degés celcius en une température en degrés kelvin'''
+    return (Temp_celcius + 273.15)
+
+def T_optimale(T_room, T_surface):
+    '''calcule la température ressentie en fonction de la chaleur de la pièce et celles des surfaces'''
+    return((T_room+T_surface)/2)
+
 
 

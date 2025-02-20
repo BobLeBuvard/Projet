@@ -1,6 +1,7 @@
 import numpy as np
 from main import odefunction
 import scipy as scp
+
 import matplotlib.pyplot as plt
 debug = True
 #question 3.2 

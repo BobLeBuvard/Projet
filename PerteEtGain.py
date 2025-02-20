@@ -20,3 +20,5 @@ def g(x):
     flux = PERTE_ET_GAIN[1]
     val = scp.interpolate.UnivariateSpline(heures,flux,s = degre_de_lissage)
     return val(x)
+
+    # Louis a besoin de plt.show() pour afficher le graph
