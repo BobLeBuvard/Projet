@@ -8,7 +8,6 @@ from PerteEtGain import g
 
 # T = np.array([T_room, T_t, T_cc, T_c1,T_c2])
 
-num_du_scenario = 1
 
 C_room = 12 # Capacité de la pièce régulée (kJ/m²K)
 C_c1 = 50 # Capacité de la partie supérieure béton
@@ -29,14 +28,14 @@ R_s_moins_c2 = 0.183
 
 
 
-def scenario1(t):
+def scenario1(t,delta_t):
     '''4h de refroidissement et puis le chauffage est coupé'''
     if 0<= t <=4 :
         isOn = 2 #refroidit
     else:
         isOn = 1 #éteint
     return isOn
-def scenario2(t):
+def scenario2(t,delta_t):
     ''' 4h de refroidissement,10h de chauffe et puis le chauffage est coupé '''
     if 0<= t <=4 :
         isOn = 2 # refroidit
@@ -45,7 +44,7 @@ def scenario2(t):
     else:
         isOn = 1 # éteint
     return isOn
-def scenario3(t):
+def scenario3(t,delta_t):
     '''12h de chauffe et puis 12h de refroidissement'''
     if 0<= t <=12 :
         isOn = 3 #chauffe
@@ -53,17 +52,27 @@ def scenario3(t):
         isOn = 2 #refroidit
     return isOn
 
+def scenario4(t,delta_t):
+    if 0<= t <=4 :
+        isOn = 2 # refroidit
+    elif 4<t<= (4+delta_t):
+        isOn = 3 #chauffe
+    elif((4+delta_t)<t<=24 ):
+        isOn = 1 # éteint
+    return isOn
 
-def scenario(num,t):
-    '''on a défini 3 scénarios, cette fonction peut nous définir lequel on va utiliser pour notre fonction:
+def scenario(num,t,delta_t):
+    '''on a défini 4 scénarios, cette fonction peut nous définir lequel on va utiliser pour notre fonction:
     
     num -> numéro du scénario
     
     t -> variable du scénario 
-    '''
-    scenarios = [scenario1,scenario2,scenario3]
 
-    return scenarios[num-1](t)
+    delta_t  -> intervalle de temps ( utile que pour le scénario 4 )
+    '''
+    scenarios = [scenario1,scenario2,scenario3,scenario4]
+
+    return scenarios[num-1](t,delta_t)
 
 
 def T_w(isOn,T_t):
@@ -98,7 +107,7 @@ def odefunction(t, T):
                     
 
     #CALCUL DE dT_t 
-    dT[1] = (1/C[5])*( (-1/R_x)*(T[1]-T[2]) - (1/R_w)*(T[1] - T_w(scenario(num_du_scenario,t), T[1])) )
+    dT[1] = (1/C[5])*( (-1/R_x)*(T[1]-T[2]) - (1/R_w)*(T[1] - T_w(scenario(num_du_scenario = 2 , t ,delta_t = 0 ), T[1])) )
 
 
     #CALCUL DE dT_cc
@@ -111,7 +120,6 @@ def odefunction(t, T):
     dT[4] = (1/C[4])* ((-1/R_c2_moins_cc)*(T[4]-T[2])+ (1/(R_r_moins_s + R_s_moins_c2))*(T[0] - T[4]))
 
     return(dT)
-
 
 # inutile pour le moment
 # def T_optimale(T_room, T_surface):

@@ -23,4 +23,26 @@ OVERLEAF: https://www.overleaf.com/read/xjxshnygpmzg#719801
 
 Coucou de Louis, la bise ! 
 
-JOEL JE VAIS TE POUTRER LE CUL SI TU NE FAIS PAS UN COMMIT D'ICI DIMANCHE
+JOEL JE VAIS TE POUTRER LE CUL SI TU NE FAIS PAS UN COMMIT D'ICI DIMANCHE 23/02/25
+
+
+
+CURRENT advencement:
+#question 1.1 ?
+#question 1.2 ?
+
+#question 2.0 OK
+
+#question 3.1 OK
+#question 3.2 OK
+#question 3.3 OK
+#question 3.4 NON
+#question 3.5 NON
+#question 3.6 NON
+
+#question 4.1 PRESQUE
+#question 4.2 NON
+#question 4.3 NON
+
+#rapport      ChatGPT
+
