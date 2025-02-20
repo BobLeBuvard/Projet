@@ -1,32 +1,13 @@
 import numpy as np
-from scipy.integrate import solve_ivp as solve
 from PerteEtGain import g
+from config import * 
 
 
 
-#FORME DE l'array T 
 
-# T = np.array([T_room, T_t, T_cc, T_c1,T_c2])
-
-
-C_room = 12 # Capacité de la pièce régulée (kJ/m²K)
-C_c1 = 50 # Capacité de la partie supérieure béton
-C_c2 = 10 # Capacité de la partie inférieure béton
-C_cc = 50 # Capacité de la partie centrale béton
-C_t = 1 # Capacité des tubes
-C_w = 30 # Capacité de l'eau
-C = np.array([C_room, C_t, C_cc, C_c1,C_c2, C_w])
-
-R_s = 1 #Résistance de la surface entrre le béton et la pièce régulée
-R_x = 0.025 #Résistance de contact entre les tubes & la partie centrale du béton (m²K/W)
-R_w = 0.15 #Résistance de l'eau
-R_cc_moins_c1 = 0.025
-R_c2_moins_cc = 0.02
-R_r_moins_s = 0.1
-R_s_moins_c2 = 0.183
-
-
-
+def scenariodebug(t,delta_t):
+    isOn = 1 #éteint pour voir la température de la pièce sans chauffe
+    return isOn 
 
 def scenario1(t,delta_t):
     '''4h de refroidissement et puis le chauffage est coupé'''
@@ -61,7 +42,7 @@ def scenario4(t,delta_t):
         isOn = 1 # éteint
     return isOn
 
-def scenario(num,t,delta_t):
+def scenario(t,num,delta_t):
     '''on a défini 4 scénarios, cette fonction peut nous définir lequel on va utiliser pour notre fonction:
     
     num -> numéro du scénario
@@ -70,7 +51,7 @@ def scenario(num,t,delta_t):
 
     delta_t  -> intervalle de temps ( utile que pour le scénario 4 )
     '''
-    scenarios = [scenario1,scenario2,scenario3,scenario4]
+    scenarios = [scenario1,scenario2,scenario3,scenario4,scenariodebug]
 
     return scenarios[num-1](t,delta_t)
 
@@ -95,11 +76,19 @@ def T_w(isOn,T_t):
 
 #question 3.1
 def odefunction(t, T):
+
+    '''retourne une array contenant les cinq dérivées selon leur formule
     
-    '''retourne une array contenant les cinq dérivées selon leur formule'''
+    IN: 
+    
+    t -> instant de temps (float64)
+    
+    T -> array des températures (dim (1,5)) dans l'ordre [T_room, T_t, T_cc, T_c1,T_c2]
+
+    '''
 
 
-    dT = np.zeros(5)
+    dT = np.zeros_like(T) # de même dimensions que T mais contient les dérivées
 
 
     #CALCUL DE dT_room
@@ -107,7 +96,9 @@ def odefunction(t, T):
                     
 
     #CALCUL DE dT_t 
-    dT[1] = (1/C[5])*( (-1/R_x)*(T[1]-T[2]) - (1/R_w)*(T[1] - T_w(scenario(num_du_scenario = 2 , t ,delta_t = 0 ), T[1])) )
+    isOn = scenario( t ,num_du_scenario, delta_t = 0)
+    # if debug: print(num_du_scenario) #DEBUG
+    dT[1] = (1/C[5])*( (-1/R_x)*(T[1]-T[2]) - (1/R_w)*(T[1] - T_w(isOn, T[1])) )
 
 
     #CALCUL DE dT_cc

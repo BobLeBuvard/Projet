@@ -1,12 +1,14 @@
 import numpy as np
 from main import odefunction
 import scipy as scp
+from config import *
 
 #question 3.2 
-def calculTemperaturesEuler(FenetreDeTemperature, T0, h):
-    t0, tf = FenetreDeTemperature
+def calculTemperaturesEuler(FenetreDeTemps, T0, h,t2):
+    t0, tf = FenetreDeTemps
 
     t = np.arange(t0, tf + h, h)  # on fait des temps discrets distancés de h entre t0 et tf
+    if custom : t = t2 
     n = len(t)  # nombre de points de temps -> je préfère faire ainsi parce que on demande d'utiliser n , sinon je ferais T = np.zeros((5, len(t)))
     
     T = np.zeros((5, n))  # 5*n températures en fonction du nombre de points de temps -> on est obligé de mettre sous cette forme 
@@ -14,20 +16,23 @@ def calculTemperaturesEuler(FenetreDeTemperature, T0, h):
     
     for i in range(1, n):
         dT = odefunction(t[i-1], T[:, i-1])  #calcul des dérivées
-        T[:, i] = T[:, i-1] + h * dT  # application de Euler
+        T[:, i] = T[:, i-1] + h * dT  # application de Euler (copypaste du cours avec modifs)
         
     return [t, T]
 
 
 #question 3.3
-def calculTemperaturesIVP(FenetreDeTemperature, T0, rtol = 10^-7): # par défaut une précision de 10^-7 (choix arbitraire)
-    solution = scp.integrate.solve_ivp(odefunction, FenetreDeTemperature, T0, rtol)
+def calculTemperaturesIVP(FenetreDeTemps, T0, rtol = default_tol):
+    solution = scp.integrate.solve_ivp(odefunction, FenetreDeTemps, T0, rtol= rtol)
     return(solution)
+
+
+
 # question 4.1 base
 def calculCycles(cycles,T0,FenetreDeTemps,h):
     '''
 
-    fonction qui calcule un nombre de cycles de chauffe (sur plusieurs jours potentiellement) et qui retourne des données plottables.
+    fonction qui calcule un nombre de cycles de chauffe (sur plusieurs jours potentiellement) et qui retourne des données plottables. avec le calcul de températures par Euler
     
     ======
     IN: 

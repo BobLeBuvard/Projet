@@ -1,33 +1,28 @@
-import numpy as np
-from main import odefunction
-from main import num_du_scenario
-import scipy as scp
+from config import *
 import SimTABS
-import PerteEtGain
 import matplotlib.pyplot as plt
 
-days = 20 #calculer sur 1 jour par exemple
 
-#SCENARIO A MODIFIER DANS main.py
-debug = True
 
 
 #TESTER LES EXERCICES
 
+#t,T = SimTABS.calculCycles(5,T0,FenetreDeTemps,h)
 
-T0 = np.array([15, 15, 15, 15, 15])
-FenetreDeTemps = np.array([0, 24]) # fenetre de test comme demandé
-h = 0.1  # pas de temps ( toutes les 6 minutes)
+solution = SimTABS.calculTemperaturesIVP(FenetreDeTemps,T0, rtol=10e-10)
+t = solution.t
+T = solution.y
 
-#t, T = SimTABS.calculTemperaturesEuler(FenetreDeTemperature, T0, h)
+T2 = SimTABS.calculTemperaturesEuler(FenetreDeTemps,T0,0.1, t )
 
-t,T = SimTABS.calculCycles(5,T0,FenetreDeTemps,h)
-if debug:  
-    #print(T[1])
-    plt.plot(t,T[0],label = 'T_room') 
-    plt.plot(t,T[1],label = 'T_t') 
-    plt.plot(t,T[2],label = 'T_cc') 
-    plt.plot(t,T[3],label = 'T_c1') 
-    plt.plot(t,T[4],label = 'T_c2')
-    plt.show()
+T3 = T - T2[1]
+T = T3
+if debug: 
+    plt.ylabel('Température(T)', fontsize = 8) # Labélisation de l'axe des ordonnées (copypaste du tuto)
+    plt.xlabel('Temps (t)', fontsize = 8) # Labélisation de l'axe des abscisses (copypaste du tuto)
+    index = ['T_room','T_t','T_cc','T_c1','T_c2','undefined','undefined'] 
+    for i in range(T.shape[0]):  
+        plt.plot(t, T[i], label=index[i])  # en fonction du nombre de variables dans T, on affiche plus ou moins de fonctions
+    plt.legend(loc='best')
+    plt.show()  
 

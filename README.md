@@ -36,11 +36,11 @@ CURRENT advencement:
 #question 3.1 OK
 #question 3.2 OK
 #question 3.3 OK
-#question 3.4 NON
+#question 3.4 PRESQUE
 #question 3.5 NON
 #question 3.6 NON
 
-#question 4.1 PRESQUE
+#question 4.1 OK
 #question 4.2 NON
 #question 4.3 NON
 
