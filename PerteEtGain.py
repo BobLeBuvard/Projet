@@ -1,6 +1,7 @@
 import numpy as np
 import scipy as scp
 import matplotlib.pyplot as plt
+degre_de_lissage = 5
 PERTE_ET_GAIN = np.loadtxt('PerteEtGain.txt') # array constante du fichier texte 
 heures = PERTE_ET_GAIN[0]
 flux = PERTE_ET_GAIN[1]
