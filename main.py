@@ -1,5 +1,4 @@
 import numpy as np
-import PerteEtGain
 from scipy.integrate import solve_ivp as solve
 from PerteEtGain import g
 
@@ -9,7 +8,7 @@ from PerteEtGain import g
 
 # T = np.array([T_room, T_t, T_cc, T_c1,T_c2])
 
-
+num_du_scenario = 1
 
 C_room = 12 # Capacité de la pièce régulée (kJ/m²K)
 C_c1 = 50 # Capacité de la partie supérieure béton
@@ -28,7 +27,7 @@ R_r_moins_s = 0.1
 R_s_moins_c2 = 0.183
 
 
-num_du_scenario = 1 # on a choisi le scenario 1 pour le #DEBUG
+
 
 def scenario1(t):
     '''4h de refroidissement et puis le chauffage est coupé'''
@@ -54,6 +53,7 @@ def scenario3(t):
         isOn = 2 #refroidit
     return isOn
 
+
 def scenario(num,t):
     '''on a défini 3 scénarios, cette fonction peut nous définir lequel on va utiliser pour notre fonction:
     
@@ -64,7 +64,6 @@ def scenario(num,t):
     scenarios = [scenario1,scenario2,scenario3]
 
     return scenarios[num-1](t)
-
 
 
 def T_w(isOn,T_t):
@@ -86,7 +85,6 @@ def T_w(isOn,T_t):
         return T_t #le dernier terme est annulé donc il faut que T_t - T_w = 0 -> T_w = T_t
 
 #question 3.1
-
 def odefunction(t, T):
     
     '''retourne une array contenant les cinq dérivées selon leur formule'''
@@ -115,9 +113,10 @@ def odefunction(t, T):
     return(dT)
 
 
-def T_optimale(T_room, T_surface):
-    '''calcule la température ressentie en fonction de la chaleur de la pièce et celles des surfaces'''
-    return((T_room+T_surface)/2)
+# inutile pour le moment
+# def T_optimale(T_room, T_surface):
+#     '''calcule la température ressentie en fonction de la chaleur de la pièce et celles des surfaces'''
+#     return((T_room+T_surface)/2)
 
 
 
