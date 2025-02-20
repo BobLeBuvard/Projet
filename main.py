@@ -10,13 +10,15 @@ T_c2 = 293,15 #kelvins
 T_cc = 293,15 #kelvins
 T_t = 293,15 #Température des tubes 
 T = np.array([T_room, T_t, T_cc, T_c1,T_c2])
+
 C_room = 12 # Capacité de la pièce régulée (kJ/m²K)
 C_c1 = 50 # Capacité de la partie supérieure béton
 C_c2 = 10 # Capacité de la partie inférieure béton
 C_cc = 50 # Capacité de la partie centrale béton
 C_t = 1 # Capacité des tubes
 C_w = 30 # Capacité de l'eau
-C = np.array([C_room, C_t, C_cc, C_c1,C_c2, C_w]
+C = np.array([C_room, C_t, C_cc, C_c1,C_c2, C_w])
+
 R_s = 1 #Résistance de la surface entrre le béton et la pièce régulée
 R_x = 0.025 #Résistance de contact entre les tubes & la partie centrale du béton (m²K/W)
 R_w = 0.15 #Résistance de l'eau
@@ -86,26 +88,26 @@ def T_w(isOn):
 #question 3.1
 def odefunction(t, T ):
 
-dT = np.zeros[5]
-'''ici il y aura les cinq dérivées de la température, donc les cinq équations différentielles''' 
+    dT = np.zeros[5]
+    '''calcul des 5 équations différentielles ''' 
 
 
-#CALCUL DE dT_room
-dT[0] = (1/C[0])*((-1/(R_r_moins_s +R_s_moins_c2))*(T[0]-T[4]+G(t)))  #Il manque la fonction G(t)
-                  
-#CALCUL DE dT_t
-dT[1] = (1/C[5])*( (-1/R_x)*(T[1]-T[2]) - (1/R_w)(T[1] - T_w(isOn)))
+    #CALCUL DE dT_room
+    dT[0] = (1/C[0])*((-1/(R_r_moins_s +R_s_moins_c2))*(T[0]-T[4]+G(t)))  #Il manque la fonction G(t)
+                    
+    #CALCUL DE dT_t
+    dT[1] = (1/C[5])*( (-1/R_x)*(T[1]-T[2]) - (1/R_w)(T[1] - T_w(isOn)))
 
-#CALCUL DE dT_cc
-dT[2] = (1/C[2])*( (-1/(R_cc_moins_c1))*(T[2]-T[3])- (1/R_x)*(T[2]-T[1]) + (1/R_c2_moins_cc)*(T[4] - T[2]))
+    #CALCUL DE dT_cc
+    dT[2] = (1/C[2])*( (-1/(R_cc_moins_c1))*(T[2]-T[3])- (1/R_x)*(T[2]-T[1]) + (1/R_c2_moins_cc)*(T[4] - T[2]))
 
-#CALCUL DE dT_c1 
-dT[3] = (1/C_[3])*(-1/R_cc_moins_c1)*(T[3]-T[2])
+    #CALCUL DE dT_c1 
+    dT[3] = (1/C_[3])*(-1/R_cc_moins_c1)*(T[3]-T[2])
 
-#CALCUL DE dT_c2 
-dT[4] = (1/C[4])* ((-1/R_c2_moins_cc)*(T[4]-T[2])+ (1/(R_r_moins_s)+ R_s_moins_c2)/(T[0] - T[4]))
+    #CALCUL DE dT_c2 
+    dT[4] = (1/C[4])* ((-1/R_c2_moins_cc)*(T[4]-T[2])+ (1/(R_r_moins_s)+ R_s_moins_c2)/(T[0] - T[4]))
 
-return(dT)
+    return(dT)
 
 
 def celcius_en_kelvin(Temp_celcius):
@@ -116,10 +118,5 @@ def T_optimale(T_room, T_surface):
     '''calcule la température ressentie en fonction de la chaleur de la pièce et celles des surfaces'''
     return((T_room+T_surface)/2)
 
-#question 3.2 
-def calculTemperaturesEuler([t0,tf], T0, h)
 
-#question 3.3
-def calculTemperaturesIVP(FenetreDeTemperature, T0, rtol = 10^-10):
-    
-    return(t,T)
+
