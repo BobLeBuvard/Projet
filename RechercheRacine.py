@@ -1,5 +1,4 @@
 import numpy as np
-
 def f(x):
     '''
     fonction de test pour tester si les deux fonctions de racine fonctionnent correctement. 
