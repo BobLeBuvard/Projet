@@ -1,7 +1,7 @@
 import numpy as np
 import PerteEtGain
 from scipy.integrate import solve_ivp as solve
-
+from PerteEtGain import g
 
 
 
@@ -92,11 +92,11 @@ def odefunction(t, T):
     '''retourne une array contenant les cinq dérivées selon leur formule'''
 
 
-    dT = np.zeros[5]
+    dT = np.zeros(5)
 
 
     #CALCUL DE dT_room
-    dT[0] = (1/C[0])*((-1/(R_r_moins_s +R_s_moins_c2))*(T[0]-T[4]+G(t)))  #Il manque la fonction G(t)
+    dT[0] = (1/C[0])*((-1/(R_r_moins_s +R_s_moins_c2))*(T[0]-T[4]+g(t)))  #Il manque la fonction G(t)
                     
 
     #CALCUL DE dT_t 
@@ -107,17 +107,13 @@ def odefunction(t, T):
     dT[2] = (1/C[2])*( (-1/(R_cc_moins_c1))*(T[2]-T[3])- (1/R_x)*(T[2]-T[1]) + (1/R_c2_moins_cc)*(T[4] - T[2]))
 
     #CALCUL DE dT_c1 
-    dT[3] = (1/C_[3])*(-1/R_cc_moins_c1)*(T[3]-T[2])
+    dT[3] = (1/C[3])*(-1/R_cc_moins_c1)*(T[3]-T[2])
 
     #CALCUL DE dT_c2 
     dT[4] = (1/C[4])* ((-1/R_c2_moins_cc)*(T[4]-T[2])+ (1/(R_r_moins_s + R_s_moins_c2))*(T[0] - T[4]))
 
     return(dT)
 
-
-def celcius_en_kelvin(Temp_celcius):
-    '''fonction qui transforme une température en degés celcius en une température en degrés kelvin'''
-    return (Temp_celcius + 273.15)
 
 def T_optimale(T_room, T_surface):
     '''calcule la température ressentie en fonction de la chaleur de la pièce et celles des surfaces'''
