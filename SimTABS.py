@@ -1,5 +1,10 @@
 import numpy as np
 from main import odefunction
+import scipy as scp
+
+#question 3.2 
+def calculTemperaturesEuler(FenetreDeTemperature, T0, h):
+    t0, tf = FenetreDeTemperature
 
 def calculTemperaturesEuler(interval, T0, h):
     t0, tf = interval
@@ -16,10 +21,16 @@ def calculTemperaturesEuler(interval, T0, h):
     return [t, T]
 
 
+#question 3.3
+def calculTemperaturesIVP(FenetreDeTemperature, T0, rtol = 10^-7): # par défaut une précision de 10^-7 (choix arbitraire)
+    solution = scp.integrate.solve_ivp(odefunction, FenetreDeTemperature, T0, rtol)
+    return(solution)
+
+
 T0 = [15, 15, 15, 15, 15]
-interval = np.array([0, 24])  # En heures
+FenetreDeTemperature = np.array([0, 24])  # En heures
 h = 0.1  # Pas de temps
 
-t, T = calculTemperaturesEuler(interval, T0, h)
+t, T = calculTemperaturesEuler(FenetreDeTemperature, T0, h)
 print(T)        
 '''bizarrement dans ce test après 24h, la température globale est aux alentours de 150°C ce qui est un pôtipeu chaud'''

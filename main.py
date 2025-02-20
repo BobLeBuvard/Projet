@@ -83,6 +83,7 @@ def T_w(isOn):
     else:
         return T_t #le dernier terme est annulé donc il faut que T_t - T_w = 0 -> T_w = T_t
 
+#question 3.1
 def odefunction(t, T ):
     
     '''retourne une array contenant les cinq dérivées selon leur formule
