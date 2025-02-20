@@ -22,3 +22,5 @@ S'il y a des conflits de versions, ce qui ne devrait pas arriver, contactez moi 
 OVERLEAF: https://www.overleaf.com/read/xjxshnygpmzg#719801
 
 Coucou de Louis, la bise ! 
+
+JOEL JE VAIS TE POUTRER LE CUL SI TU NE FAIS PAS UN COMMIT D'ICI DIMANCHE

@@ -2,13 +2,11 @@ import numpy as np
 import PerteEtGain
 #VARIABLES
 
-#DEBUG VARIABLES T: A RETIRER DANS LE CODE FINAL
-T_room = 293.15 #kelvins = 20 degrés Celcius
-T_c1 = 293.15 #kelvins 
-T_c2 = 293.15 #kelvins
-T_cc = 293.15 #kelvins
-T_t = 293.15 #Température des tubes 
-T = np.array([T_room, T_t, T_cc, T_c1,T_c2])
+
+#FORME DE l'array T 
+
+# T = np.array([T_room, T_t, T_cc, T_c1,T_c2])
+
 
 C_room = 12 # Capacité de la pièce régulée (kJ/m²K)
 C_c1 = 50 # Capacité de la partie supérieure béton
@@ -65,7 +63,7 @@ def scenario(num,t):
 
 
 
-def T_w(isOn):
+def T_w(isOn,T_t):
     '''
     prend en entrée 1 , 2 ou 3
 
@@ -84,11 +82,9 @@ def T_w(isOn):
         return T_t #le dernier terme est annulé donc il faut que T_t - T_w = 0 -> T_w = T_t
 
 #question 3.1
-def odefunction(t, T ):
+def odefunction(t, T):
     
     '''retourne une array contenant les cinq dérivées selon leur formule
-    
-    ATTENTION: LES DIVISIONS PAR ZERO NE SONT PAS ELIMINEES -> TOUTES LES TEMPERATURES DOIVENT ETRE DIFFERENTES POUR QUE CA FONCTIONNE
 
     TOUTES LES EQUADIFFS UTILISENT DES TEMPERATURES AU PIF A RETIRER POUR LA REMISE ( tout ce qui concerne des valeurs fixées de T_xxx ainsi que l'array T)
     ''' 
@@ -97,7 +93,7 @@ def odefunction(t, T ):
     dT[0] = (1/C[0])*((-1/(R_r_moins_s +R_s_moins_c2))*(T[0]-T[4]+ PerteEtGain.g(t)))
                     
     #CALCUL DE dT_t 
-    dT[1] = (1/C[5])*( (-1/R_x)*(T[1]-T[2]) - (1/R_w)*(T[1] - T_w(scenario(num_du_scenario,t))) )
+    dT[1] = (1/C[5])*( (-1/R_x)*(T[1]-T[2]) - (1/R_w)*(T[1] - T_w(scenario(num_du_scenario,t), T[1])) )
 
     #CALCUL DE dT_cc
     dT[2] = (1/C[2])*( (-1/(R_cc_moins_c1))*(T[2]-T[3])- (1/R_x)*(T[2]-T[1]) + (1/R_c2_moins_cc)*(T[4] - T[2]))
@@ -107,7 +103,7 @@ def odefunction(t, T ):
 
 
     #CALCUL DE dT_c2 
-    dT[4] = (1/C[4])* ((-1/R_c2_moins_cc)*(T[4]-T[2])+ (1/(R_r_moins_s)+ R_s_moins_c2)*(T[0] - T[4]))
+    dT[4] = (1/C[4])* ((-1/R_c2_moins_cc)*(T[4]-T[2])+ (1/(R_r_moins_s + R_s_moins_c2))*(T[0] - T[4]))
 
     return(dT)
 

@@ -12,7 +12,7 @@ if __name__ == "__main__":  # nécessaire pour tester le graphe si on débug
     val2 = scp.interpolate.UnivariateSpline(heures,flux,s = 10)
     #plt.plot(heures, val(heures),label='Spline')
     plt.plot(heures, val2(heures),label='Spline')
-    
+    plt.show()
 def g(x):    
     PERTE_ET_GAIN = np.loadtxt('PerteEtGain.txt') # array constante du fichier texte 
     

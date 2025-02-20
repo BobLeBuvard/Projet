@@ -1,7 +1,8 @@
 import numpy as np
 from main import odefunction
 import scipy as scp
-
+import matplotlib.pyplot as plt
+debug = True
 #question 3.2 
 def calculTemperaturesEuler(FenetreDeTemperature, T0, h):
     t0, tf = FenetreDeTemperature
@@ -28,9 +29,17 @@ def calculTemperaturesIVP(FenetreDeTemperature, T0, rtol = 10^-7): # par défaut
 
 
 T0 = [15, 15, 15, 15, 15]
-FenetreDeTemperature = np.array([0, 24])  # En heures
-h = 0.1  # Pas de temps
+FenetreDeTemperature = np.array([0, 24]) # fenetre de test comme demandé
+h = 0.1  # pas de temps ( toutes les 6 minutes)
 
 t, T = calculTemperaturesEuler(FenetreDeTemperature, T0, h)
-print(T)        
-'''bizarrement dans ce test après 24h, la température globale est aux alentours de 150°C ce qui est un pôtipeu chaud'''
+if debug:  
+    print(T[1])
+    plt.plot(t,T[0],label = 'T_room') 
+    plt.plot(t,T[1],label = 'T_t') 
+    plt.plot(t,T[2],label = 'T_cc') 
+    plt.plot(t,T[3],label = 'T_c1') 
+    plt.plot(t,T[4],label = 'T_c2')
+    plt.show()
+    
+'''TEMPERATURE CORRIGEE -> affichage des graphes de température si debug = True, sinon mettre sur debug = False à la ligne 5 '''
