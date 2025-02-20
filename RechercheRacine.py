@@ -1,5 +1,4 @@
 import numpy as np
-import PerteEtGain
 def f(x):
     '''
     fonction de test pour tester si les deux fonctions de racine fonctionnent correctement. 
