@@ -49,7 +49,7 @@ def scenario3(t):
     if 0<= t <=12 :
         isOn = 3 #chauffe
     else:
-        isOn = 2 #éteint
+        isOn = 2 #refroidit
     return isOn
 
 def scenario(num,t):
@@ -106,7 +106,7 @@ def odefunction(t, T ):
 
 
     #CALCUL DE dT_c2 
-    dT[4] = (1/C[4])* ((-1/R_c2_moins_cc)*(T[4]-T[2])+ (1/(R_r_moins_s)+ R_s_moins_c2)/(T[0] - T[4]))
+    dT[4] = (1/C[4])* ((-1/R_c2_moins_cc)*(T[4]-T[2])+ (1/(R_r_moins_s)+ R_s_moins_c2)*(T[0] - T[4]))
 
     return(dT)
 
