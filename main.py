@@ -2,7 +2,8 @@ import numpy as np
 from PerteEtGain import g
 from config import * 
 
-
+def kelvin(temp):
+    return 273.15 +temp
 
 
 def scenariodebug(t,delta_t):
@@ -68,9 +69,9 @@ def T_w(isOn,T_t):
     
     '''
     if isOn == 3:
-        return 28
+        return kelvin(28)
     elif isOn == 2: 
-        return 18
+        return kelvin(18)
     else:
         return T_t #le dernier terme est annulé donc il faut que T_t - T_w = 0 -> T_w = T_t
 
@@ -92,14 +93,14 @@ def odefunction(t, T):
 
 
     #CALCUL DE dT_room
-    dT[0] = (1/C[0])*((-1/(R_r_moins_s +R_s_moins_c2))*(T[0]-T[4]+g(t)))  #Il manque la fonction G(t)
+    dT[0] = (1/C[0])*((-1/(R_r_moins_s + R_s_moins_c2))*(T[0]-T[4]) +g(t))  #Il manque la fonction G(t)
                     
 
     #CALCUL DE dT_t 
-    
+
     isOn = scenario( t ,num_du_scenario, delta_t = 0)
     # if debug: print(num_du_scenario) #DEBUG
-    dT[1] = (1/C[5])*( (-1/R_x)*(T[1]-T[2]) - (1/R_w)*(T[1] - T_w(isOn, T[1])) )
+    dT[1] = (1/C[1])*( (-1/R_x)*(T[1]-T[2]) - (1/R_w)*(T[1] - T_w(isOn, T[1])) )
 
 
     #CALCUL DE dT_cc

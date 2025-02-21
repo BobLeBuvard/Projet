@@ -1,10 +1,11 @@
 import numpy as np
 from main import odefunction
+from main import kelvin
 import scipy as scp
 from config import *
 
 #question 3.2 
-def calculTemperaturesEuler(FenetreDeTemps, T0, h,t2 =0 ):
+def calculTemperaturesEuler(FenetreDeTemps, T0, h,t2 = 0 ):
     t0, tf = FenetreDeTemps
 
     t = np.arange(t0, tf + h, h)  # on fait des temps discrets distancés de h entre t0 et tf
