@@ -5,11 +5,10 @@ import scipy as scp
 from config import *
 
 #question 3.2 
-def calculTemperaturesEuler(FenetreDeTemps, T0, h,t2 = 0 ):
+def calculTemperaturesEuler(FenetreDeTemps, T0, h ):
     t0, tf = FenetreDeTemps
 
-    t = np.arange(t0, tf + h, h)  # on fait des temps discrets distancés de h entre t0 et tf
-    if custom : t = t2 
+    t = np.arange(t0, tf + h, h)  # on fait des temps discrets distancés de h entre t0 et tf 
     n = len(t)  # nombre de points de temps -> je préfère faire ainsi parce que on demande d'utiliser n , sinon je ferais T = np.zeros((5, len(t)))
     
     T = np.zeros((5, n))  # 5*n températures en fonction du nombre de points de temps -> on est obligé de mettre sous cette forme 
@@ -23,8 +22,8 @@ def calculTemperaturesEuler(FenetreDeTemps, T0, h,t2 = 0 ):
 
 
 #question 3.3
-def calculTemperaturesIVP(FenetreDeTemps, T0, rtol = default_tol):
-    solution = scp.integrate.solve_ivp(odefunction, FenetreDeTemps, T0, rtol= rtol)
+def calculTemperaturesIVP(FenetreDeTemps, T0, rtol, t_eval = None):
+    solution = scp.integrate.solve_ivp(odefunction, FenetreDeTemps, T0, rtol= rtol,t_eval = t_eval) # forcer d'évaluer aux valeurs de t de Euler pour le dernier paramètreS
     return[solution.t, solution.y]
 
 
@@ -67,7 +66,7 @@ def calculCycles(cycles,T0,FenetreDeTemps,h):
             t = t[:-1]
             T = T[:, :-1]
 
-        t, T = calculTemperaturesEuler(FenetreDeTemps, T0, h,np.arange(0,24,0.1) ) #T0 est de dimensions (2,dimension de fenetre avec des increments de h) #PAR DEFAUT SI Custom = True, c'est sur 24h avec des incéments de 6min
+        t, T = calculTemperaturesEuler(FenetreDeTemps, T0, h ) #T0 est de dimensions (2,dimension de fenetre avec des increments de h) #PAR DEFAUT SI Custom = True, c'est sur 24h avec des incéments de 6min
 
         T_Total = np.concatenate((T_Total,T), axis = 1) 
         
@@ -78,3 +77,17 @@ def calculCycles(cycles,T0,FenetreDeTemps,h):
     T = T_Total #flemme de changer tous les "plot", je renomme juste T 
     t = t_Total #idem qu'au dessus
     return(t,T)
+
+def convergence():
+    '''
+    Cette fonction doit calculer un premier cycle, ensuite deux méthodes possibles: 
+    1) soit tout calculer et puis vérifier pour chaque t et t-24h s'ils sont identiques (facile)
+    2) calculer un premier cycle et puis grâce à l'incrément ajouter un t et comparer au t-24 (plus difficile mais plus rapide et plus propre)
+        -> pour l'option 2 faudrait juste modifier certaines parties de calculCycles
+
+
+
+    
+    '''
+    
+    pass
