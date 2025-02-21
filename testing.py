@@ -3,20 +3,21 @@ import SimTABS
 import matplotlib.pyplot as plt
 
 
-
+sim= 2
 
 #TESTER LES EXERCICES
+if sim == 1:
+    t,T = SimTABS.calculCycles(20,T0,FenetreDeTemps,h)
+    
+elif sim ==2:
+    t,T = SimTABS.calculTemperaturesIVP(FenetreDeTemps,T0, rtol=10e-10)
 
-#t,T = SimTABS.calculCycles(5,T0,FenetreDeTemps,h)
+    #t,T2 = SimTABS.calculTemperaturesEuler(FenetreDeTemps,T0,0.001, t )
 
-solution = SimTABS.calculTemperaturesIVP(FenetreDeTemps,T0, rtol=10e-10)
-t = solution.t
-T = solution.y
+    #T3 = T -T2
 
-T2 = SimTABS.calculTemperaturesEuler(FenetreDeTemps,T0,0.1, t )
+    T = T
 
-T3 = T - T2[1]
-T = T3
 if debug: 
     plt.ylabel('Température(T)', fontsize = 8) # Labélisation de l'axe des ordonnées (copypaste du tuto)
     plt.xlabel('Temps (t)', fontsize = 8) # Labélisation de l'axe des abscisses (copypaste du tuto)

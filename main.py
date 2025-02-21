@@ -96,6 +96,7 @@ def odefunction(t, T):
                     
 
     #CALCUL DE dT_t 
+    
     isOn = scenario( t ,num_du_scenario, delta_t = 0)
     # if debug: print(num_du_scenario) #DEBUG
     dT[1] = (1/C[5])*( (-1/R_x)*(T[1]-T[2]) - (1/R_w)*(T[1] - T_w(isOn, T[1])) )

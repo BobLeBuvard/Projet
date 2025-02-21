@@ -1,4 +1,5 @@
 import numpy as np
+import math
 def f(x):
     '''
     fonction de test pour tester si les deux fonctions de racine fonctionnent correctement. 
@@ -80,9 +81,13 @@ def secante(f, x0, x1, tol = 0.5e-7, max_iter=50):
 def bissection(f, x0, x1, tol = 0.5e-7, max_iter=50): #par défaut une tolérance de 8 décimales correctes, et un nombre d'itérations max de 50 
     '''
      f : fonction d'entrée
+
     x0: début (ou fin) de l'intervalle de recherche de racine
+
     x1: fin (ou début) de l'intervalle de recherche de racine
+
     tol: tolérance de l'imprécision de la racine (par défaut 0.5e-7)
+
     max_iter: nombre maximal d'itérations de la recherche
 
     Recherche de racine par dichotomie -> on coupe l'intervalle en deux et on regarde le signe de ce terme pour diminuer la taille de l'intervalle d'un facteur 1/2
@@ -99,8 +104,8 @@ def bissection(f, x0, x1, tol = 0.5e-7, max_iter=50): #par défaut une toléranc
     #CODE EN NEGLIGEANT LES FONCTION AVEC nbr_racines > 1  en nombre pairs ( souci pour 3 racines, 5 racines,... )
     
     
-    nombre_d_iterations = round(np.log2((x1 - x0) / (2 * tol))) + 1 #arrondi supérieur
-    # print(nombre_d_iterations)  #DEBUG
+    nombre_d_iterations = math.ceil(np.log2((x1 - x0) / (2 * tol))) #arrondi supérieur
+    
     if(nombre_d_iterations <= 0 or nombre_d_iterations > max_iter):
         return [1984,-1] # on a un souci de convergeance: un nombre négatif d'itérations...
 
@@ -120,5 +125,5 @@ def bissection(f, x0, x1, tol = 0.5e-7, max_iter=50): #par défaut une toléranc
     
     #TODO : 
     #       Souci pour tester la convergence -> mauvais message d'erreur si divergence je crois
-    #       PAS PRIS EN COMPTE LES RACINES DOUBLES SUR AUCUNE FONCTION
+    #       Mentionner les racines double dans le rapport
 

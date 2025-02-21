@@ -4,7 +4,7 @@ import scipy as scp
 from config import *
 
 #question 3.2 
-def calculTemperaturesEuler(FenetreDeTemps, T0, h,t2):
+def calculTemperaturesEuler(FenetreDeTemps, T0, h,t2 =0 ):
     t0, tf = FenetreDeTemps
 
     t = np.arange(t0, tf + h, h)  # on fait des temps discrets distancés de h entre t0 et tf
@@ -24,7 +24,8 @@ def calculTemperaturesEuler(FenetreDeTemps, T0, h,t2):
 #question 3.3
 def calculTemperaturesIVP(FenetreDeTemps, T0, rtol = default_tol):
     solution = scp.integrate.solve_ivp(odefunction, FenetreDeTemps, T0, rtol= rtol)
-    return(solution)
+    return[solution.t, solution.y]
+
 
 
 
@@ -53,17 +54,25 @@ def calculCycles(cycles,T0,FenetreDeTemps,h):
     
     T: array de dimensions (5, cycles*h + cycles-1 ( souci de compter 2 fois la fin d'un cycle et le début d'un cycle suivant) ) -> pour 1 cycle avec h = 24 c'est (5,24+1)
     '''
+    
+    
+
     T_Total = np.empty((5, 0))  # 5 lignes, 0 colonnes
     t_Total = np.array([])
 
     for i in range(cycles):
-        t, T = calculTemperaturesEuler(FenetreDeTemps, T0, h) #T0 est de dimensions (2,dimension de fenetre avec des increments de h)
+
+        if i > 0:
+            t = t[:-1]
+            T = T[:, :-1]
+
+        t, T = calculTemperaturesEuler(FenetreDeTemps, T0, h,np.arange(0,24,0.1) ) #T0 est de dimensions (2,dimension de fenetre avec des increments de h) #PAR DEFAUT SI Custom = True, c'est sur 24h avec des incéments de 6min
 
         T_Total = np.concatenate((T_Total,T), axis = 1) 
         
         t_Total = np.concatenate((t_Total,(t + ((FenetreDeTemps[1]-FenetreDeTemps[0])*i) )))
         
-        T0 = [T[0][-1],T[1][-1],T[2][-1],T[3][-1],T[4][-1]] #prendre les 5 dernières valeurs de l'itération précédentes comme valeurs initiales -> le dernier élément de la rangée correspondante
+        T0 = T[:, -1] #prendre les 5 dernières valeurs de l'itération précédentes comme valeurs initiales -> la dernière colonne de t et T
 
     T = T_Total #flemme de changer tous les "plot", je renomme juste T 
     t = t_Total #idem qu'au dessus

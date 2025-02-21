@@ -11,11 +11,11 @@ module qui contient toutes les variables. Pour l'instant ça charge tout dans la
 
 days = 20 #calculer sur ce nombre de cycles
 FenetreDeTemps = np.array([0, 24]) # fenetre de test comme demandé -> taille du cycle
-num_du_scenario = 5 # scénario 5 = scénario debug
+num_du_scenario = 1 # scénario 5 = scénario debug
 h = 0.1  # pas de temps ( toutes les 6 minutes)
 debug = True
 T0 = np.array([15, 15, 15, 15, 15]) #conitions initiales données -> ici mises en array
-custom = True # pour calculer Euler aux endroits de résolution de Solve_IVP -> c'est crade
+custom = False # pour calculer Euler aux endroits de résolution de Solve_IVP -> c'est crade
 
 
 
