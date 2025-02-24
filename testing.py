@@ -26,7 +26,7 @@ def test(h):
         plt.title(label = 'h = '+str(h))
         plt.show()  
 
-sim= 4
+sim= 2
 
 
 #TESTER LES EXERCICES
@@ -38,7 +38,7 @@ if sim == 1:
 #question 3.4
 elif sim ==2:
     #tester la différence entre les deux fonctions pour des valeurs de h différentes
-    h_de_test = [0.001, 0.01,0.1,0.25,0.5,1,10]
+    h_de_test = [0.001, 0.01,0.1,0.25,0.5,1,24]
     for i in range(len(h_de_test)):
         test(h_de_test[i])        
     
