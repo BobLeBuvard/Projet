@@ -1,0 +1,52 @@
+ index
+  
+                Repertoire "main.py":
+   
+    fonction Kelvin : fonction qui change les °c en °k
+
+    scenariodebug → Mode debug (éteint) → sim 5 
+
+    scenario1 → 4h refroidissement, puis éteint → sim 1  
+
+    scenario2 → 4h refroidissement, 10h chauffe, puis éteint → sim 2  
+
+    scenario3 → 12h chauffe, 12h refroidissement → sim 3 
+
+    scenario4 → 4h refroidissement, chauffage dynamique → sim 4  
+
+                Température cible : 
+T_w(isOn, T_t) → Renvoie la température cible selon l’état   
+
+                Équations différentielles :  
+odefunction(t, T) → Calcule les dérivées des températures 
+
+                Fonction non utilisée  :
+T_optimale(T_room, T_surface) → Calcul température ressentie   
+
+                repertoire "config.py":
+
+    Pas de foncion, juste les variables utilisés fixé
+
+                Repertoire "SimTabs.py":
+
+            Fonctions de calcul des températures  
+
+calculTemperaturesEuler(FenetreDeTemps, T0, h)  
+  → Résout les températures avec la méthode d’Euler explicite  
+
+calculTemperaturesIVP(FenetreDeTemps, T0, rtol, t_eval=None)  
+  → Résout les températures avec solve_ivp (méthode plus précise)
+
+calculCycles(cycles, T0, FenetreDeTemps, h)`  
+  → Calcule plusieurs cycles de chauffe avec la méthode d’Euler 
+
+            repertoire "PerteEtGain.py":
+         Fonctions liées aux pertes et gains thermiques  
+
+g(t):  
+  → Interpole et retourne la valeur du flux thermique à l’instant t  
+
+Bloc de test principal  
+ if __name__ == "__main__": # A ce que j'ai compris ! 
+  → Charge et affiche les données PerteEtGain.txt sous forme de graphe
+
