@@ -1,6 +1,7 @@
 import numpy as np
 from PerteEtGain import g
 from config import * 
+import math
 
 def kelvin(temp):
     return 273.15 +temp
@@ -121,3 +122,6 @@ def odefunction(t, T):
 
 
 
+def dessinemoassa(x,y,index,xlabel = None, Ylabel = None, titre= None,Legende = None ):
+        
+    pass

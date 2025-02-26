@@ -3,6 +3,7 @@ from main import odefunction
 from main import kelvin
 import scipy as scp
 from config import *
+import math
 
 #question 3.2 
 def calculTemperaturesEuler(FenetreDeTemps, T0, h ):
@@ -77,17 +78,23 @@ def calculCycles(cycles,T0,FenetreDeTemps,h):
     T = T_Total #flemme de changer tous les "plot", je renomme juste T 
     t = t_Total #idem qu'au dessus
     return(t,T)
-
-def convergence():
-    '''
-    Cette fonction doit calculer un premier cycle, ensuite deux méthodes possibles: 
-    1) soit tout calculer et puis vérifier pour chaque t et t-24h s'ils sont identiques (facile)
-    2) calculer un premier cycle et puis grâce à l'incrément ajouter un t et comparer au t-24 (plus difficile mais plus rapide et plus propre)
-        -> pour l'option 2 faudrait juste modifier certaines parties de calculCycles
-
-
-
+def converge(h, T_total,tolerance):
+    ''' 
+    Recherche si les températures finissent par stagner après un certain nombre de cycles
     
+    h -> intervalle entre les mesures. C'est 24h*h 
+    
+    T_total -> array contenant les températures des 5 surfaces évaluées aux différents intervalles
+    
+    tolerance -> tolérance à partir de laquelle on définit que la température stagne
     '''
     
-    pass
+    diff = np.zeros(T_total.shape[1]) #liste vide de différences entre 2 jours
+    nextDay = round(24/h) #nombre de pas de temps dans 24h 
+    for i in range(math.ceil(T_total.shape[1]- nextDay)) :
+        diff[i] = abs(T_total[0][i] - T_total[0][i+ nextDay] ) 
+        if diff[i] <=  tolerance :
+            print("a convergé en " +str(i/nextDay) + "jours")
+            return [np.arange(len(diff)),diff] 
+    print("il n'y a pas eu convergence sur l'intervalle.")
+    return diff

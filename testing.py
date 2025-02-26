@@ -1,5 +1,6 @@
 from config import *
 import SimTABS
+import math
 import matplotlib.pyplot as plt
 # sim (simulation) c'est l'exercice de test qu'on veut appliquer.
 # 1 c'est les cycles
@@ -26,13 +27,13 @@ def test(h):
         plt.title(label = 'h = '+str(h))
         plt.show()  
 
-sim= 2
+sim= 5
 
 
 #TESTER LES EXERCICES
 
 if sim == 1:
-    t,T = SimTABS.calculCycles(5,T0,FenetreDeTemps,h)
+    t,T = SimTABS.calculCycles(10,T0,FenetreDeTemps,h)
     T = T - 273.15
 
 #question 3.4
@@ -50,10 +51,12 @@ elif sim == 4:
     t,T = SimTABS.calculTemperaturesIVP(FenetreDeTemps,T0, rtol=10e-10)
     T = T - 273.15
 
-
-
-
-
+elif sim ==5:
+    t,T = SimTABS.calculCycles(10,T0,FenetreDeTemps,h)
+    t,T = SimTABS.converge(h,T,0.01)
+    plt.plot (t, T[len(t)], 'o')
+    plt.show() 
+'''    
 if debug & sim !=2 : 
     plt.ylabel('Température(T)', fontsize = 8) # Labélisation de l'axe des ordonnées (copypaste du tuto)
     plt.xlabel('Temps (t)', fontsize = 8) # Labélisation de l'axe des abscisses (copypaste du tuto)
@@ -63,3 +66,4 @@ if debug & sim !=2 :
     plt.legend( loc='best')
     plt.title(label = str(h))
     plt.show()  
+'''
