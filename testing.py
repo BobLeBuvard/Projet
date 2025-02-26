@@ -28,13 +28,13 @@ def test(h):
         plt.title(label = 'h = '+str(h))
         plt.show()  
 
-sim= 3
+sim= 1
 
 
 #TESTER LES EXERCICES
 
 if sim == 1:
-    t,T = SimTABS.calculCycles(5,T0,FenetreDeTemps,h)
+    t,T = SimTABS.calculCycles(10,T0,FenetreDeTemps,h)
     T = T - 273.15
 
 #question 3.4
@@ -57,7 +57,7 @@ elif sim == 4:
 elif sim ==5:
     h = 0.01
     ''' calcul de la différence de température par tranches de 24h --> NECESSITE UN h DIVISEUR DE 24 ( ex: 0.1, 0.01, ou autre )'''
-    t,T = SimTABS.calculCycles(15,T0,FenetreDeTemps,h)
+    t,T = SimTABS.calculCycles(16,T0,FenetreDeTemps,h)
     T_converge = SimTABS.converge(h,T,0.01)
     t2 = t[:len(T_converge)] # les  premiers éléments de t2
     plt.plot (t2,T_converge)
@@ -65,8 +65,22 @@ elif sim ==5:
     plt.plot()
     plt.show() 
 #main.dessinemoassa(t,T,['T_room','T_t','T_cc','T_c1','T_c2','undefined','undefined'],ylabel='Température(T)',xlabel ='Temps (t)' ,titre = str(h))
+
+elif sim == 6:
+    '''tester la différence entre les résolutions par Euler pour des valeurs de h différentes '''
+    h_de_test = [0.001, 0.01,0.1,0.25] #0.001 pas utile puisque 0.01l'approche suffisemment bien
+    for i in range(len(h_de_test) -1 ):
+        t_euler2,T2 = SimTABS.calculTemperaturesEuler(FenetreDeTemps,T0,h_de_test[i])   
+        t_euler1,T1 = SimTABS.calculTemperaturesEuler(FenetreDeTemps,T0,h_de_test[i+1])
+        for i in range(5):
+            plt.plot(t_euler1,T1[i])
+            plt.plot(t_euler2,T2[i])
+            plt.show()
     
-if debug & sim !=2 : 
+
+
+    
+if debug & sim !=2 & sim !=6  : 
     plt.ylabel('Température(°K)', fontsize = 8) # Labélisation de l'axe des ordonnées (copypaste du tuto)
     plt.xlabel('Temps (heures)', fontsize = 8) # Labélisation de l'axe des abscisses (copypaste du tuto)
     index = ['T_room','T_t','T_cc','T_c1','T_c2','undefined','undefined'] 
