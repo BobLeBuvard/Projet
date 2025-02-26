@@ -19,13 +19,9 @@ OUI je sais c'est pas clean, on peut tout coder sur VSC, c'est vrai MAIS c'est m
 
 S'il y a des conflits de versions, ce qui ne devrait pas arriver, contactez moi ou envoyez le code, je vais merge tout ça (Pierre)
 
-OVERLEAF: https://www.overleaf.com/read/xjxshnygpmzg#719801
+OVERLEAF: ME MP POUR LE LIEN
 
 Coucou de Louis, la bise ! 
-
-JOEL JE VAIS TE POUTRER LE CUL SI TU NE FAIS PAS UN COMMIT D'ICI DIMANCHE 23/02/25
-
-
 
 CURRENT advencement:
 #question 1.1 ?
@@ -36,9 +32,9 @@ CURRENT advencement:
 #question 3.1 OK
 #question 3.2 OK
 #question 3.3 OK
-#question 3.4 PRESQUE
-#question 3.5 NON
-#question 3.6 NON
+#question 3.4 OK
+#question 3.5 OK
+#question 3.6 OK
 
 #question 4.1 OK
 #question 4.2 NON

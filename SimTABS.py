@@ -75,26 +75,29 @@ def calculCycles(cycles,T0,FenetreDeTemps,h):
         
         T0 = T[:, -1] #prendre les 5 dernières valeurs de l'itération précédentes comme valeurs initiales -> la dernière colonne de t et T
 
-    T = T_Total #flemme de changer tous les "plot", je renomme juste T 
-    t = t_Total #idem qu'au dessus
-    return(t,T)
+
+    return(t_Total,T_Total)
+
 def converge(h, T_total,tolerance):
     ''' 
     Recherche si les températures finissent par stagner après un certain nombre de cycles
     
-    h -> intervalle entre les mesures. C'est 24h*h 
+    h -> entier : intervalle entre les mesures. C'est 24h/h 
     
-    T_total -> array contenant les températures des 5 surfaces évaluées aux différents intervalles
+    T_total -> array[a,b]: array contenant les températures des 5 surfaces évaluées aux différents intervalles
     
-    tolerance -> tolérance à partir de laquelle on définit que la température stagne
+    tolerance -> entier : tolérance à partir de laquelle on définit que la température stagne
     '''
-    
-    diff = np.zeros(T_total.shape[1]) #liste vide de différences entre 2 jours
-    nextDay = round(24/h) #nombre de pas de temps dans 24h 
-    for i in range(math.ceil(T_total.shape[1]- nextDay)) :
+    #conversion du temps donné en minutes -> 
+    nextDay = round(24/h) #nombre de pas de temps dans 24h ATTENTION --> LE NOMBRE DE PAS DE TEMPS DOIT POUVOIR DIVISER 24H ( ex: des pas de temps de 0.9h ne peuvent pas faire des cycles complets de 24h)
+
+    diff = np.zeros(T_total.shape[1] - nextDay) #liste vide de différences entre 2 jours --> on doit retirer l'équivalent d'un jour
+   
+    for i in range(T_total.shape[1]- nextDay) :
         diff[i] = abs(T_total[0][i] - T_total[0][i+ nextDay] ) 
+        # print( str(i)+" : "  +str(diff[i])) #DEBUG
         if diff[i] <=  tolerance :
-            print("a convergé en " +str(i/nextDay) + "jours")
-            return [np.arange(len(diff)),diff] 
+            print("a convergé après " +str((i/nextDay) +1) + "jours") # le +1 car il y a un décalage de 1 jour entre cycles et nombre de jours: après 10 jours il y a eu 9 cycles par exemple
+            return diff 
     print("il n'y a pas eu convergence sur l'intervalle.")
     return diff

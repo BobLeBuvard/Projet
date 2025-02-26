@@ -1,7 +1,7 @@
 import numpy as np
 from PerteEtGain import g
 from config import * 
-import math
+import matplotlib.pyplot as plt
 
 def kelvin(temp):
     return 273.15 +temp
@@ -122,6 +122,13 @@ def odefunction(t, T):
 
 
 
-def dessinemoassa(x,y,index,xlabel = None, Ylabel = None, titre= None,Legende = None ):
-        
-    pass
+def dessinemoassa(t,T,index,xlabel = None, ylabel = None, titre= None,Legende = None ):
+    if debug : 
+        plt.ylabel(ylabel, fontsize = 8) # Labélisation de l'axe des ordonnées (copypaste du tuto)
+        plt.xlabel(xlabel, fontsize = 8) # Labélisation de l'axe des abscisses (copypaste du tuto)
+        for i in range(T.shape[0]):  
+            plt.plot(t, T[i], label=index[i])  # en fonction du nombre de variables dans T, on affiche plus ou moins de fonctions
+        plt.legend(Legende, loc='best')
+        plt.title(label = titre)
+        plt.show()  
+        pass
