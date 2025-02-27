@@ -13,7 +13,6 @@ def test(h):
         
     t_euler,T2 = SimTABS.calculTemperaturesEuler(FenetreDeTemps,T0,h)
     t,T1 = SimTABS.calculTemperaturesIVP(FenetreDeTemps,T0, rtol=10e-10,t_eval=t_euler )
-
     
 
     T3 = T1 -T2
@@ -28,14 +27,13 @@ def test(h):
         plt.title(label = 'h = '+str(h))
         plt.show()  
 
-sim= 1
+sim= 4
 
 
 #TESTER LES EXERCICES
 
 if sim == 1:
-    t,T = SimTABS.calculCycles(10,T0,FenetreDeTemps,h)
-    T = T - 273.15
+    t,T = SimTABS.calculCycles(5,T0,FenetreDeTemps,h)
 
 #question 3.4
 elif sim ==2:
@@ -47,12 +45,14 @@ elif sim ==2:
 elif sim == 3:
     '''calcul de température par Euler'''
     t,T = SimTABS.calculTemperaturesEuler(FenetreDeTemps,T0,h)
-    T = T - 273.15
+    
+    
+
 elif sim == 4: 
     '''Calcul par solve_IVP'''
     h = 'méthode de solve_IVP'
     t,T = SimTABS.calculTemperaturesIVP(FenetreDeTemps,T0, rtol=10e-10)
-    T = T - 273.15
+    
 
 elif sim ==5:
     h = 0.01
@@ -68,7 +68,7 @@ elif sim ==5:
 
 elif sim == 6:
     '''tester la différence entre les résolutions par Euler pour des valeurs de h différentes '''
-    h_de_test = [0.001, 0.01,0.1,0.25] #0.001 pas utile puisque 0.01l'approche suffisemment bien
+    h_de_test = [0.001, 0.01,0.1,0.25] #0.001 pas utile puisque 0.01 l'approche suffisemment bien
     for i in range(len(h_de_test) -1 ):
         t_euler2,T2 = SimTABS.calculTemperaturesEuler(FenetreDeTemps,T0,h_de_test[i])   
         t_euler1,T1 = SimTABS.calculTemperaturesEuler(FenetreDeTemps,T0,h_de_test[i+1])
@@ -80,7 +80,8 @@ elif sim == 6:
 
 
     
-if debug & sim !=2 & sim !=6  : 
+if debug and (sim !=2) and (sim !=6)  : 
+    #T = T - 273.15 #remise en celsius
     plt.ylabel('Température(°K)', fontsize = 8) # Labélisation de l'axe des ordonnées (copypaste du tuto)
     plt.xlabel('Temps (heures)', fontsize = 8) # Labélisation de l'axe des abscisses (copypaste du tuto)
     index = ['T_room','T_t','T_cc','T_c1','T_c2','undefined','undefined'] 

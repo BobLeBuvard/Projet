@@ -3,22 +3,16 @@ from PerteEtGain import g
 from config import * 
 import matplotlib.pyplot as plt
 
-def kelvin(temp):
-    return 273.15 +temp
 
 
-def scenariodebug(t,delta_t):
-    isOn = 1 #éteint pour voir la température de la pièce sans chauffe
-    return isOn 
-
-def scenario1(t,delta_t):
+def scenario1(t):
     '''4h de refroidissement et puis le chauffage est coupé'''
     if 0<= t <=4 :
         isOn = 2 #refroidit
     else:
         isOn = 1 #éteint
     return isOn
-def scenario2(t,delta_t):
+def scenario2(t):
     ''' 4h de refroidissement,10h de chauffe et puis le chauffage est coupé '''
     if 0<= t <=4 :
         isOn = 2 # refroidit
@@ -27,7 +21,7 @@ def scenario2(t,delta_t):
     else:
         isOn = 1 # éteint
     return isOn
-def scenario3(t,delta_t):
+def scenario3(t):
     '''12h de chauffe et puis 12h de refroidissement'''
     if 0<= t <=12 :
         isOn = 3 #chauffe
@@ -35,7 +29,7 @@ def scenario3(t,delta_t):
         isOn = 2 #refroidit
     return isOn
 
-def scenario4(t,delta_t):
+def scenario4(t):
     if 0<= t <=4 :
         isOn = 2 # refroidit
     elif 4<t<= (4+delta_t):
@@ -44,7 +38,7 @@ def scenario4(t,delta_t):
         isOn = 1 # éteint
     return isOn
 
-def scenario(t,num,delta_t):
+def scenario(t,num):
     '''on a défini 4 scénarios, cette fonction peut nous définir lequel on va utiliser pour notre fonction:
     
     num -> numéro du scénario
@@ -53,9 +47,9 @@ def scenario(t,num,delta_t):
 
     delta_t  -> intervalle de temps ( utile que pour le scénario 4 )
     '''
-    scenarios = [scenario1,scenario2,scenario3,scenario4,scenariodebug]
+    scenarios = [scenario1,scenario2,scenario3,scenario4]
 
-    return scenarios[num-1](t,delta_t)
+    return scenarios[num-1](t)
 
 
 def T_w(isOn,T_t):
@@ -99,8 +93,7 @@ def odefunction(t, T):
 
     #CALCUL DE dT_t 
 
-    isOn = scenario( t ,num_du_scenario, delta_t = 0)
-    # if debug: print(num_du_scenario) #DEBUG
+    isOn = scenario( t ,num_du_scenario)
     dT[1] = (1/C[1])*( (-1/R_x)*(T[1]-T[2]) - (1/R_w)*(T[1] - T_w(isOn, T[1])) )
 
 
@@ -115,12 +108,20 @@ def odefunction(t, T):
 
     return(dT)
 
-# inutile pour le moment
-# def T_optimale(T_room, T_surface):
-#     '''calcule la température ressentie en fonction de la chaleur de la pièce et celles des surfaces'''
-#     return((T_room+T_surface)/2)
+def T_optimale(T_room, T_surface):
+    '''calcule la température ressentie en fonction de la chaleur de la pièce et celles des surfaces'''
+    return((T_room+T_surface)/2)
 
-
+def EstTemperatureOK(temps,T_room,T_surface):
+    HeuresBureau = [8,19]
+    EN15251_temp = kelvin([19.5,24])
+    if (temps < HeuresBureau[0] or temps >HeuresBureau[1]):
+        return False
+    Temp_optimale = T_optimale(T_room,T_surface)
+    if (EN15251_temp[0] <= Temp_optimale <= EN15251_temp[1]):
+        return True
+    else:
+        return False
 
 def dessinemoassa(t,T,index,xlabel = None, ylabel = None, titre= None,Legende = None ):
     if debug : 

@@ -1,9 +1,8 @@
 import numpy as np
 from main import odefunction
-from main import kelvin
+from main import EstTemperatureOK
 import scipy as scp
 from config import *
-import math
 
 #question 3.2 
 def calculTemperaturesEuler(FenetreDeTemps, T0, h ):
@@ -16,19 +15,14 @@ def calculTemperaturesEuler(FenetreDeTemps, T0, h ):
     T[:, 0] = T0  # conditions initiales
     
     for i in range(1, n):
-        dT = odefunction(t[i-1], T[:, i-1])  #calcul des dérivées
-        T[:, i] = T[:, i-1] + h * dT  # application de Euler (copypaste du cours avec modifs)
-        
+        dT = odefunction(t[i-1], T[:, i-1])  #calcul des dérivées de tout pour chaque dernier élément de la colonne
+        T[:, i] = T[:, i-1] + h * dT  # application de Euler 
     return [t, T]
-
 
 #question 3.3
 def calculTemperaturesIVP(FenetreDeTemps, T0, rtol, t_eval = None):
     solution = scp.integrate.solve_ivp(odefunction, FenetreDeTemps, T0, rtol= rtol,t_eval = t_eval) # forcer d'évaluer aux valeurs de t de Euler pour le dernier paramètreS
     return[solution.t, solution.y]
-
-
-
 
 # question 4.1 base
 def calculCycles(cycles,T0,FenetreDeTemps,h):
@@ -101,7 +95,7 @@ def converge(h, T_total,tolerance):
     print("il n'y a pas eu convergence sur l'intervalle.")
     return diff
 
-def converge_fin_journee(h, T_total, tolerance):
+def converge_fin_journee(T_total, tolerance,h):
     """
     Vérifie la convergence de la température à la fin de chaque journée.
 
@@ -130,7 +124,6 @@ def converge_fin_journee(h, T_total, tolerance):
 
     print("il n'y a pas eu convergence sur l'intervalle.")
     return diff
-
 
 def convergeEfficace(h, T0, tolerance, temp=0):
     """
@@ -182,3 +175,11 @@ def convergeEfficace(h, T0, tolerance, temp=0):
 
     print("Erreur : la convergence n'a pas été atteinte en 30 jours.")
     return [T_Total, last_temps, "erreur: convergence de plus de 30 jours"]
+
+def T_confort_max(FenetreDeTemps, T0, h):
+    while(delta_t <24):
+        delta_t += 0.5
+        t, T = calculTemperaturesEuler(FenetreDeTemps, T0, h )
+        for i in range(t): #tester pour tous les éléments de T
+            if not EstTemperatureOK(i,T[0],T[4]): 
+                break
