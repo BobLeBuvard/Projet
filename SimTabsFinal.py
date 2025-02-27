@@ -242,6 +242,7 @@ def diff_entre_Euler_et_IVP(h):
 def question_3_4():
     diff_entre_Euler_et_IVP(h) 
 
+
 #______________________________________________________________________________________________________#
 #question 3.5
 
@@ -324,7 +325,8 @@ def question_3_5():
 
 #______________________________________________________________________________________________________#
 # question 3.6
-if __name__ == '__main__':
+def question_3_6():
+    global num_du_scenario
     for i in range(3):
         num_du_scenario = (i+1)
         t,T = calculTemperaturesEuler(FenetreDeTemps,T0,h)
