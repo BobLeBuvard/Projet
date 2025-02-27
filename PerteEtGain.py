@@ -10,6 +10,10 @@ if __name__ == "__main__":  # nécessaire pour tester le graphe si on débug
     val = scp.interpolate.CubicSpline(heures,flux,bc_type='periodic')
     plt.plot(heures, val(heures),label='Spline')
     plt.plot(PERTE_ET_GAIN[0],PERTE_ET_GAIN[1],'o')
+    plt.xlabel("Heures")  # Nom de l'axe des X
+    plt.ylabel("Flux")  # Nom de l'axe des Y
+    plt.title("Variation du flux en fonction du temps")  # Titre du graphe
+    plt.legend(loc = 'best')
     plt.show()     # Louis a besoin de plt.show() pour afficher le graph
 def g(t):    
     PERTE_ET_GAIN = np.loadtxt('PerteEtGain.txt') # array constante du fichier texte 
