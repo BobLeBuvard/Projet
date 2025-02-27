@@ -1,5 +1,4 @@
 from SimTABS import calculTemperaturesEuler
-import RechercheRacine 
 import math
 from RechercheRacine import hasRoots
 import numpy as np
@@ -41,12 +40,6 @@ def Tmax_pour_deltaT(deltaT, T_dmax):
     T_confort = (T[0, :] + T[4, :]) / 2  # Troom = T[0], Tc2 = T[4]
     Tmax = np.max(T_confort)
     return Tmax - T_dmax
-
-#______________________________________________________________________________________________________#
-# question 4.2
-
-#______________________________________________________________________________________________________#
-# question 4.3
 
 
 
@@ -118,3 +111,5 @@ def bissection_secante(f, x0, x1, tol = 0.5e-7, max_iter=50): #par défaut une t
 
 
 
+#______________________________________________________________________________________________________#
+# question 4.3
