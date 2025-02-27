@@ -11,7 +11,7 @@ def kelvin(temp):
 
 FenetreDeTemps = np.array([0, 24]) # fenetre de test comme demandé -> taille du cycle
 num_du_scenario = 1 # scénario 5 = scénario debug
-h = 0.01  # pas de temps ( toutes les 6 minutes)
+h = 0.1  # pas de temps ( toutes les 6 minutes)
 debug = True
 T0 = kelvin(np.array([15,15,15,15,15])) #conitions initiales données -> ici mises en array en kelvins
 delta_t = 0

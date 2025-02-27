@@ -6,27 +6,27 @@ import matplotlib.pyplot as plt
 #2 c'est la différence (! au custom = True et euler qui fait des siennes )
 #3 c'est calcul par euler
 #4 par IVP
+
 def test(h):
     
-        
+    global T1,T2
     t_euler,T2 = SimTABS.calculTemperaturesEuler(FenetreDeTemps,T0,h)
     t,T1 = SimTABS.calculTemperaturesIVP(FenetreDeTemps,T0, rtol=10e-10,t_eval=t_euler )
     
 
     T3 = T1 -T2
-    T = T3
     if debug: 
         plt.ylabel('Température(T)', fontsize = 8) # Labélisation de l'axe des ordonnées (copypaste du tuto)
         plt.xlabel('Temps (t)', fontsize = 8) # Labélisation de l'axe des abscisses (copypaste du tuto)
         index = ['T_room','T_t','T_cc','T_c1','T_c2','undefined','undefined'] 
-        for i in range(T.shape[0]):  
-            plt.plot(t, T[i], label=index[i])  # en fonction du nombre de variables dans T, on affiche plus ou moins de fonctions
+        for i in range(T3.shape[0]):  
+            plt.plot(t, T3[i], label=index[i])  # en fonction du nombre de variables dans T, on affiche plus ou moins de fonctions
         plt.legend( loc='best')
         plt.title(label = 'h = '+str(h))
         plt.show()  
 
 
-sim= 4
+sim= 2
 
 #TESTER LES EXERCICES
 
