@@ -1,9 +1,10 @@
 #DEPRECATED: NE PLUS UTILISER LES FONCTIONS QUI SONT ICI SAUF POUR DES TESTS
 
 import numpy as np
-
 from config import * 
 import SimTABS
+from Question4 import EstTemperatureOK
+from SimTabsFinal import calculTemperaturesEuler
 
 def convergeEfficace(h, T0, tolerance, temp=0):
     """
@@ -79,3 +80,10 @@ def converge(h, T_total,tolerance):
     print("il n'y a pas eu convergence sur l'intervalle.")
     return diff
 
+def T_confort_max(FenetreDeTemps, T0, h):
+    while(delta_t <24):
+        delta_t += 0.5
+        t, T = calculTemperaturesEuler(FenetreDeTemps, T0, h )
+        for i in range(t): #tester pour tous les éléments de T
+            if not EstTemperatureOK(i,T[0],T[4]): 
+                break

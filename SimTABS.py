@@ -1,6 +1,5 @@
 import numpy as np
-from main import odefunction
-from main import EstTemperatureOK
+from SimTabsFinal import odefunction
 import scipy as scp
 from config import *
 
@@ -176,10 +175,4 @@ def convergeEfficace(h, T0, tolerance, temp=0):
     print("Erreur : la convergence n'a pas été atteinte en 30 jours.")
     return [T_Total, last_temps, "erreur: convergence de plus de 30 jours"]
 
-def T_confort_max(FenetreDeTemps, T0, h):
-    while(delta_t <24):
-        delta_t += 0.5
-        t, T = calculTemperaturesEuler(FenetreDeTemps, T0, h )
-        for i in range(t): #tester pour tous les éléments de T
-            if not EstTemperatureOK(i,T[0],T[4]): 
-                break
+

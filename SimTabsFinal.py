@@ -6,6 +6,9 @@ from PerteEtGain import g
 
 def kelvin(temp):
     return (temp+273.15) 
+
+
+
 #CONFIG
 FenetreDeTemps = np.array([0, 24]) # fenetre de test comme demandé -> taille du cycle
 num_du_scenario = 1
@@ -319,7 +322,6 @@ def question_3_5():
     converge_fin_journee(T,0.01,h)
 
 
-
 #______________________________________________________________________________________________________#
 # question 3.6
 if __name__ == '__main__':
@@ -327,4 +329,3 @@ if __name__ == '__main__':
         num_du_scenario = (i+1)
         t,T = calculTemperaturesEuler(FenetreDeTemps,T0,h)
         dessinemoassa(t,T,['T_room','T_t','T_cc','T_c1','T_c2'],xlabel='Temps (heures)',ylabel='Température(°K)',titre= f'scénario {i}')
-
