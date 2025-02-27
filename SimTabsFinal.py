@@ -6,6 +6,8 @@ from PerteEtGain import g
 
 def kelvin(temp):
     return (temp+273.15) 
+def celcius(temp):
+    return (temp-273.15)
 
 
 
