@@ -1,3 +1,5 @@
+#DEPRECATED: NE PLUS UTILISER LES FONCTIONS QUI SONT ICI SAUF POUR DES TESTS
+
 import numpy as np
 from SimTabsFinal import odefunction
 import scipy as scp

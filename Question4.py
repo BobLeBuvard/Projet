@@ -1,8 +1,10 @@
-from SimTABS import kelvin,calculTemperaturesEuler
+from SimTABS import calculTemperaturesEuler
 import RechercheRacine 
+import numpy as np
+from SimTabsFinal import calculTemperaturesEuler
 
 #______________________________________________________________________________________________________#
-# question 4.1 base
+# question 4.1
 
 
 
@@ -21,24 +23,26 @@ def EstTemperatureOK(temps, T_room, T_surface):
     Temp_optimale = T_optimale(T_room, T_surface)
     return EN15251_temp[0] <= Temp_optimale <= EN15251_temp[1]
 
-def T_confort_max(FenetreDeTemps, T0, h):
-    """Calcule la température de confort maximale en testant différents scénarios de chauffage"""
-    delta_t = 0  # Initialisation du temps de chauffage
+def Tmax_pour_deltaT(deltaT, T_dmax):
+    """
+    Fonction à annuler : T_max(deltaT) - T_dmax
     
-    while delta_t < 24:
-        delta_t += 0.5  # On teste par pas de 30 min
-        
-        t, T = calculTemperaturesEuler(FenetreDeTemps, T0, h)  # Simulation de température
-        
-        T_confort_values = []  # Stocke les valeurs de T_confort sur 24h
-        
-        for i in range(len(t)):  # On parcourt chaque instant simulé
-            if EstTemperatureOK(t[i], T[i, 0], T[i, 4]):  
-                T_confort_values.append(T_optimale(T[i, 0], T[i, 4]))
-        
-        if T_confort_values:
-            Tmax_confort = max(T_confort_values)  # Trouver le maximum
-            print(f"Delta_t = {delta_t}h -> Tmax_confort = {Tmax_confort:.2f}°C")
+    Arguments :
+    - deltaT : durée de chauffage après 4h. (float64)
+    - T_dmax : valeur cible de Tmax (ex : 24°C). (float64)
     
-    return Tmax_confort  # Retourne la valeur maximale atteinte
+    Retourne :
+    - Différence entre Tmax obtenu et Tmax souhaité.
+    """
+
+    t, T = calculTemperaturesEuler([0, 24], [15, 15, 15, 15, 15], 0.1, deltaT)
+    T_confort = (T[0, :] + T[4, :]) / 2  # Troom = T[0], Tc2 = T[4]
+    Tmax = np.max(T_confort)
+    return Tmax - T_dmax
+
+#______________________________________________________________________________________________________#
+# question 4.2
+
+#______________________________________________________________________________________________________#
+# question 4.3
 

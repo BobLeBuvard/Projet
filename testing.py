@@ -1,3 +1,5 @@
+#DEPRECATED: NE PLUS UTILISER LES FONCTIONS QUI SONT ICI SAUF POUR DES TESTS
+
 from config import *
 import SimTABS
 import matplotlib.pyplot as plt

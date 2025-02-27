@@ -192,9 +192,9 @@ def calculTemperaturesIVP(FenetreDeTemps, T0, rtol, t_eval = None):
 
     IN:
 
-    FenetreDeTemps -> array de 2 éléments: le début (0) et la fin de la fenêtre de temps de calcul (généralement 24 pour 24h) de ( dim(1))
+    FenetreDeTemps -> array de 2 éléments: le début (0) et la fin de la fenêtre de temps de calcul (généralement 24 pour 24h) de (array dim(1))
 
-    T0 -> conditions initiales (dim(5,0) ) 
+    T0 -> conditions initiales (array dim(5,0) )
     
     rtol -> tolérance de résolution ( à quoi on doit s'attendre comme différence avec la véritable valeur)
 
@@ -247,13 +247,13 @@ def calculCycles(cycles,T0,FenetreDeTemps,h):
     
     FenetreDeTemps: durée d'un cycle sous forme d'array [t0,tf] (ex: [0,24] -> cycle de 24h)
     
-    h: intervalle entre les instants de calcul de température (int)
+    h: intervalle entre les instants de calcul de température (float64)
 
     ======
     OUT: 
     
 
-    t: temps d'évaluation (array de dim(1) de longueur -> intervalle/h )
+    t: temps d'évaluation (array de array dim(1) de longueur -> intervalle/h )
     
     T: array de dimensions (5, cycles*h + cycles-1 ( souci de compter 2 fois la fin d'un cycle et le début d'un cycle suivant) ) -> pour 1 cycle avec h = 24 c'est (5,24+1)
     ex: dim(5, 24000)
@@ -279,9 +279,12 @@ def converge_fin_journee(T_total, tolerance,h):
     """
     Vérifie la convergence de la température à la fin de chaque journée.
 
-    h : intervalle entre les mesures (en heures) (int)
-    T_total : matrice des températures au fil du temps (dim(5, n))
-    tolerance : seuil de tolérance pour considérer une convergence (int)
+
+    T_total : matrice des températures au fil du temps (arrayarray dim(5, n))
+    
+    tolerance : seuil de tolérance pour considérer une convergence (float64)
+
+    h : intervalle entre les mesures (en heures) (float64)
 
     Retourne : le tableau des différences entre jours successifs (dim(5,n))
 
