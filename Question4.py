@@ -1,6 +1,7 @@
 from SimTABS import kelvin,calculTemperaturesEuler
 import RechercheRacine 
 import math
+from RechercheRacine import hasRoots
 
 #______________________________________________________________________________________________________#
 # question 4.1 base
@@ -90,25 +91,26 @@ def bissection_secante(f, x0, x1, tol = 0.5e-7, max_iter=50): #par défaut une t
             x1 = x2 # f(x0) et f(x2) sont de signe contraire -> le zéro se trouve entre x0 et x2
         else: 
             x0 = x2 # les deux nombres sont de même signe -> le zéro se trouve entre x2 et x1
-
+        if i > math.ceil((max_iter)/4): 
+            break
 
 
     #passage à la méthode de la sécante 
 
-    for i in range(math.ceil((max_iter)/4)):
-        fx1 = f(x1)     #STOCKAGE DE L'ESTIMATION DE LA FONCTION A UN POINT X1
-        fx0 = f(x0)     #STOCKAGE DE L'ESTIMATION DE LA FONCTION A UN POINT X0
+       
+    fx1 = f(x1)     #STOCKAGE DE L'ESTIMATION DE LA FONCTION A UN POINT X1
+    fx0 = f(x0)     #STOCKAGE DE L'ESTIMATION DE LA FONCTION A UN POINT X0
 
-        if abs(fx1 - fx0) ==0 : # on veut pas diviser par zéro
-            return [1984, -1]
-        #maintenant on calcule la formule du point de la fonction à l:
-        
-        x2 = x1 -  fx1* (x1 - x0) / (fx1 - fx0) # on calcule le nouveau point x
-        if abs(x2 - x1) < tol:
-            return [x2, 0] #on a trouvé la racine correcte (avec tolérances en valeur absolue) !
-        
-        x0, x1 = x1, x2  # Sinon on met les valeurs à jour x1 devient x0 et x2 devient x1  
-        return [x2,0]
-  
+    if abs(fx1 - fx0) ==0 : # on veut pas diviser par zéro
+        return [1984, -1]
+    #maintenant on calcule la formule du point de la fonction à l:
+    
+    x2 = x1 -  fx1* (x1 - x0) / (fx1 - fx0) # on calcule le nouveau point x
+    if abs(x2 - x1) < tol:
+        return [x2, 0] #on a trouvé la racine correcte (avec tolérances en valeur absolue) !
+    
+    x0, x1 = x1, x2  # Sinon on met les valeurs à jour x1 devient x0 et x2 devient x1  
+    return [x2,0]
+
 
 
