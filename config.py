@@ -2,8 +2,6 @@ import numpy as np
 ''' 
 module qui contient toutes les variables. Pour l'instant ça charge tout dans la mémoire, on verra pour changer si on veut juste charger certaines parties pour certaines fonctions par la suite
 
-
-
 '''
 
 def kelvin(temp):
@@ -12,7 +10,7 @@ def kelvin(temp):
 
 
 FenetreDeTemps = np.array([0, 24]) # fenetre de test comme demandé -> taille du cycle
-num_du_scenario = 2 # scénario 5 = scénario debug
+num_du_scenario = 1 # scénario 5 = scénario debug
 h = 0.01  # pas de temps ( toutes les 6 minutes)
 debug = True
 T0 = kelvin(np.array([15,15,15,15,15])) #conitions initiales données -> ici mises en array en kelvins

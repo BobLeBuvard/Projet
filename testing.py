@@ -1,7 +1,5 @@
 from config import *
 import SimTABS
-import math
-import main
 import matplotlib.pyplot as plt
 # sim (simulation) c'est l'exercice de test qu'on veut appliquer.
 # 1 c'est les cycles
@@ -27,8 +25,8 @@ def test(h):
         plt.title(label = 'h = '+str(h))
         plt.show()  
 
-sim= 4
 
+sim= 4
 
 #TESTER LES EXERCICES
 
