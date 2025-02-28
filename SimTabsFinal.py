@@ -15,7 +15,6 @@ num_du_scenario = 1
 h = 0.01  # pas de temps ( toutes les 6 minutes)
 debug = True
 T0 = kelvin(np.array([15,15,15,15,15])) #conitions initiales données -> ici mises en array en kelvins
-delta_t = 0
 nombre_de_cycles = 11
 default_tol = 10e-10 #choix arbitraire
 
@@ -73,7 +72,7 @@ def scenario3(t):
     else:
         isOn = 2 #refroidit
     return isOn
-def scenario4(t):
+def scenario4(t, delta_t = None):
     if 0<= t <=4 :
         isOn = 2 # refroidit
     elif 4<t<= (4+delta_t):
@@ -81,7 +80,7 @@ def scenario4(t):
     elif((4+delta_t)<t<=24 ):
         isOn = 1 # éteint
     return isOn
-def scenario(t,num):
+def scenario(t,num,delta_t = None): # *args définit s'il y a un argument supplémentaire (delta_t)
     '''on a défini 4 scénarios, cette fonction peut nous définir lequel on va utiliser pour notre fonction:
     
     num -> numéro du scénario
@@ -92,7 +91,7 @@ def scenario(t,num):
     '''
     scenarios = [scenario1,scenario2,scenario3,scenario4]
 
-    return scenarios[num-1](t)
+    return scenarios[num-1](t,delta_t)
 
 def T_w(isOn,T_t):
     '''
@@ -115,7 +114,7 @@ def T_w(isOn,T_t):
 
 #______________________________________________________________________________________________________#
                                          #question 3.1
-def odefunction(t, T):
+def odefunction(t, T,delta_t = None):
     
     '''retourne une array contenant les cinq dérivées selon leur formule
     
@@ -137,7 +136,7 @@ def odefunction(t, T):
                     
     #CALCUL DE dT_t 
 
-    isOn = scenario( t ,num_du_scenario)
+    isOn = scenario( t ,num_du_scenario,delta_t)
     dT[1] = (1/C[1])*( (-1/R_x)*(T[1]-T[2]) - (1/R_w)*(T[1] - T_w(isOn, T[1])) )
 
     #CALCUL DE dT_cc
@@ -155,7 +154,7 @@ def odefunction(t, T):
 #______________________________________________________________________________________________________#
 #question 3.2 
 
-def calculTemperaturesEuler(FenetreDeTemps, T0, h ):
+def calculTemperaturesEuler(FenetreDeTemps, T0, h, delta_t = None):
     '''
     Fonction qui résoud une équation différentielle par la méthode d'Euler:
 
@@ -176,7 +175,7 @@ def calculTemperaturesEuler(FenetreDeTemps, T0, h ):
     T[:, 0] = T0  # conditions initiales
     
     for i in range(1, n):
-        dT = odefunction(t[i-1], T[:, i-1])  #calcul des dérivées de tout pour chaque dernier élément de la colonne
+        dT = odefunction(t[i-1], T[:, i-1],delta_t)  #calcul des dérivées de tout pour chaque dernier élément de la colonne
         T[:, i] = T[:, i-1] + h * dT  # application de Euler 
     return [t, T]
 def question_3_2():

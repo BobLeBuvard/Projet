@@ -9,37 +9,37 @@ from SimTabsFinal import calculTemperaturesEuler
 
 
 
-def T_optimale(T_room, T_surface):
-    """Calcule la température de confort selon la norme"""
-    return (T_room + T_surface) / 2
-
-def EstTemperatureOK(temps, T_room, T_surface):
-    """Vérifie si la température est dans la plage de confort pendant les heures de bureau"""
-    HeuresBureau = [8, 19]
-    EN15251_temp = [19.5, 24]  # En °C, pas besoin de kelvin()
-    
-    if temps < HeuresBureau[0] or temps > HeuresBureau[1]:
-        return False  # Hors des heures de bureau
-    
-    Temp_optimale = T_optimale(T_room, T_surface)
-    return EN15251_temp[0] <= Temp_optimale <= EN15251_temp[1]
-
-def Tmax_pour_deltaT(deltaT, T_dmax):
+def T_max(delta_t, T_d_max):
     """
-    Fonction à annuler : T_max(deltaT) - T_dmax
+    Fonction qui calcule le maximum de température de confort d'un cycle (avec un delta T donné)
     
-    Arguments :
+    Fonction à annuler : T_max(deltaT) - T_dmax 
+
+    IN:
+
     - deltaT : durée de chauffage après 4h. (float64)
+
     - T_dmax : valeur cible de Tmax (ex : 24°C). (float64)
     
-    Retourne :
+    OUT:
+    
     - Différence entre Tmax obtenu et Tmax souhaité.
     """
 
-    t, T = calculTemperaturesEuler([0, 24], [15, 15, 15, 15, 15], 0.1, deltaT)
-    T_confort = (T[0, :] + T[4, :]) / 2  # Troom = T[0], Tc2 = T[4]
-    Tmax = np.max(T_confort)
-    return Tmax - T_dmax
+    t, T = calculTemperaturesEuler([0, 24], [15, 15, 15, 15, 15], 0.1, delta_t = delta_t)
+    T_confort = (T[0, :] + T[4, :]) / 2  # T_room = T[0], T_c2 = T[4]
+    '''Ici on fait des opérations matricielles. 
+    On crée une array T_confort avec dedans la température optimale pour chaque t de sortie de calculTemperaturesEuler()
+    en gros pour chaque élément de T on va aller prendre la valeur et on va l'additionner avec la même valeur pour T_c2
+
+    c'est équivalent à :
+    T_confort = zeros_like(T)
+    for i in range(t):
+        T_confort[i] = (T[0][i] + T[4][i])/2
+        
+    '''
+    T_max = np.max(T_confort)
+    return T_max - T_d_max
 
 
 
@@ -49,6 +49,7 @@ def Tmax_pour_deltaT(deltaT, T_dmax):
 def bissection_secante(f, x0, x1, tol = 0.5e-7, max_iter=50): #par défaut une tolérance de 8 décimales correctes, et un nombre d'itérations max de 50 
     '''
     Recherche de racine par dichotomie -> on coupe l'intervalle en deux et on regarde le signe de ce terme pour diminuer la taille de l'intervalle d'un facteur 1/2
+
     une fois que les limites de l'intervalle sont suffisamment proches de zéro, on retourne la valeur de x à cet endroit ansi qu'un code d'erreur s'il y a eu un problème.
     
     f : fonction d'entrée
