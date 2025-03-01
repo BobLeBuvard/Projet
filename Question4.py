@@ -1,14 +1,15 @@
+from SimTABS import calculTemperaturesEuler
 import math
-import matplotlib.pyplot as plt
-from RechercheRacine import bissection
+from RechercheRacine import hasRoots
 import numpy as np
-from SimTabsFinal import calculTemperaturesEuler,kelvin
+from SimTabsFinal import calculTemperaturesEuler
+
 #______________________________________________________________________________________________________#
 # question 4.1
 
 
 
-def Trouver_T_max(delta_t, T_d_max):
+def T_max(delta_t, T_d_max):
     """
     Fonction qui calcule le maximum de température de confort d'un cycle (avec un delta T donné)
     
@@ -25,41 +26,72 @@ def Trouver_T_max(delta_t, T_d_max):
     - Différence entre Tmax obtenu et Tmax souhaité.
     """
 
-      t, T = calculTemperaturesEuler([0, 24], kelvin(np.array([15, 15, 15, 15, 15])),  0.01,num_du_scenario = 4, delta_t = delta_t)
+    t, T = calculTemperaturesEuler([0, 24], [15, 15, 15, 15, 15], 0.1, delta_t = delta_t)
     T_confort = (T[0, :] + T[4, :]) / 2  # T_room = T[0], T_c2 = T[4]
-    T_max = np.max(T_confort)
-    return (T_max ,t,T_confort)
+    '''Ici on fait des opérations matricielles. 
+    On crée une array T_confort avec dedans la température optimale pour chaque t de sortie de calculTemperaturesEuler()
+    en gros pour chaque élément de T on va aller prendre la valeur et on va l'additionner avec la même valeur pour T_c2
 
-def question_4_1(delta_t):
-    MAX,t,T_confort = Trouver_T_max(delta_t,kelvin(24.5))
-    plt.xlabel("température optimale", fontsize = 8) # Labélisation de l'axe des abscisses (copypaste du tuto)
-    plt.ylabel("temps (24h)", fontsize = 8) # Labélisation de l'axe des ordonnées (copypaste du tuto)
-    plt.title(label = f'Température de confort sur 24h -> delta_t = {delta_t}')
-    plt.plot(t,T_confort,label= "prout")
-    plt.legend( loc='best')
-    plt.show()  
+    c'est équivalent à :
+    T_confort = zeros_like(T)
+    for i in range(t):
+        T_confort[i] = (T[0][i] + T[4][i])/2
+        
+    '''
+    T_max = np.max(T_confort)
+    return T_max - T_d_max
+
+
 
 #______________________________________________________________________________________________________#
 #question 4.2
+def bissection_secante(f, x0, x1, tol = 0.5e-7, max_iter=50): #par défaut une tolérance de 8 décimales correctes, et un nombre d'itérations max de 50 
+    '''
+    Recherche de racine par dichotomie -> on coupe l'intervalle en deux et on regarde le signe de ce terme pour diminuer la taille de l'intervalle d'un facteur 1/2
 
-def recherche_delta_t(T_max_d, 0 ,24 ,tol = 0.5e-7):
+    une fois que les limites de l'intervalle sont suffisamment proches de zéro, on retourne la valeur de x à cet endroit ansi qu'un code d'erreur s'il y a eu un problème.
     
- f_difference = lambda deltaT: T_max(deltaT) - T_max_d 
-    '''''
-    fonction qui fait la différence entre T_max qui varie en fonction de delta et T_max_d qui est choisis abritrairement, il faut en 
-    rechercher la racine pour pouvoir trouver delta_t
-    '''''
- delta_t  = bissection(f_difference, 0 , 24 , tol=tol, max_iter=54)
- return delta_t
+    f : fonction d'entrée
 
+    x0: début (ou fin) de l'intervalle de recherche de racine
 
-'''''
+    x1: fin (ou début) de l'intervalle de recherche de racine
 
+    tol: tolérance de l'imprécision de la racine (par défaut 0.5e-7)
+
+    max_iter: nombre maximal d'itérations de la recherche
+
+    
+    Sortie sous la forme:
+
+    [x, status]
+'''
+    retour = hasRoots(f,x0,x1,tol)
+    if retour[1] != 0:
+        return retour
+    #CODE EN NEGLIGEANT LES FONCTION AVEC nbr_racines > 1  en nombre pairs ( souci pour 3 racines, 5 racines,... )
+    
+    
+    nombre_d_iterations = math.ceil(np.log2((x1 - x0) / (2 * tol))) #arrondi supérieur
+
+    if(nombre_d_iterations <= 0 or nombre_d_iterations > max_iter):
+        return [1984,-1] # on a un souci de convergeance: un nombre négatif d'itérations...
+
+    for i in range(nombre_d_iterations):
+        x2 = (x0+x1) /2 #creation d'un point au milieu de x0 et x1 
+        fx2 = f(x2)     #STOCKAGE DE L'ESTIMATION DE LA FONCTION A UN POINT X2
+        fx0 = f(x0)     #STOCKAGE DE L'ESTIMATION DE LA FONCTION A UN POINT X0
+        if fx2 < tol:
+            return [x2 , 0] #on a trouvé la racine exacte -> on quitte
+        elif(fx0 * fx2 < 0): #on compare le signe de x0 et x2 
+            x1 = x2 # f(x0) et f(x2) sont de signe contraire -> le zéro se trouve entre x0 et x2
+        else: 
+            x0 = x2 # les deux nombres sont de même signe -> le zéro se trouve entre x2 et x1
         if i > math.ceil((max_iter)/4): 
             break
 
 
-#passage à la méthode de la sécante 
+    #passage à la méthode de la sécante 
 
        
     fx1 = f(x1)     #STOCKAGE DE L'ESTIMATION DE LA FONCTION A UN POINT X1
@@ -74,9 +106,20 @@ def recherche_delta_t(T_max_d, 0 ,24 ,tol = 0.5e-7):
         return [x2, 0] #on a trouvé la racine correcte (avec tolérances en valeur absolue) !
     
     x0, x1 = x1, x2  # Sinon on met les valeurs à jour x1 devient x0 et x2 devient x1  
-    return [x2,0]   
+    return [x2,0]
 
-'''
+#methode de la sécante
+def Recherchede_Delta_d(Td_max, intervalle, T0, h, G_interp):
+    """Trouve la durée Δt pour atteindre Tmax = Td_max sur 24h en utilisant la méthode de la sécante."""
+    def erreur_delta(dt):
+        return T_max(intervalle, T0, h, G_interp) - Td_max
+    
+    dt_opt, statut = secante(erreur_delta, 1, 10, 1e-2)
+    if statut == 0:
+        return dt_opt
+    else:
+        print("Échec de la recherche de Δt")
+        return None
 
 #______________________________________________________________________________________________________#
 # question 4.3
