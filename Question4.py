@@ -1,15 +1,16 @@
-from SimTABS import calculTemperaturesEuler
 import math
+import matplotlib.pyplot as plt
 from RechercheRacine import hasRoots
 import numpy as np
-from SimTabsFinal import calculTemperaturesEuler
+from SimTabsFinal import calculTemperaturesEuler,dessinemoassa,kelvin
 
 #______________________________________________________________________________________________________#
 # question 4.1
 
 
 
-def T_max(delta_t, T_d_max):
+def Trouver_T_max(delta_t, T_d_max):
+
     """
     Fonction qui calcule le maximum de température de confort d'un cycle (avec un delta T donné)
     
@@ -25,8 +26,8 @@ def T_max(delta_t, T_d_max):
     
     - Différence entre Tmax obtenu et Tmax souhaité.
     """
-
-    t, T = calculTemperaturesEuler([0, 24], [15, 15, 15, 15, 15], 0.1, delta_t = delta_t)
+    
+    t, T = calculTemperaturesEuler([0, 24], [15, 15, 15, 15, 15],  0.01,num_du_scenario = 4, delta_t = delta_t)
     T_confort = (T[0, :] + T[4, :]) / 2  # T_room = T[0], T_c2 = T[4]
     '''Ici on fait des opérations matricielles. 
     On crée une array T_confort avec dedans la température optimale pour chaque t de sortie de calculTemperaturesEuler()
@@ -38,10 +39,19 @@ def T_max(delta_t, T_d_max):
         T_confort[i] = (T[0][i] + T[4][i])/2
         
     '''
+    
     T_max = np.max(T_confort)
-    return T_max - T_d_max
+    return (T_max ,t,T_confort)
 
-
+def question_4_1(delta_t):
+    MAX,t,T_confort = Trouver_T_max(delta_t,kelvin(24.5))
+    plt.xlabel("température optimale moins T_d_max(°K)", fontsize = 8) # Labélisation de l'axe des abscisses (copypaste du tuto)
+    plt.ylabel("temps (24h)", fontsize = 8) # Labélisation de l'axe des ordonnées (copypaste du tuto)
+    plt.title(label = 'Température de confort sur 24h')
+    plt.plot(t,T_confort,label= "prout")
+    plt.legend( loc='best')
+    plt.show()  
+    
 
 #______________________________________________________________________________________________________#
 #question 4.2

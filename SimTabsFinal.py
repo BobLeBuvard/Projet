@@ -11,9 +11,7 @@ def celcius(temp):
 
 #CONFIG
 FenetreDeTemps = np.array([0, 24]) # fenetre de test comme demandé -> taille du cycle
-num_du_scenario = 1
 h = 0.01  # pas de temps ( toutes les 6 minutes)
-debug = True
 T0 = kelvin(np.array([15,15,15,15,15])) #conitions initiales données -> ici mises en array en kelvins
 nombre_de_cycles = 11
 default_tol = 10e-10 #choix arbitraire
@@ -39,24 +37,25 @@ R_s_moins_c2 = 0.183
 
 def dessinemoassa(t,T,index,xlabel = None, ylabel = None, titre= None ):
     ''' fonction qui plotte le graphe de ce qu'on lui a donné.'''
-    if debug : 
-        plt.ylabel(ylabel, fontsize = 8) # Labélisation de l'axe des ordonnées (copypaste du tuto)
-        plt.xlabel(xlabel, fontsize = 8) # Labélisation de l'axe des abscisses (copypaste du tuto)
-        for i in range(T.shape[0]):  
-            plt.plot(t, T[i], label=index[i])  # en fonction du nombre de variables dans T, on affiche plus ou moins de fonctions
-        plt.legend( loc='best')
-        plt.title(label = titre)
-        plt.show()  
+    plt.xlabel(xlabel, fontsize = 8) # Labélisation de l'axe des abscisses (copypaste du tuto)
+    plt.ylabel(ylabel, fontsize = 8) # Labélisation de l'axe des ordonnées (copypaste du tuto)
+    for i in range(T.shape[0]):  
+        plt.plot(t, T[i], label=index[i])  # en fonction du nombre de variables dans T, on affiche plus ou moins de fonctions
+    plt.legend( loc='best')
+    plt.title(label = titre)
+    plt.show()  
 
 #SCENARIOS POUR LA QUESTION 4
-def scenario1(t):
+# delta_t = None c'est pour singaler qu'il peut y avoir des arguments supplémentaires dans la fonction. Dans notre cas, delta_t
+
+def scenario1(t, delta_t = None):
     '''4h de refroidissement et puis le chauffage est coupé'''
     if 0<= t <=4 :
         isOn = 2 #refroidit
     else:
         isOn = 1 #éteint
     return isOn
-def scenario2(t):
+def scenario2(t, delta_t = None):
     ''' 4h de refroidissement,10h de chauffe et puis le chauffage est coupé '''
     if 0<= t <=4 :
         isOn = 2 # refroidit
@@ -65,22 +64,24 @@ def scenario2(t):
     else:
         isOn = 1 # éteint
     return isOn
-def scenario3(t):
+def scenario3(t, delta_t = None): 
     '''12h de chauffe et puis 12h de refroidissement'''
     if 0<= t <=12 :
         isOn = 3 #chauffe
     else:
         isOn = 2 #refroidit
     return isOn
-def scenario4(t, delta_t = None):
+def scenario4(t, delta_t =None ):
+    if delta_t == None: delta_t = 0 #Par défaut zéro...
+    
     if 0<= t <=4 :
         isOn = 2 # refroidit
-    elif 4<t<= (4+delta_t):
+    elif 4<t<= (4+ delta_t):
         isOn = 3 #chauffe
     elif((4+delta_t)<t<=24 ):
         isOn = 1 # éteint
     return isOn
-def scenario(t,num,delta_t = None): # *args définit s'il y a un argument supplémentaire (delta_t)
+def scenario(t,num,delta_t = None): # delta_t = None définit s'il y a un argument supplémentaire (delta_t)
     '''on a défini 4 scénarios, cette fonction peut nous définir lequel on va utiliser pour notre fonction:
     
     num -> numéro du scénario
@@ -91,7 +92,7 @@ def scenario(t,num,delta_t = None): # *args définit s'il y a un argument suppl�
     '''
     scenarios = [scenario1,scenario2,scenario3,scenario4]
 
-    return scenarios[num-1](t,delta_t)
+    return scenarios[num-1](t,delta_t = delta_t)
 
 def T_w(isOn,T_t):
     '''
@@ -114,8 +115,7 @@ def T_w(isOn,T_t):
 
 #______________________________________________________________________________________________________#
                                          #question 3.1
-def odefunction(t, T,delta_t = None):
-    
+def odefunction(t, T,num_du_scenario = 1, delta_t = None):
     '''retourne une array contenant les cinq dérivées selon leur formule
     
     IN: 
@@ -136,7 +136,7 @@ def odefunction(t, T,delta_t = None):
                     
     #CALCUL DE dT_t 
 
-    isOn = scenario( t ,num_du_scenario,delta_t)
+    isOn = scenario(t, num_du_scenario, delta_t=delta_t)
     dT[1] = (1/C[1])*( (-1/R_x)*(T[1]-T[2]) - (1/R_w)*(T[1] - T_w(isOn, T[1])) )
 
     #CALCUL DE dT_cc
@@ -154,7 +154,7 @@ def odefunction(t, T,delta_t = None):
 #______________________________________________________________________________________________________#
 #question 3.2 
 
-def calculTemperaturesEuler(FenetreDeTemps, T0, h, delta_t = None):
+def calculTemperaturesEuler(FenetreDeTemps, T0, h,num_du_scenario = 1, delta_t = None):
     '''
     Fonction qui résoud une équation différentielle par la méthode d'Euler:
 
@@ -175,10 +175,10 @@ def calculTemperaturesEuler(FenetreDeTemps, T0, h, delta_t = None):
     T[:, 0] = T0  # conditions initiales
     
     for i in range(1, n):
-        dT = odefunction(t[i-1], T[:, i-1],delta_t)  #calcul des dérivées de tout pour chaque dernier élément de la colonne
+        dT = odefunction(t[i-1], T[:, i-1], num_du_scenario, delta_t=delta_t)  #calcul des dérivées de tout pour chaque dernier élément de la colonne
         T[:, i] = T[:, i-1] + h * dT  # application de Euler 
     return [t, T]
-def question_3_2():
+def question_3_2(num_du_scenario = 1):
     t,T = calculCycles(1,T0,FenetreDeTemps,0.01)
     dessinemoassa(t,T,['T_room','T_t','T_cc','T_c1','T_c2'],xlabel='Temps (heures)',ylabel='Température(°K)',titre= f'Euler: scénario {num_du_scenario}')
 
@@ -201,7 +201,7 @@ def calculTemperaturesIVP(FenetreDeTemps, T0, rtol, t_eval = None):
     '''
     solution = scp.integrate.solve_ivp(odefunction, FenetreDeTemps, T0, rtol= rtol,t_eval = t_eval) # forcer d'évaluer aux valeurs de t de Euler pour le dernier paramètre si on veut comparer Solve_IVP et Euler
     return[solution.t, solution.y]
-def question_3_3():
+def question_3_3(num_du_scenario = 1):
     t,T = calculTemperaturesIVP(FenetreDeTemps,T0,10e-10)
     dessinemoassa(t,T,['T_room','T_t','T_cc','T_c1','T_c2'],xlabel='Temps (heures)',ylabel='Température(°K)',titre= f'IVP: scénario {num_du_scenario}')
 
@@ -223,8 +223,7 @@ def diff_entre_Euler_et_IVP():
         
         T = T1 -T2
         print(f'T1 est de dimensions: {T1.shape} et T2 est de dimensions: {T2.shape}')
-        if debug: 
-            dessinemoassa(t_euler,T,['T_room','T_t','T_cc','T_c1','T_c2'],xlabel='Temps (heures)',ylabel='Température(°K)',titre= f'différence entre Euler et Runge avec h = {h_de_test[i]}')
+        dessinemoassa(t_euler,T,['T_room','T_t','T_cc','T_c1','T_c2'],xlabel='Temps (heures)',ylabel='Température(°K)',titre= f'différence entre Euler et Runge avec h = {h_de_test[i]}')
 def question_3_4():
     diff_entre_Euler_et_IVP() 
 
@@ -307,10 +306,9 @@ def converge_fin_journee(T_total, tolerance,h):
 
     print("il n'y a pas eu convergence sur l'intervalle.")
     return diff
-def dessineDesCycles(cycles):
-    if debug:
-        t,T = calculCycles(cycles,T0,FenetreDeTemps,0.01)
-        dessinemoassa(t,T,['T_room','T_t','T_cc','T_c1','T_c2'],xlabel='Temps (heures)',ylabel='Température(°K)',titre= f'Euler: scénario {num_du_scenario}')
+def dessineDesCycles(cycles,num_du_scenario):
+    t,T = calculCycles(cycles,T0,FenetreDeTemps,0.01)
+    dessinemoassa(t,T,['T_room','T_t','T_cc','T_c1','T_c2'],xlabel='Temps (heures)',ylabel='Température(°K)',titre= f'Euler: scénario {num_du_scenario}')
 
 def question_3_5():
     t,T = calculCycles(nombre_de_cycles,T0,FenetreDeTemps,h)
@@ -322,8 +320,6 @@ def question_3_5():
 #______________________________________________________________________________________________________#
 # question 3.6
 def question_3_6():
-    global num_du_scenario
     for i in range(3):
-        num_du_scenario = (i+1)
-        t,T = calculTemperaturesEuler(FenetreDeTemps,T0,h)
+        t,T = calculTemperaturesEuler(FenetreDeTemps,T0,h,num_du_scenario = i+1)
         dessinemoassa(t,T,['T_room','T_t','T_cc','T_c1','T_c2'],xlabel='Temps (heures)',ylabel='Température(°K)',titre= f'scénario {i}')
