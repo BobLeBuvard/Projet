@@ -28,19 +28,8 @@ def Trouver_T_max(delta_t, T_d_max):
     - Différence entre Tmax obtenu et Tmax souhaité.
     """
     
-    t, T = calculTemperaturesEuler([0, 24], [15, 15, 15, 15, 15],  0.01,num_du_scenario = 4, delta_t = delta_t)
+    t, T = calculTemperaturesEuler([0, 24], kelvin(np.array([15, 15, 15, 15, 15])),  0.01,num_du_scenario = 4, delta_t = delta_t)
     T_confort = (T[0, :] + T[4, :]) / 2  # T_room = T[0], T_c2 = T[4]
-    '''Ici on fait des opérations matricielles. 
-    On crée une array T_confort avec dedans la température optimale pour chaque t de sortie de calculTemperaturesEuler()
-    en gros pour chaque élément de T on va aller prendre la valeur et on va l'additionner avec la même valeur pour T_c2
-
-    c'est équivalent à :
-    T_confort = zeros_like(T)
-    for i in range(t):
-        T_confort[i] = (T[0][i] + T[4][i])/2
-        
-    '''
-    
     T_max = np.max(T_confort)
     return (T_max ,t,T_confort)
 
@@ -48,7 +37,7 @@ def question_4_1(delta_t):
     MAX,t,T_confort = Trouver_T_max(delta_t,kelvin(24.5))
     plt.xlabel("température optimale moins T_d_max(°K)", fontsize = 8) # Labélisation de l'axe des abscisses (copypaste du tuto)
     plt.ylabel("temps (24h)", fontsize = 8) # Labélisation de l'axe des ordonnées (copypaste du tuto)
-    plt.title(label = 'Température de confort sur 24h')
+    plt.title(label = f'Température de confort sur 24h -> delta_t = {delta_t}')
     plt.plot(t,T_confort,label= "prout")
     plt.legend( loc='best')
     plt.show()  
@@ -57,12 +46,11 @@ def question_4_1(delta_t):
 #______________________________________________________________________________________________________#
 #question 4.2
 
-def recherche_delta_t(T_max_d,x0,xf,tol = 0.5e-7)
+def recherche_delta_t(T_max_d,x0,xf,tol = 0.5e-7):
     
- f_difference = lambda deltaT: T_max(deltaT) - T_max_d 
- delta_t  = bissection(f_difference, 0 , 24 , 0.5e-7, max_iter=54)
-return delta_t
-
+    f_difference = lambda deltaT: Trouver_T_max(deltaT) - T_max_d 
+    delta_t  = bissection(f_difference, 0 , 24 , 0.5e-7, max_iter=54)
+    return delta_t
 
 '''''
 
