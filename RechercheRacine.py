@@ -64,7 +64,7 @@ def secante(f, x0, x1, tol = 0.5e-7, max_iter=50):
             return [x2, 0] #on a trouvé la racine correcte (avec tolérances en valeur absolue) !
         
         x0, x1 = x1, x2  # Sinon on met les valeurs à jour x1 devient x0 et x2 devient x1  
-        return [x2,0]
+    return [x2,0]
 
 def bissection(f, x0, x1, tol = 0.5e-7, max_iter=50): #par défaut une tolérance de 8 décimales correctes, et un nombre d'itérations max de 50 
     '''
@@ -102,17 +102,13 @@ def bissection(f, x0, x1, tol = 0.5e-7, max_iter=50): #par défaut une toléranc
         x2 = (x0+x1) /2 #creation d'un point au milieu de x0 et x1 
         fx2 = f(x2)     #STOCKAGE DE L'ESTIMATION DE LA FONCTION A UN POINT X2
         fx0 = f(x0)     #STOCKAGE DE L'ESTIMATION DE LA FONCTION A UN POINT X0
-        if fx2 < tol:
+        if abs(fx2) < tol:
             return [x2 , 0] #on a trouvé la racine exacte -> on quitte
         elif(fx0 * fx2 < 0): #on compare le signe de x0 et x2 
             x1 = x2 # f(x0) et f(x2) sont de signe contraire -> le zéro se trouve entre x0 et x2
         else: 
             x0 = x2 # les deux nombres sont de même signe -> le zéro se trouve entre x2 et x1
     
-    else:    
-        return [x2,0]
-    
-    #TODO : 
-    #       Souci pour tester la convergence -> mauvais message d'erreur si divergence je crois
-    #       Mentionner les racines double dans le rapport
+   
+    return [x2,0]
 

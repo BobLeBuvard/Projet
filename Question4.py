@@ -5,9 +5,11 @@ from RechercheRacine import bissection,secante
 import numpy as np
 from SimTabsFinal import calculTemperaturesEuler,kelvin,celsius
 
+def fonctionzero():
+    plt.plot(np.arange(24),np.zeros(24))
+
 #______________________________________________________________________________________________________#
 # question 4.1
-
 
 
 def T_max(delta_t):
@@ -33,16 +35,17 @@ def T_max(delta_t):
     MAX = np.max(T_confort)
     return MAX,t,T_confort
 
-def question_4_1(delta_t):
+def question_4_1(delta_t,T_max_d):
     MAX,t,T_confort = T_max(delta_t)
     print(celsius(MAX))
-    plt.xlabel("température optimale", fontsize = 8) # Labélisation de l'axe des abscisses (copypaste du tuto)
-    plt.ylabel("temps (24h)", fontsize = 8) # Labélisation de l'axe des ordonnées (copypaste du tuto)
+    plt.xlabel("temps (24h)", fontsize = 8) # Labélisation de l'axe des ordonnées (copypaste du tuto)
+    plt.ylabel("température optimale", fontsize = 8) # Labélisation de l'axe des abscisses (copypaste du tuto)
     plt.title(label = f'Température de confort sur 24h -> delta_t = {delta_t}')
-    plt.plot(t,celsius(T_confort),label= "prout")
+    plt.plot(t,celsius(T_confort)-T_max_d ,label= "prout")
+    fonctionzero()
     plt.legend( loc='best')
     plt.show()
-
+ 
 
 #______________________________________________________________________________________________________#
 #question 4.2
