@@ -12,7 +12,7 @@ def fonctionzero():
 # question 4.1
 
 
-def T_max(delta_t):
+def T_max(delta_t, no_max = False):
     """
     Fonction qui calcule le maximum de température de confort d'un cycle (avec un delta T donné)
     
@@ -28,11 +28,11 @@ def T_max(delta_t):
     
     - Différence entre Tmax obtenu et Tmax souhaité.
     """
-
+    MAX = 0
     t, T = calculTemperaturesEuler([0, 24], kelvin(np.array([15, 15, 15, 15, 15])),  0.01,num_du_scenario = 4, delta_t = delta_t)
     T_confort = (T[0, :] + T[4, :]) / 2  # T_room = T[0], T_c2 = T[4]
 
-    MAX = np.max(T_confort)
+    if not no_max: MAX = np.max(T_confort) #si on ne veut pas de max --> no_max=True ben on ne le calcule pas.
     return MAX,t,T_confort
 
 def question_4_1(delta_t,T_max_d):
@@ -62,8 +62,6 @@ def recherche_delta_t (T_max_d, intervalle = [0,24], tol = 0.5e-7):
         print('erreur')
         return(-1)
     return delta_t
-
-
 '''
 
         if i > math.ceil((max_iter)/4): 
@@ -101,44 +99,19 @@ def Recherchede_Delta_d(Td_max, intervalle, T0, h, G_interp):
         return None
 '''
 
-#methode de la sécante
-def Recherchede_Delta_T(Td_max, intervalle, T0, h, G_interp):
-    """Trouve la durée Δt pour atteindre Tmax = Td_max sur 24h en utilisant la méthode de la sécante."""
-    def delta_T():
-        return T_max(intervalle, T0, h, G_interp) - Td_max
-    
-    dt_opt, statut = secante( 0, 24, 1e-2 )
-    if statut == 0:
-        return dt_opt
-    else:
-        print("Échec de la recherche de Δt")
-        return None
-
-
 #______________________________________________________________________________________________________#
 # question 4.3
 
 
 
 
-def temperature_bureau(delta_t):
- delta_t = delta_t
- t, T = calculTemperaturesEuler([8, 19], kelvin(np.array([15, 15, 15, 15, 15])),  0.01,num_du_scenario = 4, delta_t = delta_t)
- T_confort = (T[0, :] + T[4, :]) / 2  # T_room = T[0], T_c2 = T[4]
 
- return T_confort
-
-
-def verification_EN15251(T_confort):
- Norme_respectee = True
- for i in range(len(T_confort))
-     if  not 19.5 < T_confort[i] < 24
-     norme_respectee  False
-     break
- if norme_respectee:
+def verification_EN15251(delta_t):
+    MAX,t,T_max_arr = T_max(delta_t,no_max = True)
+    T_confort = T_max_arr
+    for i in range(len(t)):
+        if 8<= t[i]<=  19 and not 19.5 < T_confort[i] < 24: 
+            print("La norme EN15251 n'est pas respectée.")
+            return False
     print("La norme EN15251 est respectée.")
-else:
-    print("La norme EN15251 n'est pas respectée.")
-
-
- 
+    return True
