@@ -35,6 +35,8 @@ R_c2_moins_cc = 0.02
 R_r_moins_s = 0.1
 R_s_moins_c2 = 0.183
 
+debug = True
+
 def dessinemoassa(t,T,index,xlabel = None, ylabel = None, titre= None ):
     ''' fonction qui plotte le graphe de ce qu'on lui a donné.'''
     plt.xlabel(xlabel, fontsize = 8) # Labélisation de l'axe des abscisses (copypaste du tuto)
@@ -231,6 +233,39 @@ def question_3_4():
 #______________________________________________________________________________________________________#
 #question 3.5
 
+def cycles_apres_convergence(T0, FenetreDeTemps, h, tol=0.01, max_jours=30):
+    '''fonction qui va calculer itérativement chaque jour et va voir  à partir de quand la température se stabilise entre les jours.
+    
+    IN: 
+
+    T0 -> conditions initiales (array dim(5,1))
+    FenetreDeTemps -> durée d'un cycle
+    '''
+    # calculer les 2 premiers jours
+    journee_pas = round((FenetreDeTemps[1]-FenetreDeTemps[0])/h)
+    t,T = calculCycles(2,T0,FenetreDeTemps,h)
+    T_total = np.copy(T)
+    t_total = np.copy(t)
+    for i  in range(max_jours):
+        if abs(T_total[0, -1] - T_total[0, -(1+journee_pas)]) <= tol:
+            print(f"a convergé après {i+2} jours")
+            
+            if debug:
+                plt.plot(t_total,T_total)
+                plt.title(label= "graphique de la température jusqu'à convergence")
+                plt.show()
+            return i+2 , T_total[:,-(1+journee_pas)]  #retourne le nombre de jours et les conditions de l'avant dernier jour
+            
+        else:
+            t,T = calculTemperaturesEuler(FenetreDeTemps,T_total[:,-1],h)
+            #ajouter le dernier jour à T_total et t_total
+            T_total = np.concatenate((T_total,T),axis = 1)
+            t_total = np.concatenate((t_total,t))
+            print(f"n'a pas convergé après {i+2} jours")
+    print(f"n'a pas convergé après {max_jours} , ajoutez plus de jours")
+    return None, None
+
+
 def calculCycles(cycles,T0,FenetreDeTemps,h):
     '''
 
@@ -273,48 +308,14 @@ def calculCycles(cycles,T0,FenetreDeTemps,h):
 
     return(t_Total,T_Total)
 
-def converge_fin_journee(T_total, tolerance,h):
-    """
-    Vérifie la convergence de la température à la fin de chaque journée.
-
-
-    T_total : matrice des températures au fil du temps (arrayarray dim(5, n))
-    
-    tolerance : seuil de tolérance pour considérer une convergence (float64)
-
-    h : intervalle entre les mesures (en heures) (float64)
-
-    Retourne : le tableau des différences entre jours successifs (dim(5,n))
-
-    """
-
-    StepsInADay = round(24 / h) + 1  # Nombre de points dans une journée
-    num_days = (T_total.shape[1] - 1) // StepsInADay  # Nombre total de jours utilisables
-
-    if num_days < 2:  # On doit comparer au moins 2 jours
-        print("Pas assez de jours pour tester la convergence.")
-        return np.array([])
-
-    diff = np.zeros(num_days - 1)
-
-    for i in range(num_days - 1):
-        diff[i] = abs(T_total[0, (i + 1) * StepsInADay] - T_total[0, i * StepsInADay])
-
-        if diff[i] <= tolerance:
-            print(f"a convergé après {i+2} jours")
-            return diff, i+2  # On arrête dès qu'on a une convergence
-
-    print("il n'y a pas eu convergence sur l'intervalle.")
-    return diff
-
 def dessineDesCycles(cycles,num_du_scenario):
     t,T = calculCycles(cycles,T0,FenetreDeTemps,0.01)
     dessinemoassa(t,T,['T_room','T_t','T_cc','T_c1','T_c2'],xlabel='Temps (heures)',ylabel='Température(°K)',titre= f'Euler: scénario {num_du_scenario}')
 
 def question_3_5():
-    t,T = calculCycles(nombre_de_cycles,T0,FenetreDeTemps,h)
-    T_2 = converge_fin_journee(T,0.01,h)
-    plt.plot(np.arange(len(T_2)),T_2)
+    '''fonction qui va dessiner le graphe tes températures d'une journée juesqu'à arriver à un état staionnaire'''
+    jours,T_2 = cycles_apres_convergence(T0, FenetreDeTemps,0.01)
+    plt.plot(np.arange(len(T_2))*h,T_2)
 
 
 

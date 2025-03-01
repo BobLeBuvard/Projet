@@ -108,6 +108,7 @@ def bissection(f, x0, x1, tol = 0.5e-7, max_iter=50): #par défaut une toléranc
             x1 = x2 # f(x0) et f(x2) sont de signe contraire -> le zéro se trouve entre x0 et x2
         else: 
             x0 = x2 # les deux nombres sont de même signe -> le zéro se trouve entre x2 et x1
+        print(f"nouveau x2 trouvé dans la recherche de racine: {x2}")
     
    
     return [x2,0]

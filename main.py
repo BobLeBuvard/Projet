@@ -3,8 +3,9 @@
 import numpy as np
 from config import * 
 import SimTABS
-from Question4 import EstTemperatureOK
-from SimTabsFinal import calculTemperaturesEuler
+import math
+from Question4 import T_max
+from RechercheRacine import bissection,secante
 
 def convergeEfficace(h, T0, tolerance, temp=0):
     """
@@ -79,3 +80,76 @@ def converge(h, T_total,tolerance):
             return diff 
     print("il n'y a pas eu convergence sur l'intervalle.")
     return diff
+
+def converge_fin_journee(T_total, tolerance,h):
+    """
+    Vérifie la convergence de la température à la fin de chaque journée.
+
+
+    T_total : matrice des températures au fil du temps (arrayarray dim(5, n))
+    
+    tolerance : seuil de tolérance pour considérer une convergence (float64)
+
+    h : intervalle entre les mesures (en heures) (float64)
+
+    Retourne : le tableau des différences entre jours successifs (dim(5,n))
+
+    """
+
+    StepsInADay = round(24 / h) + 1  # Nombre de points dans une journée
+    num_days = (T_total.shape[1] - 1) // StepsInADay  # Nombre total de jours utilisables
+
+    if num_days < 2:  # On doit comparer au moins 2 jours
+        print("Pas assez de jours pour tester la convergence.")
+        return np.array([])
+
+    diff = np.zeros(num_days - 1)
+
+    for i in range(num_days - 1):
+        diff[i] = abs(T_total[0, (i + 1) * StepsInADay] - T_total[0, i * StepsInADay])
+
+        if diff[i] <= tolerance:
+            print(f"a convergé après {i+2} jours")
+            return diff, i+2  # On arrête dès qu'on a une convergence
+
+    print("il n'y a pas eu convergence sur l'intervalle.")
+    return diff
+
+def bisecante(f, x0, x1, tol = 0.5e-7, max_iter=50):
+    for i in range(max_iter):
+        pass
+
+        #ICI ON DOIT METTRE LA METHODE DE LA BISSECTION POUR RETRECIRE L'INTERVALLE
+        if i > math.ceil((max_iter)/4): 
+            break
+
+
+    #passage à la méthode de la sécante 
+
+        
+    fx1 = f(x1)     #STOCKAGE DE L'ESTIMATION DE LA FONCTION A UN POINT X1
+    fx0 = f(x0)     #STOCKAGE DE L'ESTIMATION DE LA FONCTION A UN POINT X0
+
+    if abs(fx1 - fx0) ==0 : # on veut pas diviser par zéro
+        return [1984, -1]
+    #maintenant on calcule la formule du point de la fonction à l:
+
+    x2 = x1 -  fx1* (x1 - x0) / (fx1 - fx0) # on calcule le nouveau point x
+    if abs(x2 - x1) < tol:
+        return [x2, 0] #on a trouvé la racine correcte (avec tolérances en valeur absolue) !
+
+    x0, x1 = x1, x2  # Sinon on met les valeurs à jour x1 devient x0 et x2 devient x1  
+    return [x2,0]
+
+#methode de la sécante
+def Recherchede_Delta_d(Td_max, intervalle, T0, h, G_interp):
+    """Trouve la durée Δt pour atteindre Tmax = Td_max sur 24h en utilisant la méthode de la sécante."""
+    def erreur_delta(dt):
+        return T_max(intervalle, T0, h, G_interp) - Td_max
+    
+    dt_opt, statut = secante(erreur_delta, 1, 10, 1e-2)
+    if statut == 0:
+        return dt_opt
+    else:
+        print("Échec de la recherche de Δt")
+        return None
