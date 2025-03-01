@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import scipy as scp
 from PerteEtGain import g
 
-
+#TODO: renommer correctement la variable isOn en "heating_mode" car isOn sous entendrait un booléen, ce qui n'est pas le cas
 def kelvin(temp):
     return (temp+273.15) 
 def celsius(temp):
@@ -39,13 +39,15 @@ debug = True
 
 def dessinemoassa(t,T,index,xlabel = None, ylabel = None, titre= None ):
     ''' fonction qui plotte le graphe de ce qu'on lui a donné.'''
-    plt.xlabel(xlabel, fontsize = 8) # Labélisation de l'axe des abscisses (copypaste du tuto)
-    plt.ylabel(ylabel, fontsize = 8) # Labélisation de l'axe des ordonnées (copypaste du tuto)
-    for i in range(T.shape[0]):  
-        plt.plot(t, T[i], label=index[i])  # en fonction du nombre de variables dans T, on affiche plus ou moins de fonctions
-    plt.legend( loc='best')
-    plt.title(label = titre)
-    plt.show()  
+    #TODO: expliciter in et out avec le même format 
+    if debug:
+        plt.xlabel(xlabel, fontsize = 8) # Labélisation de l'axe des abscisses (copypaste du tuto)
+        plt.ylabel(ylabel, fontsize = 8) # Labélisation de l'axe des ordonnées (copypaste du tuto)
+        for i in range(T.shape[0]):  
+            plt.plot(t, T[i], label=index[i])  # en fonction du nombre de variables dans T, on affiche plus ou moins de fonctions
+        plt.legend( loc='best')
+        plt.title(label = titre)
+        plt.show()  
 
 #SCENARIOS POUR LA QUESTION 4
 # delta_t = None c'est pour singaler qu'il peut y avoir des arguments supplémentaires dans la fonction. Dans notre cas, delta_t
@@ -82,6 +84,50 @@ def scenario4(t, delta_t =None ):
     elif((4+delta_t)<t<=24 ):
         isOn = 1 # éteint
     return isOn
+def scenario5(t,delta_t = None):
+    '''
+    En fonction d'une variable on peut créer un scénario de chauffe customisé
+
+    scénario à sa guise: on entre une array pour dire les heures durant lesquelles on veut chauffer, refroidir ou couper
+    
+    Cette fonction prend delta_t comme paramètre en compte, mais delta_t dans ce cas n'est pas une simple array
+
+    dans le scénario 5 en effet, delta_t est un tuple contenant un nombre: le mode de chauffe de base ( 1, 2 ou 3) et une array d'heures de chauffe
+     l'array d'heures de chauffe est une array plate 3xn  -> Par exemple si on veut faire chauffer entre 5 et 6h on met [3(type de chauffe),5(début),6(fin)]    
+    
+    Voici un exemple de delta_t
+
+            
+
+    delta_t = (1,np.array([ 3,5,6, 2,9,10, 3,15,18, 3,8,9])
+               ^            ^ ^ ^
+               |            | | |
+    (défaut éteint)   chaud-début-fin
+
+    '''
+    if delta_t.type != 'int':
+        default_mode,heatingcycle = delta_t
+    else:
+        print("il y a un problème de delta_t: delta_t n'est pas celui attendu (tuple) contenant un int et une flat_array")
+        isOn = False
+    if heatingcycle!= None:
+        matrice = heatingcycle.reshape(3, heatingcycle.shape/3)
+        '''
+        exemple de matrice
+    mode    3  2  2  3 
+    début   5  9  15 8 
+    fin     6  10 18 9
+
+        '''
+        for i in range(np.shape[1]): # nombre de colonnes
+            if matrice[1,i] <= t <= matrice[2,i]:
+                isOn = matrice[0,i]
+                return isOn
+    #on a pas trouvé de valeur pour laquelle on veut chauffer ou refroidir.
+    return default_mode
+            
+
+
 def scenario(t,num,delta_t = None): # delta_t = None définit s'il y a un argument supplémentaire (delta_t)
     '''
     on a défini 4 scénarios, cette fonction peut nous définir lequel on va utiliser pour notre fonction:
@@ -92,7 +138,7 @@ def scenario(t,num,delta_t = None): # delta_t = None définit s'il y a un argume
 
     delta_t  -> intervalle de temps ( utile que pour le scénario 4 )
     '''
-    scenarios = [scenario1,scenario2,scenario3,scenario4]
+    scenarios = [scenario1,scenario2,scenario3,scenario4,scenario5]
 
     return scenarios[num-1](t,delta_t = delta_t)
 
@@ -117,7 +163,8 @@ def T_w(isOn,T_t):
 
 #______________________________________________________________________________________________________#
                                          #question 3.1
-def odefunction(t, T,num_du_scenario = 1, delta_t = None):
+def odefunction(t, T,num_du_scenario = 1, delta_t = None,Force_heating = False):
+    #TODO: mettre à jour le docstring avec les paramètres
     '''retourne une array contenant les cinq dérivées selon leur formule
     
     IN: 
@@ -139,6 +186,7 @@ def odefunction(t, T,num_du_scenario = 1, delta_t = None):
     #CALCUL DE dT_t 
 
     isOn = scenario(t, num_du_scenario, delta_t=delta_t)
+    if Force_heating != False: isOn = Force_heating
     dT[1] = (1/C[1])*( (-1/R_x)*(T[1]-T[2]) - (1/R_w)*(T[1] - T_w(isOn, T[1])) )
 
     #CALCUL DE dT_cc
@@ -156,7 +204,8 @@ def odefunction(t, T,num_du_scenario = 1, delta_t = None):
 #______________________________________________________________________________________________________#
 #question 3.2 
 
-def calculTemperaturesEuler(FenetreDeTemps, T0, h,num_du_scenario = 1, delta_t = None):
+def calculTemperaturesEuler(FenetreDeTemps, T0, h,num_du_scenario = 1, delta_t = None,Force_heating = False):
+    #TODO: mettre à jour le docstring avec les paramètres
     '''
     Fonction qui résoud une équation différentielle par la méthode d'Euler:
 
@@ -167,6 +216,8 @@ def calculTemperaturesEuler(FenetreDeTemps, T0, h,num_du_scenario = 1, delta_t =
     T0 -> conditions initiales (arrray de dimensions (5,0) ) 
     
     h -> pas de temps nécessaire à la résolution avec Euler (entier)
+    
+    Force_heating -> si on met ce paramètre, on peut dire si on veut chauffer, refroidire ou couper sur le cycle complet. (on peut aussi le faire avec le scénario 5 et delta_t = )
     '''
     t0, tf = FenetreDeTemps
 
@@ -177,7 +228,7 @@ def calculTemperaturesEuler(FenetreDeTemps, T0, h,num_du_scenario = 1, delta_t =
     T[:, 0] = T0  # conditions initiales
     
     for i in range(1, n):
-        dT = odefunction(t[i-1], T[:, i-1], num_du_scenario, delta_t=delta_t)  #calcul des dérivées de tout pour chaque dernier élément de la colonne
+        dT = odefunction(t[i-1], T[:, i-1], num_du_scenario, delta_t=delta_t,Force_heating = Force_heating)  #calcul des dérivées de tout pour chaque dernier élément de la colonne
         T[:, i] = T[:, i-1] + h * dT  # application de Euler 
     return [t, T]
 def question_3_2(num_du_scenario = 1):
@@ -225,7 +276,7 @@ def diff_entre_Euler_et_IVP():
         
         
         T = T1 -T2
-        print(f'T1 est de dimensions: {T1.shape} et T2 est de dimensions: {T2.shape}')
+        if debug: print(f'T1 est de dimensions: {T1.shape} et T2 est de dimensions: {T2.shape}')
         dessinemoassa(t_euler,T,['T_room','T_t','T_cc','T_c1','T_c2'],xlabel='Temps (heures)',ylabel='Température(°K)',titre= f'différence entre Euler et Runge avec h = {h_de_test[i]}')
 def question_3_4():
     '''Fonction qui dessine des graphiques de la différence entre la résolution par Euler et par Runge-Kutta pour estimer leur convergence l'une vers l'autre'''
@@ -316,7 +367,7 @@ def dessineDesCycles(cycles,num_du_scenario):
     dessinemoassa(t,T,['T_room','T_t','T_cc','T_c1','T_c2'],xlabel='Temps (heures)',ylabel='Température(°K)',titre= f'Euler: scénario {num_du_scenario}')
 
 def question_3_5():
-    '''fonction qui va dessiner le graphe tes températures d'une journée juesqu'à arriver à un état staionnaire'''
+    '''fonction qui va dessiner le graphe tes températures d'une journée jusqu'à arriver à un état staionnaire'''
     jours,T_2 = cycles_apres_convergence(T0, FenetreDeTemps,0.01)
     plt.plot(np.arange(len(T_2))*h,T_2)
 
