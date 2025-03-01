@@ -9,7 +9,6 @@ from SimTabsFinal import calculTemperaturesEuler,kelvin
 
 
 def Trouver_T_max(delta_t, T_d_max):
-
     """
     Fonction qui calcule le maximum de température de confort d'un cycle (avec un delta T donné)
     
@@ -25,8 +24,8 @@ def Trouver_T_max(delta_t, T_d_max):
     
     - Différence entre Tmax obtenu et Tmax souhaité.
     """
-    
-    t, T = calculTemperaturesEuler([0, 24], kelvin(np.array([15, 15, 15, 15, 15])),  0.01,num_du_scenario = 4, delta_t = delta_t)
+
+      t, T = calculTemperaturesEuler([0, 24], kelvin(np.array([15, 15, 15, 15, 15])),  0.01,num_du_scenario = 4, delta_t = delta_t)
     T_confort = (T[0, :] + T[4, :]) / 2  # T_room = T[0], T_c2 = T[4]
     T_max = np.max(T_confort)
     return (T_max ,t,T_confort)
@@ -39,16 +38,20 @@ def question_4_1(delta_t):
     plt.plot(t,T_confort,label= "prout")
     plt.legend( loc='best')
     plt.show()  
-    
 
 #______________________________________________________________________________________________________#
 #question 4.2
 
-def recherche_delta_t(T_max_d,x0,xf,tol = 0.5e-7):
+def recherche_delta_t(T_max_d, 0 ,24 ,tol = 0.5e-7):
     
-    f_difference = lambda deltaT: Trouver_T_max(deltaT) - T_max_d 
-    delta_t  = bissection(f_difference, 0 , 24 , 0.5e-7, max_iter=54)
-    return delta_t
+ f_difference = lambda deltaT: T_max(deltaT) - T_max_d 
+    '''''
+    fonction qui fait la différence entre T_max qui varie en fonction de delta et T_max_d qui est choisis abritrairement, il faut en 
+    rechercher la racine pour pouvoir trouver delta_t
+    '''''
+ delta_t  = bissection(f_difference, 0 , 24 , tol=tol, max_iter=54)
+ return delta_t
+
 
 '''''
 
