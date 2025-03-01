@@ -4,7 +4,8 @@ import numpy as np
 from SimTabsFinal import calculTemperaturesEuler,kelvin,celsius,cycles_apres_convergence
 
 def fonctionzero():
-    plt.plot(np.arange(24),np.zeros(24))
+    '''fonction qui va plot y = 0 sur le graphique'''
+    plt.plot(np.arange(25),np.zeros(25))
 
 #______________________________________________________________________________________________________#
 # question 4.1
@@ -49,7 +50,7 @@ def question_4_1(delta_t,T_max_d):
 #question 4.2
 
 def recherche_delta_t (T_max_d, intervalle = [0,24], tol = 0.5e-7, T0 = kelvin(np.array([15, 15, 15, 15, 15]))):
-    
+    '''fonction qui va rechercher le delta_t tel que l'on ne dépassera jamais T_max_d sur un cycle de 24h'''
     f_difference = lambda deltaT: T_max(deltaT, T0)[0] - T_max_d 
     '''
     fonction qui fait la différence entre T_max qui varie en fonction de delta et T_max_d qui est choisis abritrairement, il faut en 

@@ -75,7 +75,6 @@ def scenario3(t, delta_t = None):
     return isOn
 def scenario4(t, delta_t =None ):
     if delta_t == None: delta_t = 0 #Par défaut zéro...
-    
     if 0<= t <=4 :
         isOn = 2 # refroidit
     elif 4<t<= (4+ delta_t):
@@ -84,7 +83,8 @@ def scenario4(t, delta_t =None ):
         isOn = 1 # éteint
     return isOn
 def scenario(t,num,delta_t = None): # delta_t = None définit s'il y a un argument supplémentaire (delta_t)
-    '''on a défini 4 scénarios, cette fonction peut nous définir lequel on va utiliser pour notre fonction:
+    '''
+    on a défini 4 scénarios, cette fonction peut nous définir lequel on va utiliser pour notre fonction:
     
     num -> numéro du scénario
     
@@ -199,10 +199,11 @@ def calculTemperaturesIVP(FenetreDeTemps, T0, rtol, t_eval = None):
     
     rtol -> tolérance de résolution ( à quoi on doit s'attendre comme différence avec la véritable valeur)
 
-    paramètre t_eval -> paramètre pour forcer l'évaluation aux points de Euler pour pouvoir comparer à des t identiques. On pourrait interpoler mais je sais pas trop
+    t_eval -> paramètre pour forcer l'évaluation aux points de Euler pour pouvoir comparer à des t identiques. On pourrait interpoler mais je sais pas trop
     '''
     solution = scp.integrate.solve_ivp(odefunction, FenetreDeTemps, T0, rtol= rtol,t_eval = t_eval) # forcer d'évaluer aux valeurs de t de Euler pour le dernier paramètre si on veut comparer Solve_IVP et Euler
     return[solution.t, solution.y]
+
 def question_3_3(num_du_scenario = 1):
     t,T = calculTemperaturesIVP(FenetreDeTemps,T0,10e-10)
     dessinemoassa(t,T,['T_room','T_t','T_cc','T_c1','T_c2'],xlabel='Temps (heures)',ylabel='Température(°K)',titre= f'IVP: scénario {num_du_scenario}')
@@ -227,6 +228,7 @@ def diff_entre_Euler_et_IVP():
         print(f'T1 est de dimensions: {T1.shape} et T2 est de dimensions: {T2.shape}')
         dessinemoassa(t_euler,T,['T_room','T_t','T_cc','T_c1','T_c2'],xlabel='Temps (heures)',ylabel='Température(°K)',titre= f'différence entre Euler et Runge avec h = {h_de_test[i]}')
 def question_3_4():
+    '''Fonction qui dessine des graphiques de la différence entre la résolution par Euler et par Runge-Kutta pour estimer leur convergence l'une vers l'autre'''
     diff_entre_Euler_et_IVP() 
 
 
@@ -234,12 +236,15 @@ def question_3_4():
 #question 3.5
 
 def cycles_apres_convergence(T0, FenetreDeTemps, h, tol=0.01, max_jours=30):
-    '''fonction qui va calculer itérativement chaque jour et va voir  à partir de quand la température se stabilise entre les jours.
+    '''
+    fonction qui va calculer itérativement chaque jour et va voir à partir de quand la température se stabilise entre les jours.
     
     IN: 
 
     T0 -> conditions initiales (array dim(5,1))
+
     FenetreDeTemps -> durée d'un cycle
+
     '''
     # calculer les 2 premiers jours
     journee_pas = round((FenetreDeTemps[1]-FenetreDeTemps[0])/h)
@@ -271,7 +276,6 @@ def calculCycles(cycles,T0,FenetreDeTemps,h):
 
     Fonction qui calcule un nombre de cycles de chauffe (sur plusieurs jours potentiellement) et qui retourne des données plottables. avec le calcul de températures par Euler
     
-    ======
     IN: 
 
     cycles: nombre de cycles d'évaluation (int)
@@ -282,7 +286,6 @@ def calculCycles(cycles,T0,FenetreDeTemps,h):
     
     h: intervalle entre les instants de calcul de température (float64)
 
-    ======
     OUT: 
     
 
