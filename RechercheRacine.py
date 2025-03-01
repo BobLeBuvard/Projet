@@ -14,20 +14,19 @@ def hasRoots(f, x0,x1,tol):
     '''vérifie si la fonction possède les conditions nécessaires pour pouvoir trouver les racines: 
     -intervertit les bornes si elles sont inversées
     -vérifie si les bornes sont bien de signe opposé'''
-    if (f(x0) * f(x1) > 0) or (tol == 0): # le produit des images est négatif si ils possèdent une racine entre x0 et x1 car de signe opposé (règle de l'étau) Pas bon non plus si on veut une tolérance nulle au risque de diviser par zéro
+    # Vérification des conditions
+    if (f(x0) * f(x1) > 0) or (tol == 0):
         return [1984, 1]
-
-    # cas de base où x0 ou x1 sont racine
-    elif(f(x0) == 0 ):
-        return[x0,0]
-    elif(f(x1) == 0) :
-        return[x1,0]
-
-    if x1<x0: #optionnel si on se goure et que x0>x1 (bornes inversées)
-        x1,x0 = x0,x1
-        #Le prof demande un message d'erreur ou pas ? décommenter la ligne suivante si c'est le cas, et supprimer la ligne au dessus
-        # return [1984,1]
-
+    elif f(x0) == 0:
+        return [x0, 0]
+    elif f(x1) == 0:
+        return [x1, 0]
+    
+    if x1 < x0:
+        x1, x0 = x0, x1
+    
+    # Ajoute un return par défaut pour éviter None
+    return [1984, 0] 
     
 def secante(f, x0, x1, tol = 0.5e-7, max_iter=50):
     '''

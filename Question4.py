@@ -1,15 +1,16 @@
 from SimTABS import calculTemperaturesEuler
 import math
-from RechercheRacine import bissection
+import matplotlib.pyplot as plt
+from RechercheRacine import bissection,secante
 import numpy as np
-from SimTabsFinal import calculTemperaturesEuler,kelvin
+from SimTabsFinal import calculTemperaturesEuler,kelvin,celsius
 
 #______________________________________________________________________________________________________#
 # question 4.1
 
 
 
-def T_max(delta_t, T_d_max):
+def T_max(delta_t):
     """
     Fonction qui calcule le maximum de température de confort d'un cycle (avec un delta T donné)
     
@@ -28,32 +29,35 @@ def T_max(delta_t, T_d_max):
 
     t, T = calculTemperaturesEuler([0, 24], kelvin(np.array([15, 15, 15, 15, 15])),  0.01,num_du_scenario = 4, delta_t = delta_t)
     T_confort = (T[0, :] + T[4, :]) / 2  # T_room = T[0], T_c2 = T[4]
-    '''Ici on fait des opérations matricielles. 
-    On crée une array T_confort avec dedans la température optimale pour chaque t de sortie de calculTemperaturesEuler()
-    en gros pour chaque élément de T on va aller prendre la valeur et on va l'additionner avec la même valeur pour T_c2
 
-    c'est équivalent à :
-    T_confort = zeros_like(T)
-    for i in range(t):
-        T_confort[i] = (T[0][i] + T[4][i])/2
-        
-    '''
-    T_max = np.max(T_confort)
-    return T_max - T_d_max
+    MAX = np.max(T_confort)
+    return MAX,t,T_confort
 
+def question_4_1(delta_t):
+    MAX,t,T_confort = T_max(delta_t)
+    print(celsius(MAX))
+    plt.xlabel("température optimale", fontsize = 8) # Labélisation de l'axe des abscisses (copypaste du tuto)
+    plt.ylabel("temps (24h)", fontsize = 8) # Labélisation de l'axe des ordonnées (copypaste du tuto)
+    plt.title(label = f'Température de confort sur 24h -> delta_t = {delta_t}')
+    plt.plot(t,celsius(T_confort),label= "prout")
+    plt.legend( loc='best')
+    plt.show()
 
 
 #______________________________________________________________________________________________________#
 #question 4.2
 
-def recherche_delta_t(T_max_d, 0 ,24 ,tol = 0.5e-7):
+def recherche_delta_t (T_max_d, intervalle = [0,24], tol = 0.5e-7):
     
-    f_difference = lambda deltaT: T_max(deltaT) - T_max_d 
+    f_difference = lambda deltaT: T_max(deltaT)[0] - T_max_d 
     '''''
     fonction qui fait la différence entre T_max qui varie en fonction de delta et T_max_d qui est choisis abritrairement, il faut en 
     rechercher la racine pour pouvoir trouver delta_t
     '''''
-    delta_t  = bissection(f_difference, 0 , 24 , tol=tol, max_iter=54)
+    delta_t ,statut = bissection(f_difference,intervalle[0],intervalle[1], tol=tol, max_iter=54)
+    if statut !=0 :
+        print('erreur')
+        return(-1)
     return delta_t
 
 
@@ -95,17 +99,18 @@ def Recherchede_Delta_d(Td_max, intervalle, T0, h, G_interp):
 '''
 
 #methode de la sécante
-def Recherchede_Delta_d(Td_max, intervalle, T0, h, G_interp):
+def Recherchede_Delta_T(Td_max, intervalle, T0, h, G_interp):
     """Trouve la durée Δt pour atteindre Tmax = Td_max sur 24h en utilisant la méthode de la sécante."""
-    def erreur_delta(dt):
+    def delta_T():
         return T_max(intervalle, T0, h, G_interp) - Td_max
     
-    dt_opt, statut = secante(erreur_delta, 1, 10, 1e-2)
+    dt_opt, statut = secante( 0, 24, 1e-2 )
     if statut == 0:
         return dt_opt
     else:
         print("Échec de la recherche de Δt")
         return None
-    
+
+
 #______________________________________________________________________________________________________#
 # question 4.3
