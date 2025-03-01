@@ -2,7 +2,7 @@
 
 import numpy as np
 from config import * 
-import SimTABS
+import SimTABS_old
 import math
 from Question4 import T_max
 from RechercheRacine import bissection,secante
@@ -24,7 +24,7 @@ def convergeEfficace(h, T0, tolerance, temp=0):
     nextDay = round(24 / h)  # Nombre de pas de temps dans 24h
 
     # Calcul des 2 premiers jours
-    t, T = SimTABS.calculCycles(2, T0, FenetreDeTemps, h)
+    t, T = SimTABS_old.calculCycles(2, T0, FenetreDeTemps, h)
 
     # Stocker les premières valeurs
     T_Total = np.copy(T)
@@ -46,7 +46,7 @@ def convergeEfficace(h, T0, tolerance, temp=0):
         print(f"Jour {j+2}: pas encore de convergence")
 
         # Calcul du cycle suivant
-        t, T_add = SimTABS.calculCycles(1, T[:, -1], FenetreDeTemps, h)
+        t, T_add = SimTABS_old.calculCycles(1, T[:, -1], FenetreDeTemps, h)
 
         # Mise à jour des matrices
         T_Total = np.concatenate((T_Total, T_add), axis=1)

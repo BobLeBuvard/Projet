@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 from RechercheRacine import bissection
 import numpy as np
-from SimTabsFinal import calculTemperaturesEuler,kelvin,celsius,cycles_apres_convergence,dessinemoassa, debug
+from SimTABS import calculTemperaturesEuler,kelvin,celsius,cycles_apres_convergence,dessinemoassa, debug
 
 def fonctiondroite(hauteur):
     '''fonction qui va plot y = 0 sur le graphique'''
