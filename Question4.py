@@ -117,3 +117,28 @@ def Recherchede_Delta_T(Td_max, intervalle, T0, h, G_interp):
 
 #______________________________________________________________________________________________________#
 # question 4.3
+
+
+
+
+def temperature_bureau(delta_t):
+ delta_t = delta_t
+ t, T = calculTemperaturesEuler([8, 19], kelvin(np.array([15, 15, 15, 15, 15])),  0.01,num_du_scenario = 4, delta_t = delta_t)
+ T_confort = (T[0, :] + T[4, :]) / 2  # T_room = T[0], T_c2 = T[4]
+
+ return T_confort
+
+
+def verification_EN15251(T_confort):
+ Norme_respectee = True
+ for i in range(len(T_confort))
+     if  not 19.5 < T_confort[i] < 24
+     norme_respectee  False
+     break
+ if norme_respectee:
+    print("La norme EN15251 est respectée.")
+else:
+    print("La norme EN15251 n'est pas respectée.")
+
+
+ 
