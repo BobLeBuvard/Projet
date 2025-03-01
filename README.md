@@ -24,8 +24,8 @@ OVERLEAF: ME MP POUR LE LIEN
 Coucou de Louis, la bise ! 
 
 CURRENT advencement:
-#question 1.1 ?
-#question 1.2 ?
+#question 1.1 OK
+#question 1.2 OK
 
 #question 2.0 OK
 
@@ -37,8 +37,9 @@ CURRENT advencement:
 #question 3.6 OK
 
 #question 4.1 OK
-#question 4.2 NON
-#question 4.3 NON
+#question 4.2 OK
+#question 4.3 OK
 
+#TODO - > dans Question4 et SimTABS +mAj de l'index
 #rapport      ChatGPT
 
