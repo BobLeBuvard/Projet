@@ -3,7 +3,7 @@ import math
 import matplotlib.pyplot as plt
 from RechercheRacine import bissection,secante
 import numpy as np
-from SimTabsFinal import calculTemperaturesEuler,kelvin,celsius
+from SimTabsFinal import calculTemperaturesEuler,kelvin,celsius,converge_fin_journee, calculCycles
 
 def fonctionzero():
     plt.plot(np.arange(24),np.zeros(24))
@@ -104,14 +104,25 @@ def Recherchede_Delta_d(Td_max, intervalle, T0, h, G_interp):
 
 
 
+#EN15251 est une array contenant t0 et tf et Tmin et Tmax -> [8,19,19.5,24]
 
-
-def verification_EN15251(delta_t):
+def verification_EN15251(delta_t,EN15251):
     MAX,t,T_max_arr = T_max(delta_t,no_max = True)
     T_confort = T_max_arr
     for i in range(len(t)):
-        if 8<= t[i]<=  19 and not 19.5 < T_confort[i] < 24: 
+        if EN15251[0]<= t[i]<=  EN15251[1] and not EN15251[2] < T_confort[i] < EN15251[3]: 
             print("La norme EN15251 n'est pas respectée.")
             return False
     print("La norme EN15251 est respectée.")
     return True
+
+def question_4_3(T_max_d):
+    t,T = calculCycles(10,kelvin(np.array([15,15,15,15,15])), [0,24],0.01)
+    convergenceArray,has_converged = converge_fin_journee(T,0.01,0.01)
+    if has_converged == None:
+        print("l'intervalle de jours de test est trop petit pour avoir le temps de converger, calculer plus de cycles")
+        return(-1)
+    
+    delta_t = recherche_delta_t(T_max_d)
+    verifie_il = verification_EN15251(delta_t)
+    return(verifie_il)

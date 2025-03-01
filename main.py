@@ -79,11 +79,3 @@ def converge(h, T_total,tolerance):
             return diff 
     print("il n'y a pas eu convergence sur l'intervalle.")
     return diff
-
-def T_confort_max(FenetreDeTemps, T0, h):
-    while(delta_t <24):
-        delta_t += 0.5
-        t, T = calculTemperaturesEuler(FenetreDeTemps, T0, h )
-        for i in range(t): #tester pour tous les éléments de T
-            if not EstTemperatureOK(i,T[0],T[4]): 
-                break

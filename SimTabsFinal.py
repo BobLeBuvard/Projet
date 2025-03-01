@@ -302,10 +302,11 @@ def converge_fin_journee(T_total, tolerance,h):
 
         if diff[i] <= tolerance:
             print(f"a convergé après {i+2} jours")
-            return diff  # On arrête dès qu'on a une convergence
+            return diff, i+2  # On arrête dès qu'on a une convergence
 
     print("il n'y a pas eu convergence sur l'intervalle.")
     return diff
+
 def dessineDesCycles(cycles,num_du_scenario):
     t,T = calculCycles(cycles,T0,FenetreDeTemps,0.01)
     dessinemoassa(t,T,['T_room','T_t','T_cc','T_c1','T_c2'],xlabel='Temps (heures)',ylabel='Température(°K)',titre= f'Euler: scénario {num_du_scenario}')
