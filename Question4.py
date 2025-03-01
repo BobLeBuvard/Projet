@@ -1,10 +1,8 @@
 import math
 import matplotlib.pyplot as plt
-from RechercheRacine import hasRoots
 from RechercheRacine import bissection
 import numpy as np
-from SimTabsFinal import calculTemperaturesEuler,dessinemoassa,kelvin
-
+from SimTabsFinal import calculTemperaturesEuler,kelvin
 #______________________________________________________________________________________________________#
 # question 4.1
 
@@ -35,7 +33,7 @@ def Trouver_T_max(delta_t, T_d_max):
 
 def question_4_1(delta_t):
     MAX,t,T_confort = Trouver_T_max(delta_t,kelvin(24.5))
-    plt.xlabel("température optimale moins T_d_max(°K)", fontsize = 8) # Labélisation de l'axe des abscisses (copypaste du tuto)
+    plt.xlabel("température optimale", fontsize = 8) # Labélisation de l'axe des abscisses (copypaste du tuto)
     plt.ylabel("temps (24h)", fontsize = 8) # Labélisation de l'axe des ordonnées (copypaste du tuto)
     plt.title(label = f'Température de confort sur 24h -> delta_t = {delta_t}')
     plt.plot(t,T_confort,label= "prout")
