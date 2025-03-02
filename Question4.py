@@ -12,7 +12,7 @@ def fonctiondroite(hauteur):
 
 
 def T_max(delta_t, no_max = False, T0 = None):
-    """
+     """
     Fonction qui calcule le maximum de température de confort d'un cycle (avec un delta T donné)
     
     Fonction à annuler : T_max(deltaT) - T_dmax 
@@ -53,21 +53,21 @@ def question_4_1(delta_t,T_max_d):
 #question 4.2
 
 def recherche_delta_t (T_max_d, intervalle = [0,24], tol = 0.5e-7, T0 = kelvin(np.array([15, 15, 15, 15, 15]))):
-    '''fonction qui va rechercher le delta_t tel que l'on ne dépassera jamais T_max_d sur un cycle de 24h'''
-    #TODO: ajouter les in et out de la fontion (avec leurs type associé (int, float, array, list, etc...)) sous la forme :
-    '''
-    EXEMPLE
+        '''
+        fonction qui va rechercher le delta_t tel que l'on ne dépassera jamais T_max_d sur un cycle de 24h
 
-    IN:
+        IN:
     
-    T_max -> JESAISPAS
+        T_max_d (float)--> Température maximale désirée en Kelvin.
+        intervalle (list[float, float])--> Intervalle de recherche pour delta_t (par défaut [0, 24]).
+        tol (float)--> Tolérance pour la convergence de la méthode de la bissection (par défaut 0.5e-7).
+        T0 (numpy.ndarray)--> Tableau numpy des températures initiales en Kelvin (par défaut [288.15, 288.15, 288.15, 288.15, 288.15]).
 
-    OUT:
+        OUT:
 
-    delta_t -> JE SAIS PAS NON PLUS
-
-    Espacer entre les lignes pour une mise à la ligne. 
-    '''
+        delta_t (float)--> Période delta_t nécessaire pour ne pas dépasser T_max_d.
+        -1 (int)--> Code d'erreur si la méthode de la bissection échoue.
+        '''
 
 
     f_difference = lambda deltaT: T_max(deltaT, T0)[0] - T_max_d 
@@ -76,7 +76,18 @@ def recherche_delta_t (T_max_d, intervalle = [0,24], tol = 0.5e-7, T0 = kelvin(n
     rechercher la racine pour pouvoir trouver delta_t
     '''
     delta_t ,statut = bissection(f_difference,intervalle[0],intervalle[1], tol=tol, max_iter=54)
-    #TODO : expliciter les messages d'erreur -> des messages clairs
+     '''
+    if statut == -1:
+        print('Erreur : La méthode de la bissection n\'a pas convergé après 54 itérations.')
+        return -1
+    elif statut == -2:
+        print('Erreur : La fonction ne change pas de signe dans l\'intervalle donné. Impossible de trouver une racine.')
+        return -1
+    elif statut != 0:
+        print('Erreur inconnue lors de la recherche de la racine.')
+        return -1
+
+    return delta_t'''
     if statut !=0 : 
         print('erreur, problème de racine') 
         return(-1)
