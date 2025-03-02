@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import scipy as scp
 from PerteEtGain import g
 
-#TODO: renommer correctement la variable isOn en "heating_mode" car isOn sous entendrait un booléen, ce qui n'est pas le cas
+
 def kelvin(temp):
     return (temp+273.15) 
 def celsius(temp):
@@ -38,8 +38,26 @@ R_s_moins_c2 = 0.183
 debug = True
 
 def dessinemoassa(t,T,index,xlabel = None, ylabel = None, titre= None ):
-    ''' fonction qui plotte le graphe de ce qu'on lui a donné.'''
-    #TODO: expliciter in et out avec le même format 
+    ''' fonction qui plotte le graphe de ce qu'on lui a donné.
+     IN: 
+    
+     t -> array d'instant de temps (float64), dim(1,...)
+    
+     T -> array des températures (dim (1,5)) dans l'ordre [T_room, T_t, T_cc, T_c1,T_c2]
+
+     index -> un array de titre de graphe (comme la fonction peut en dessiner plusieurs d'un coup)
+
+     xlabel -> nom de l'axe des abcisses, par défault = none, il n'y en a pas
+
+     ylabel -> nom de l'axe des ordonnés, par défault = none, il n'y en a pas
+
+     titre -> nom du graphique, par défault = none, il n'y en a pas
+
+     OUT:
+     Graphique déssiné
+    '''
+
+    #TODO: expliciter in et out avec le même format (à vérif)
     if debug:
         plt.xlabel(xlabel, fontsize = 8) # Labélisation de l'axe des abscisses (copypaste du tuto)
         plt.ylabel(ylabel, fontsize = 8) # Labélisation de l'axe des ordonnées (copypaste du tuto)
@@ -55,35 +73,35 @@ def dessinemoassa(t,T,index,xlabel = None, ylabel = None, titre= None ):
 def scenario1(t, delta_t = None):
     '''4h de refroidissement et puis le chauffage est coupé'''
     if 0<= t <=4 :
-        isOn = 2 #refroidit
+        heating_mode = 2 #refroidit
     else:
-        isOn = 1 #éteint
-    return isOn
+        heating_mode = 1 #éteint
+    return heating_mode
 def scenario2(t, delta_t = None):
     ''' 4h de refroidissement,10h de chauffe et puis le chauffage est coupé '''
     if 0<= t <=4 :
-        isOn = 2 # refroidit
+        heating_mode = 2 # refroidit
     elif 4<t<=13:
-        isOn = 3 #chauffe
+        heating_mode = 3 #chauffe
     else:
-        isOn = 1 # éteint
-    return isOn
+        heating_mode = 1 # éteint
+    return heating_mode
 def scenario3(t, delta_t = None): 
     '''12h de chauffe et puis 12h de refroidissement'''
     if 0<= t <=12 :
-        isOn = 3 #chauffe
+        heating_mode = 3 #chauffe
     else:
-        isOn = 2 #refroidit
-    return isOn
+        heating_mode = 2 #refroidit
+    return heating_mode
 def scenario4(t, delta_t =None ):
     if delta_t == None: delta_t = 0 #Par défaut zéro...
     if 0<= t <=4 :
-        isOn = 2 # refroidit
+        heating_mode = 2 # refroidit
     elif 4<t<= (4+ delta_t):
-        isOn = 3 #chauffe
+        heating_mode = 3 #chauffe
     elif((4+delta_t)<t<=24 ):
-        isOn = 1 # éteint
-    return isOn
+        heating_mode = 1 # éteint
+    return heating_mode
 def scenario5(t,delta_t = None):
     '''
     En fonction d'une variable on peut créer un scénario de chauffe customisé
@@ -109,7 +127,7 @@ def scenario5(t,delta_t = None):
         default_mode,heatingcycle = delta_t
     else:
         print("il y a un problème de delta_t: delta_t n'est pas celui attendu (tuple) contenant un int et une flat_array")
-        isOn = False
+        heating_mode = False
     if heatingcycle!= None:
         matrice = heatingcycle.reshape(3, heatingcycle.shape/3)
         '''
@@ -121,8 +139,8 @@ def scenario5(t,delta_t = None):
         '''
         for i in range(np.shape[1]): # nombre de colonnes
             if matrice[1,i] <= t <= matrice[2,i]:
-                isOn = matrice[0,i]
-                return isOn
+                heating_mode = matrice[0,i]
+                return heating_mode
     #on a pas trouvé de valeur pour laquelle on veut chauffer ou refroidir.
     return default_mode
             
@@ -142,20 +160,20 @@ def scenario(t,num,delta_t = None): # delta_t = None définit s'il y a un argume
 
     return scenarios[num-1](t,delta_t = delta_t)
 
-def T_w(isOn,T_t):
+def T_w(heating_mode,T_t):
     '''
     prend en entrée 1 , 2 ou 3
 
-    isOn == 1 -> éteint (vaut T_t)
+    heating_mode == 1 -> éteint (vaut T_t)
 
-    isOn == 2 -> refroidit (vaut 18°C)
+    heating_mode == 2 -> refroidit (vaut 18°C)
     
-    isOn == 3 -> en mode chauffe (vaut 28°C)
+    heating_mode == 3 -> en mode chauffe (vaut 28°C)
     
     '''
-    if isOn == 3:
+    if heating_mode == 3:
         return kelvin(28)
-    elif isOn == 2: 
+    elif heating_mode == 2: 
         return kelvin(18)
     else:
         return T_t #le dernier terme est annulé donc il faut que T_t - T_w = 0 -> T_w = T_t
@@ -164,7 +182,7 @@ def T_w(isOn,T_t):
 #______________________________________________________________________________________________________#
                                          #question 3.1
 def odefunction(t, T,num_du_scenario = 1, delta_t = None,Force_heating = False):
-    #TODO: mettre à jour le docstring avec les paramètres
+    #TODO: mettre à jour le docstring avec les paramètres (maj faite, à vérif)
     '''retourne une array contenant les cinq dérivées selon leur formule
     
     IN: 
@@ -172,6 +190,13 @@ def odefunction(t, T,num_du_scenario = 1, delta_t = None,Force_heating = False):
     t -> instant de temps (float64)
     
     T -> array des températures (dim (1,5)) dans l'ordre [T_room, T_t, T_cc, T_c1,T_c2]
+
+    delta_t = ,intervalle de temps (float64) supplémentaire pour le scénario 4, par défault n'est pas utilisé (défini) = none
+
+    num_descenario -> scenario choisi, de 1 à 5 (5 = debug), par défaut = 1
+
+    Force_heating -> bool (flase or true), default = false, si on met ce paramètre, on peut dire si on veut chauffer, refroidire ou couper sur le cycle complet. (on peut aussi le faire avec le scénario 5 et delta_t = )
+
 
     OUT:
     dT -> dérivées des températures à l'instant t (dim(5))
@@ -185,9 +210,9 @@ def odefunction(t, T,num_du_scenario = 1, delta_t = None,Force_heating = False):
                     
     #CALCUL DE dT_t 
 
-    isOn = scenario(t, num_du_scenario, delta_t=delta_t)
-    if Force_heating != False: isOn = Force_heating
-    dT[1] = (1/C[1])*( (-1/R_x)*(T[1]-T[2]) - (1/R_w)*(T[1] - T_w(isOn, T[1])) )
+    heating_mode = scenario(t, num_du_scenario, delta_t=delta_t)
+    if Force_heating != False: heating_mode = Force_heating
+    dT[1] = (1/C[1])*( (-1/R_x)*(T[1]-T[2]) - (1/R_w)*(T[1] - T_w(heating_mode, T[1])) )
 
     #CALCUL DE dT_cc
     dT[2] = (1/C[2])*( (-1/(R_cc_moins_c1))*(T[2]-T[3])- (1/R_x)*(T[2]-T[1]) + (1/R_c2_moins_cc)*(T[4] - T[2]))
@@ -197,7 +222,6 @@ def odefunction(t, T,num_du_scenario = 1, delta_t = None,Force_heating = False):
 
     #CALCUL DE dT_c2 
     dT[4] = (1/C[4])* ((-1/R_c2_moins_cc)*(T[4]-T[2])+ (1/(R_r_moins_s + R_s_moins_c2))*(T[0] - T[4]))
-    
 
     return(dT*3600)
 
@@ -206,7 +230,7 @@ def odefunction(t, T,num_du_scenario = 1, delta_t = None,Force_heating = False):
 #question 3.2 
 
 def calculTemperaturesEuler(FenetreDeTemps, T0, h,num_du_scenario = 1, delta_t = None,Force_heating = False):
-    #TODO: mettre à jour le docstring avec les paramètres
+    #TODO: mettre à jour le docstring avec les paramètres (à vérif)
     '''
     Fonction qui résoud une équation différentielle par la méthode d'Euler:
 
@@ -214,11 +238,22 @@ def calculTemperaturesEuler(FenetreDeTemps, T0, h,num_du_scenario = 1, delta_t =
 
     FenetreDeTemps -> array de 2 éléments: le début (0) et la fin de la fenêtre de temps de calcul (généralement 24 pour 24h) de dimensions 1
 
-    T0 -> conditions initiales (arrray de dimensions (5,0) ) 
+    T0 -> conditions initiales (arrray de dimensions (5,1) ) 
     
     h -> pas de temps nécessaire à la résolution avec Euler (entier)
+   
+    delta_t -> temps (float64) supplémentaire pour le scénario 4, par défaut n'est pas utilisé (défini) = none
+
+    num_descenario -> scenario choisi, de 1 à 5 (5 = debug), par défaut le 1 est utilisé
+
+    Force_heating -> bool (flase or true), default = false, si on met ce paramètre, on peut dire si on veut chauffer, refroidire ou couper sur le cycle complet. (on peut aussi le faire avec le scénario 5 et delta_t = )
+
+    OUT:
     
-    Force_heating -> si on met ce paramètre, on peut dire si on veut chauffer, refroidire ou couper sur le cycle complet. (on peut aussi le faire avec le scénario 5 et delta_t = )
+    t -> un array des temps, dim(1,24/h)
+
+    T -> un array des température correspondantes aux temps utilsiés, dim(5,24/h)
+
     '''
     t0, tf = FenetreDeTemps
 
