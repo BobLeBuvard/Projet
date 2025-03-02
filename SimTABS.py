@@ -197,6 +197,7 @@ def odefunction(t, T,num_du_scenario = 1, delta_t = None,Force_heating = False):
 
     #CALCUL DE dT_c2 
     dT[4] = (1/C[4])* ((-1/R_c2_moins_cc)*(T[4]-T[2])+ (1/(R_r_moins_s + R_s_moins_c2))*(T[0] - T[4]))
+    
 
     return(dT*3600)
 
