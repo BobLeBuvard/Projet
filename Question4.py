@@ -32,8 +32,9 @@ def T_max(delta_t,  T0 = kelvin(np.array([15,15,15,15,15])) , no_max = False):
     T_confort = (T[0, :] + T[4, :]) / 2  # T_room = T[0], T_c2 = T[4]
     if no_max == False: 
         MAX = np.max(T_confort)
+        
         return MAX, t, T_confort#si on ne veut pas de max --> no_max=True ben on ne le calcule pas.
-    return t,T_confort
+    return None,t,T_confort
 
 def question_4_1(delta_t,T_max_d):
     '''
@@ -89,20 +90,10 @@ def recherche_delta_t (T_max_d, intervalle = [0,24], tol = 0.5e-7, T0 = kelvin(n
     rechercher la racine pour pouvoir trouver delta_t
     '''
     delta_t ,statut = bissection(f_difference,intervalle[0],intervalle[1], tol=tol, max_iter=54)
-    '''
-    if statut == -1:
-        print('Erreur : La méthode de la bissection n\'a pas convergé après 54 itérations.')
-        return -1
-    elif statut == -2:
-        print('Erreur : La fonction ne change pas de signe dans l\'intervalle donné. Impossible de trouver une racine.')
-        return -1
-    elif statut != 0:
-        print('Erreur inconnue lors de la recherche de la racine.')
-        return -1
-
-    return delta_t'''
+    
     if statut !=0 : 
         print('erreur, problème de racine') 
+        print(statut)
         return(statut)
     return delta_t
 
@@ -119,22 +110,22 @@ def question_4_2(T_max_d):
 
 #EN15251 est une array contenant t0 et tf et Tmin et Tmax -> [8,19,19.5,24]
 EN15251 = np.array([8,19,19.5,24])
-def verification_EN15251(delta_t,EN15251):
-    MAX,t,T_max_arr = T_max(delta_t,no_max = True)
-    T_confort = T_max_arr
+def verification_EN15251(delta_t,EN15251,T0 = kelvin(np.array([15,15,15,15,15])) ):
+    MAX,t,T_confort  = T_max(delta_t,T0 = T0 ,no_max = True)
+    plt.plot(t,T_confort, label = 'température de confort')
     
     for i in range(len(t)):
         T_confort_i = T_confort[i]
         if (EN15251[0]<= t[i]<=  EN15251[1]):
-            if not(EN15251[2] < T_confort_i < EN15251[3]): 
+            if not(EN15251[2] < T_confort_i < EN15251[3]): #est ce que les extrémas sont pris avec ?
                 print("La norme EN15251 n'est pas respectée.")
                 return False
     print("La norme EN15251 est respectée.")
     return True
 
-def question_4_3(T_max_d,EN15251, T0 = kelvin(np.array([15, 15, 15, 15, 15]))):
-    h = 0.01
+def question_4_3(T_max_d, EN15251 = np.array([8,19,19.5,24]), T0 = kelvin(np.array([15, 15, 15, 15, 15]))):
     
+    h = 0.01
     FenetreDeTemps = [0,24]
     days_to_converge, T0_new = cycles_apres_convergence(T0,FenetreDeTemps,h) #T0_new est les conditions initiales du dernier jour
     if days_to_converge == None:
@@ -143,9 +134,10 @@ def question_4_3(T_max_d,EN15251, T0 = kelvin(np.array([15, 15, 15, 15, 15]))):
     delta_t = recherche_delta_t(T_max_d,T0 = T0_new)
     t,T = calculTemperaturesEuler(FenetreDeTemps,T0_new,h,num_du_scenario= 4,delta_t= delta_t) #calculer le dernier jour UNIQUEMENT POUR PLOT
     for i in range(2): 
-        fonctiondroite(EN15251[i])
-    dessinemoassa(t,celsius(T),['T_room','T_t','T_cc','T_c1','T_c2'],xlabel='temps (h)',ylabel='température (°C)',titre= 'températures au jour {days_to_converge}')
-    return verification_EN15251(delta_t,EN15251)
+        fonctiondroite(EN15251[i+2], label = ['température minimale','température maximale'][i])
+    #dessinemoassa(t,celsius(T),['T_room','T_t','T_cc','T_c1','T_c2'],xlabel='temps (h)',ylabel='température (°C)',titre= f'températures au jour {days_to_converge}')
+    plt.show()
+    return verification_EN15251(delta_t,EN15251,T0_new)
 
 
 '''commentaire supplémentaire: 
@@ -164,4 +156,18 @@ Ce qu'on pourrait faire par contre c'est à l'aide du paramètre delta_t et Forc
 en fonction des conditions du jour précédent, et faire un scénario adapté. Ensuite il faudrait d'ailleurs 
 
 
+'''
+
+
+'''
+
+OUI
+1) trouver un  delta_t qui est ok avec le premier jour
+2) vérifier la stabilisation
+3) vérifier si le dernier jour stabilisé est OK avec les conditions EN15251
+    
+NON    
+1) vérifie la convergence 
+2) on trouve le delta _t pour cette journée 
+3) vérifié les conditions    
 '''
