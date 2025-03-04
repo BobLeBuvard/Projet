@@ -202,7 +202,6 @@ def odefunction(t, T,num_du_scenario = 1, delta_t = None,Force_heating = False):
     dT -> dérivées des températures à l'instant t (dim(5))
 
     '''
-
     dT = np.zeros_like(T) # de même dimensions que T mais contient les dérivées
 
     #CALCUL DE dT_room
@@ -321,7 +320,7 @@ def question_3_4():
 #______________________________________________________________________________________________________#
 #question 3.5
 
-def cycles_apres_convergence(T0, FenetreDeTemps, h, tol=0.01, max_jours=30,Force_heating = False):
+def cycles_apres_convergence(T0, FenetreDeTemps, h,delta_t = 0,num_du_scenario = 1, tol=0.01, max_jours=30, Force_heating = False):
     '''
     fonction qui va calculer itérativement chaque jour et va voir à partir de quand la température se stabilise entre les jours.
 
@@ -331,15 +330,18 @@ def cycles_apres_convergence(T0, FenetreDeTemps, h, tol=0.01, max_jours=30,Force
 
     FenetreDeTemps -> durée d'un cycle
 
-    h = pas du calcul de la fonction (0.01)
+    h -> pas du calcul de la fonction (0.01)
 
-    tol = tolérance de convergence (par défault = 0.01), erreur maximum tolérée pour dire que les températures convergent
+    tol -> tolérance de convergence (par défault = 0.01), erreur maximum tolérée pour dire que les températures convergent
 
-    max_jour = Si ce nombre de jours est dépassé, la fonction s'arrête même si les températures n'ont pas convergé après x jours (30)
+    max_jour -> Si ce nombre de jours est dépassé, la fonction s'arrête même si les températures n'ont pas convergé après x jours (30)
     par défaut)
 
+    delta_t -> intervalle de temps de chauffe utile pour la question 4
+    
     Force_heating -> entier de 1 à 3 . 1 éteint, 2 refroidit et 3 chauffe. Par défaut on ne force pas le chauffage (ce pourquoi False)
-
+    
+    
 
     OUT :
 
@@ -349,7 +351,7 @@ def cycles_apres_convergence(T0, FenetreDeTemps, h, tol=0.01, max_jours=30,Force
     '''
     # calculer les 2 premiers jours
     journee_pas = round((FenetreDeTemps[1]-FenetreDeTemps[0])/h)
-    t,T = calculCycles(2,T0,FenetreDeTemps,h)
+    t,T = calculCycles(2,T0,FenetreDeTemps,h,delta_t = delta_t)
     T_total = np.copy(T)
     t_total = np.copy(t)
     for i  in range(max_jours-2):
@@ -359,14 +361,14 @@ def cycles_apres_convergence(T0, FenetreDeTemps, h, tol=0.01, max_jours=30,Force
             if debug:
                 for j in range(0,5,4):
                     plt.plot(t_total/(FenetreDeTemps[1]-FenetreDeTemps[0]),celsius(T_total[j]))
-                plt.title(label = "graphique de la température jusqu'à convergence")
+                plt.title(label = f"graphique de la température jusqu'à convergence (delta_t = {delta_t})")
                 plt.xlabel('nombre de cycles')
                 plt.ylabel('températures des objets')
                 plt.show()
             return i+2 , T_total[:,-(1+journee_pas)]  #retourne le nombre de jours et les conditions de l'avant dernier jour
             
         else:
-            t,T = calculTemperaturesEuler(FenetreDeTemps, T_total[:,-1] , h , Force_heating= Force_heating)
+            t,T = calculTemperaturesEuler(FenetreDeTemps, T_total[:,-1] , h ,num_du_scenario= num_du_scenario,delta_t = delta_t,Force_heating= Force_heating)
             #ajouter le dernier jour à T_total et t_total
             T_total = np.concatenate((T_total,T),axis = 1)
             t_total = np.concatenate((t_total,t+(i+2)*(FenetreDeTemps[1]-FenetreDeTemps[0])))
@@ -375,7 +377,7 @@ def cycles_apres_convergence(T0, FenetreDeTemps, h, tol=0.01, max_jours=30,Force
     return None, None
 
 
-def calculCycles(cycles,T0,FenetreDeTemps,h,Force_heating = False):
+def calculCycles(cycles,T0,FenetreDeTemps,h,delta_t = 0,Force_heating = False):
     '''
 
     Fonction qui calcule un nombre de cycles de chauffe (sur plusieurs jours potentiellement) et qui retourne des données plottables. avec le calcul de températures par Euler
@@ -404,7 +406,7 @@ def calculCycles(cycles,T0,FenetreDeTemps,h,Force_heating = False):
         if i > 0:
             t = t[:-1]
             T = T[:, :-1]
-        t, T = calculTemperaturesEuler(FenetreDeTemps, T0, h,Force_heating =Force_heating) #T0 est de dimensions [5,0]
+        t, T = calculTemperaturesEuler(FenetreDeTemps, T0, h,delta_t = delta_t, Force_heating =Force_heating) #T0 est de dimensions [5,0]
         T_Total = np.concatenate((T_Total,T), axis = 1) 
         
         t_Total = np.concatenate((t_Total,(t + ((FenetreDeTemps[1]-FenetreDeTemps[0])*i) )))
