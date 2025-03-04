@@ -34,8 +34,6 @@ def T_max(delta_t,  T0 = kelvin(np.array([15,15,15,15,15])) , no_max = False):
         MAX = np.max(T_confort)
         
         return MAX, t, T_confort#si on ne veut pas de max --> no_max=True ben on ne le calcule pas.
-    print(MAX)
-    print(no_max)
     return None,t,T_confort
 
 def question_4_1(delta_t,T_max_d):
@@ -65,7 +63,7 @@ def question_4_1(delta_t,T_max_d):
 
 #______________________________________________________________________________________________________#
 #question 4.2
-
+#TODO : ON A CHANGE LA TOLERANCE DE 0.5e-7 à 0.5e-4 --> CORRIGER DANS LA VERSION FINALE
 def recherche_delta_t (T_max_d, intervalle = [0,24], tol = 0.5e-4, T0 = kelvin(np.array([15, 15, 15, 15, 15])),no_max = False):
     '''
         fonction qui va rechercher le delta_t tel que l'on ne dépassera jamais T_max_d sur un cycle de 24h
@@ -119,7 +117,7 @@ def verification_EN15251(delta_t,EN15251,T0 = kelvin(np.array([15,15,15,15,15]))
         fonctiondroite(EN15251[i+2], label = ['température minimale','température maximale'][i])
     plt.title(label = "graphique de la température de confort pendant la dernière journée")
     plt.xlabel('heures de la journée (h)')
-    plt.ylabel('température (°C')
+    plt.ylabel('température (°C)')
     plt.show()
     for i in range(len(t)):
         T_confort_i = T_confort[i]
@@ -136,14 +134,13 @@ def question_4_3(T_max_d, EN15251 = np.array([8,19,19.5,24]), T0 = kelvin(np.arr
     FenetreDeTemps = [0,24]
     delta_t = recherche_delta_t(kelvin(T_max_d),T0 = T0) #OK
     print(f"on a trouvé un delta_t de {delta_t}")
+    question_4_1(delta_t, T_max_d)   #montrer le graphe du premier jour 
     days_to_converge, T0_new = cycles_apres_convergence(T0,FenetreDeTemps,h,delta_t= delta_t,num_du_scenario=4 ) #T0_new est les conditions initiales du dernier jour
     if days_to_converge == None:
         print("Les températures ne se sont pas stabilisées.")
         return -1
     plt.show()
-    # t,T = calculTemperaturesEuler(FenetreDeTemps,T0_new,h,num_du_scenario= 4,delta_t= delta_t) #calculer le dernier jour UNIQUEMENT POUR PLOT
-    # dessinemoassa(t,celsius(T),['T_room','T_t','T_cc','T_c1','T_c2'],xlabel='temps (h)',ylabel='température (°C)',titre= f'températures au jour {days_to_converge}')
-    
+
     return verification_EN15251(delta_t,EN15251,T0_new)
 
 
@@ -173,7 +170,7 @@ NON
 1) trouver un  delta_t qui est ok avec le premier jour
 2) vérifier la stabilisation
 3) vérifier si le dernier jour stabilisé est OK avec les conditions EN15251
-    
+'''    
 
 
 
