@@ -9,7 +9,6 @@ def hasRoots(f, x0,x1,tol):
     # Vérification des conditions
     fx0 = f(x0)
     fx1 = f(x1)
-    print (f'{fx0} {fx1}')
     if ( fx0 * fx1 > 0) or (tol == 0):
         return [1984, 1]
     elif fx0 == 0:

@@ -324,12 +324,27 @@ def question_3_4():
 def cycles_apres_convergence(T0, FenetreDeTemps, h, tol=0.01, max_jours=30,Force_heating = False):
     '''
     fonction qui va calculer itérativement chaque jour et va voir à partir de quand la température se stabilise entre les jours.
-    
+
     IN: 
 
     T0 -> conditions initiales (array dim(5,1))
 
     FenetreDeTemps -> durée d'un cycle
+
+    h = pas du calcul de la fonction (0.01)
+
+    tol = tolérance de convergence (par défault = 0.01), erreur maximum tolérée pour dire que les températures convergent
+
+    max_jour = Si ce nombre de jours est dépassé, la fonction s'arrête même si les températures n'ont pas convergé après x jours (30)
+    par défaut)
+
+    Force_heating -> entier de 1 à 3 . 1 éteint, 2 refroidit et 3 chauffe. Par défaut on ne force pas le chauffage (ce pourquoi False)
+
+
+    OUT :
+
+    Graphique des température sur la durée qui assure la convergence.
+
 
     '''
     # calculer les 2 premiers jours
@@ -337,13 +352,16 @@ def cycles_apres_convergence(T0, FenetreDeTemps, h, tol=0.01, max_jours=30,Force
     t,T = calculCycles(2,T0,FenetreDeTemps,h)
     T_total = np.copy(T)
     t_total = np.copy(t)
-    for i  in range(max_jours):
+    for i  in range(max_jours-2):
         if abs(T_total[0, -1] - T_total[0, -(1+journee_pas)]) <= tol:
             print(f"a convergé après {i+2} jours")
             
             if debug:
-                plt.plot(t_total,T_total)
-                plt.title(label= "graphique de la température jusqu'à convergence")
+                for j in range(0,5,4):
+                    plt.plot(t_total/(FenetreDeTemps[1]-FenetreDeTemps[0]),celsius(T_total[j]))
+                plt.title(label = "graphique de la température jusqu'à convergence")
+                plt.xlabel('nombre de cycles')
+                plt.ylabel('températures des objets')
                 plt.show()
             return i+2 , T_total[:,-(1+journee_pas)]  #retourne le nombre de jours et les conditions de l'avant dernier jour
             
@@ -351,13 +369,13 @@ def cycles_apres_convergence(T0, FenetreDeTemps, h, tol=0.01, max_jours=30,Force
             t,T = calculTemperaturesEuler(FenetreDeTemps, T_total[:,-1] , h , Force_heating= Force_heating)
             #ajouter le dernier jour à T_total et t_total
             T_total = np.concatenate((T_total,T),axis = 1)
-            t_total = np.concatenate((t_total,t))
+            t_total = np.concatenate((t_total,t+(i+2)*(FenetreDeTemps[1]-FenetreDeTemps[0])))
             print(f"n'a pas convergé après {i+2} jours")
     print(f"n'a pas convergé après {max_jours} , ajoutez plus de jours")
     return None, None
 
 
-def calculCycles(cycles,T0,FenetreDeTemps,h,Force_heating = None):
+def calculCycles(cycles,T0,FenetreDeTemps,h,Force_heating = False):
     '''
 
     Fonction qui calcule un nombre de cycles de chauffe (sur plusieurs jours potentiellement) et qui retourne des données plottables. avec le calcul de températures par Euler
@@ -368,7 +386,7 @@ def calculCycles(cycles,T0,FenetreDeTemps,h,Force_heating = None):
 
     T0: températures initiales sous forme d'array de dimensions(1,5) avec les éléments [T_room, T_t, T_cc, T_c1,T_c2]
     
-    FenetreDeTemps: durée d'un cycle sous forme d'array [t0,tf] (ex: [0,24] -> cycle de 24h)
+    FenetreDeTemps: durée d'un cycle sous forme d'array/liste [t0,tf] (ex: [0,24] -> cycle de 24h)
     
     h: intervalle entre les instants de calcul de température (float64)
 
@@ -377,8 +395,7 @@ def calculCycles(cycles,T0,FenetreDeTemps,h,Force_heating = None):
 
     t: temps d'évaluation (array de array dim(1) de longueur -> intervalle/h )
     
-    T: array de dimensions (5, cycles*h + cycles-1 ( souci de compter 2 fois la fin d'un cycle et le début d'un cycle suivant) ) -> pour 1 cycle avec h = 24 c'est (5,24+1)
-    ex: dim(5, 24000)
+    T: array de dimensions (5, cycles*h +1)
         '''
 
     T_Total = np.empty((5, 0))  # 5 lignes, 0 colonnes
@@ -403,8 +420,7 @@ def dessineDesCycles(cycles,num_du_scenario):
 
 def question_3_5():
     '''fonction qui va dessiner le graphe tes températures d'une journée jusqu'à arriver à un état staionnaire'''
-    jours,T_2 = cycles_apres_convergence(T0, FenetreDeTemps,0.01)
-    plt.plot( np.arange(len(T_2))*h ,T_2)
+    cycles_apres_convergence(T0, FenetreDeTemps,0.01)
 
 
 

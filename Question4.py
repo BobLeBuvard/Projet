@@ -3,9 +3,9 @@ from RechercheRacine import bissection
 import numpy as np
 from SimTABS import calculTemperaturesEuler,kelvin,celsius,cycles_apres_convergence,dessinemoassa, debug
 
-def fonctiondroite(hauteur):
+def fonctiondroite(hauteur, label = None):
     '''fonction qui va plot y = 0 sur le graphique'''
-    if debug: plt.plot(np.arange(25),np.zeros(25) + hauteur )
+    if debug: plt.plot(np.arange(25),np.zeros(25) + hauteur , label = label)
 
 #______________________________________________________________________________________________________#
 # question 4.1
@@ -32,23 +32,29 @@ def T_max(delta_t,  T0 = kelvin(np.array([15,15,15,15,15])) , no_max = False):
     T_confort = (T[0, :] + T[4, :]) / 2  # T_room = T[0], T_c2 = T[4]
     if no_max == False: 
         MAX = np.max(T_confort)
-        return t, T_confort#si on ne veut pas de max --> no_max=True ben on ne le calcule pas.
-    return MAX,t,T_confort
+        return MAX, t, T_confort#si on ne veut pas de max --> no_max=True ben on ne le calcule pas.
+    return t,T_confort
 
 def question_4_1(delta_t,T_max_d):
-
-    #TODO: Docstring de la fonction (description, commentaires)
     '''
+    
     fonction qui dessine le max de température de confort en apellant T_max et en plottant les températures adéquates.
+    
+    T_max_d en degrés celsius
+    
+    delta_t en heures
     
     '''
     MAX,t,T_confort = T_max(delta_t)
     if debug: print(celsius(MAX)) #print la température max sur l'intervalle en degrés celsius
     plt.xlabel("temps (24h)", fontsize = 8) # Labélisation de l'axe des ordonnées (copypaste du tuto)
-    plt.ylabel("température optimale", fontsize = 8) # Labélisation de l'axe des abscisses (copypaste du tuto)
+    plt.ylabel("température optimale ", fontsize = 8) # Labélisation de l'axe des abscisses (copypaste du tuto)
     plt.title(label = f'Température de confort sur 24h -> delta_t = {delta_t}')
-    plt.plot(t,celsius(T_confort)-T_max_d ,label= "température de confort")
-    fonctiondroite(0)
+    plt.plot(t,celsius(T_confort) ,label= "température de confort")
+    fonctiondroite(T_max_d, label = 'température préférée')
+    plt.plot(4,T_max_d,'.', label = f'début de la période de chauffe ({4}h)')
+    plt.plot(4+delta_t,T_max_d,'.', label = f'fin de la période de chauffe ({4+delta_t}h)')
+    
     plt.legend( loc='best')
     plt.show()
     return 0
@@ -64,14 +70,16 @@ def recherche_delta_t (T_max_d, intervalle = [0,24], tol = 0.5e-7, T0 = kelvin(n
         IN:
     
         T_max_d (float)--> Température maximale désirée en Kelvin.
+        
         intervalle (list[float, float])--> Intervalle de recherche pour delta_t (par défaut [0, 24]).
+        
         tol (float)--> Tolérance pour la convergence de la méthode de la bissection (par défaut 0.5e-7).
+        
         T0 (numpy.ndarray)--> Tableau numpy des températures initiales en Kelvin (par défaut [288.15, 288.15, 288.15, 288.15, 288.15]).
 
         OUT:
 
         delta_t (float)--> Période delta_t nécessaire pour ne pas dépasser T_max_d.
-        -1 (int)--> Code d'erreur si la méthode de la bissection échoue.
         '''
 
 
@@ -95,10 +103,15 @@ def recherche_delta_t (T_max_d, intervalle = [0,24], tol = 0.5e-7, T0 = kelvin(n
     return delta_t'''
     if statut !=0 : 
         print('erreur, problème de racine') 
-        return(-1)
+        return(statut)
     return delta_t
 
-
+def question_4_2(T_max_d):
+    '''T_max_d en degrés celsius'''
+    delta_t = recherche_delta_t(kelvin(T_max_d))
+    print(f'on a trouvé un delta_t approchant la T_d désirée: {delta_t} heures')
+    question_4_1(delta_t,T_max_d)
+    
 #______________________________________________________________________________________________________#
 # question 4.3
 
