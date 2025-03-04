@@ -12,7 +12,7 @@ def fonctiondroite(hauteur):
 
 
 def T_max(delta_t, no_max = False, T0 = None):
-     """
+    '''
     Fonction qui calcule le maximum de température de confort d'un cycle (avec un delta T donné)
     
     Fonction à annuler : T_max(deltaT) - T_dmax 
@@ -26,7 +26,7 @@ def T_max(delta_t, no_max = False, T0 = None):
     OUT:
     
     - Différence entre Tmax obtenu et Tmax souhaité.
-    """
+    '''
     MAX = 0
     t, T = calculTemperaturesEuler([0, 24], T0,  0.01,num_du_scenario = 4, delta_t = delta_t)
     T_confort = (T[0, :] + T[4, :]) / 2  # T_room = T[0], T_c2 = T[4]
@@ -53,7 +53,7 @@ def question_4_1(delta_t,T_max_d):
 #question 4.2
 
 def recherche_delta_t (T_max_d, intervalle = [0,24], tol = 0.5e-7, T0 = kelvin(np.array([15, 15, 15, 15, 15]))):
-        '''
+    '''
         fonction qui va rechercher le delta_t tel que l'on ne dépassera jamais T_max_d sur un cycle de 24h
 
         IN:
@@ -76,7 +76,7 @@ def recherche_delta_t (T_max_d, intervalle = [0,24], tol = 0.5e-7, T0 = kelvin(n
     rechercher la racine pour pouvoir trouver delta_t
     '''
     delta_t ,statut = bissection(f_difference,intervalle[0],intervalle[1], tol=tol, max_iter=54)
-     '''
+    '''
     if statut == -1:
         print('Erreur : La méthode de la bissection n\'a pas convergé après 54 itérations.')
         return -1
