@@ -11,7 +11,7 @@ def fonctiondroite(hauteur):
 # question 4.1
 
 
-def T_max(delta_t, no_max = False, T0 = None):
+def T_max(delta_t,  T0 = kelvin(np.array([15,15,15,15,15])) , no_max = False):
     '''
     Fonction qui calcule le maximum de température de confort d'un cycle (avec un delta T donné)
     
@@ -30,8 +30,9 @@ def T_max(delta_t, no_max = False, T0 = None):
     MAX = 0
     t, T = calculTemperaturesEuler([0, 24], T0,  0.01,num_du_scenario = 4, delta_t = delta_t)
     T_confort = (T[0, :] + T[4, :]) / 2  # T_room = T[0], T_c2 = T[4]
-    if no_max == False:
-        MAX = np.max(T_confort) #si on ne veut pas de max --> no_max=True ben on ne le calcule pas.
+    if no_max == False: 
+        MAX = np.max(T_confort)
+        return t, T_confort#si on ne veut pas de max --> no_max=True ben on ne le calcule pas.
     return MAX,t,T_confort
 
 def question_4_1(delta_t,T_max_d):
@@ -41,7 +42,7 @@ def question_4_1(delta_t,T_max_d):
     fonction qui dessine le max de température de confort en apellant T_max et en plottant les températures adéquates.
     
     '''
-    MAX,t,T_confort = T_max(delta_t,T0 = kelvin(np.array([15,15,15,15,15])))
+    MAX,t,T_confort = T_max(delta_t)
     if debug: print(celsius(MAX)) #print la température max sur l'intervalle en degrés celsius
     plt.xlabel("temps (24h)", fontsize = 8) # Labélisation de l'axe des ordonnées (copypaste du tuto)
     plt.ylabel("température optimale", fontsize = 8) # Labélisation de l'axe des abscisses (copypaste du tuto)
@@ -128,7 +129,8 @@ def question_4_3(T_max_d,EN15251, T0 = kelvin(np.array([15, 15, 15, 15, 15]))):
         return -1
     delta_t = recherche_delta_t(T_max_d,T0 = T0_new)
     t,T = calculTemperaturesEuler(FenetreDeTemps,T0_new,h,num_du_scenario= 4,delta_t= delta_t) #calculer le dernier jour UNIQUEMENT POUR PLOT
-    for i in range(2): fonctiondroite(EN15251[i])
+    for i in range(2): 
+        fonctiondroite(EN15251[i])
     dessinemoassa(t,celsius(T),['T_room','T_t','T_cc','T_c1','T_c2'],xlabel='temps (h)',ylabel='température (°C)',titre= 'températures au jour {days_to_converge}')
     return verification_EN15251(delta_t,EN15251)
 
