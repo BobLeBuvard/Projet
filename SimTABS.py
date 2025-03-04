@@ -37,7 +37,7 @@ R_s_moins_c2 = 0.183
 
 debug = True
 
-def dessinemoassa(t,T,index,xlabel = None, ylabel = None, titre= None ):
+def dessinemoassa(t,T,index,xlabel = None, ylabel = None, titre= None):
     ''' fonction qui plotte le graphe de ce qu'on lui a donné.
      IN: 
     
@@ -47,25 +47,24 @@ def dessinemoassa(t,T,index,xlabel = None, ylabel = None, titre= None ):
 
      index -> un array de titre de graphe (comme la fonction peut en dessiner plusieurs d'un coup)
 
-     xlabel -> nom de l'axe des abcisses, par défault = none, il n'y en a pas
+     xlabel -> nom de l'axe des abcisses, par défaut = None, il n'y en a pas
 
-     ylabel -> nom de l'axe des ordonnés, par défault = none, il n'y en a pas
+     ylabel -> nom de l'axe des ordonnés, par défaut = None, il n'y en a pas
 
-     titre -> nom du graphique, par défault = none, il n'y en a pas
+     titre -> nom du graphique, par défaut = None, il n'y en a pas
 
      OUT:
-     Graphique déssiné
+
+     Graphique représentant les différentes choses demandées en paramètre
     '''
 
-    #TODO: expliciter in et out avec le même format (à vérif)
-    if debug:
-        plt.xlabel(xlabel, fontsize = 8) # Labélisation de l'axe des abscisses (copypaste du tuto)
-        plt.ylabel(ylabel, fontsize = 8) # Labélisation de l'axe des ordonnées (copypaste du tuto)
-        for i in range(T.shape[0]):  
-            plt.plot(t, T[i], label=index[i])  # en fonction du nombre de variables dans T, on affiche plus ou moins de fonctions
-        plt.legend( loc='best')
-        plt.title(label = titre)
-        plt.show()  
+    plt.xlabel(xlabel, fontsize = 8) # Labélisation de l'axe des abscisses (copypaste du tuto)
+    plt.ylabel(ylabel, fontsize = 8) # Labélisation de l'axe des ordonnées (copypaste du tuto)
+    for i in range(T.shape[0]):  
+        plt.plot(t, T[i], label=index[i])  # en fonction du nombre de variables dans T, on affiche plus ou moins de fonctions
+    plt.legend( loc='best')
+    plt.title(label = titre)
+    plt.show()  
 
 #SCENARIOS POUR LA QUESTION 4
 # delta_t = None c'est pour singaler qu'il peut y avoir des arguments supplémentaires dans la fonction. Dans notre cas, delta_t
@@ -102,6 +101,7 @@ def scenario4(t, delta_t =None ):
     elif((4+delta_t)<t<=24 ):
         heating_mode = 1 # éteint
     return heating_mode
+
 def scenario5(t,delta_t = None):
     '''
     En fonction d'une variable on peut créer un scénario de chauffe customisé
@@ -123,13 +123,14 @@ def scenario5(t,delta_t = None):
     (défaut éteint)   chaud-début-fin
 
     '''
-    if delta_t.type != 'int':
+
+    if type(delta_t) is not int:
         default_mode,heatingcycle = delta_t
     else:
         print("il y a un problème de delta_t: delta_t n'est pas celui attendu (tuple) contenant un int et une flat_array")
         heating_mode = False
     if heatingcycle!= None:
-        matrice = heatingcycle.reshape(3, heatingcycle.shape/3)
+        matrice = heatingcycle.reshape(3, len(heatingcycle/3))
         '''
         exemple de matrice
     mode    3  2  2  3 
@@ -182,7 +183,6 @@ def T_w(heating_mode,T_t):
 #______________________________________________________________________________________________________#
                                          #question 3.1
 def odefunction(t, T,num_du_scenario = 1, delta_t = None,Force_heating = False):
-    #TODO: mettre à jour le docstring avec les paramètres (maj faite, à vérif)
     '''retourne une array contenant les cinq dérivées selon leur formule
     
     IN: 
@@ -191,14 +191,14 @@ def odefunction(t, T,num_du_scenario = 1, delta_t = None,Force_heating = False):
     
     T -> array des températures (dim (1,5)) dans l'ordre [T_room, T_t, T_cc, T_c1,T_c2]
 
-    delta_t = ,intervalle de temps (float64) supplémentaire pour le scénario 4, par défault n'est pas utilisé (défini) = none
+    delta_t = intervalle de temps (float64) supplémentaire pour le scénario 4, par défaut n'est pas utilisé (défini) = None
 
-    num_descenario -> scenario choisi, de 1 à 5 (5 = debug), par défaut = 1
+    num_du_scenario -> scenario choisi, de 1 à 5 (5 = customisé), par défaut le 1 est utilisé
 
-    Force_heating -> bool (flase or true), default = false, si on met ce paramètre, on peut dire si on veut chauffer, refroidire ou couper sur le cycle complet. (on peut aussi le faire avec le scénario 5 et delta_t = )
-
+    Force_heating -> entier de 1 à 3 . 1 éteint, 2 refroidit et 3 chauffe. Par défaut on ne force pas le chauffage (ce pourquoi False)
 
     OUT:
+
     dT -> dérivées des températures à l'instant t (dim(5))
 
     '''
@@ -230,7 +230,6 @@ def odefunction(t, T,num_du_scenario = 1, delta_t = None,Force_heating = False):
 #question 3.2 
 
 def calculTemperaturesEuler(FenetreDeTemps, T0, h,num_du_scenario = 1, delta_t = None,Force_heating = False):
-    #TODO: mettre à jour le docstring avec les paramètres (à vérif)
     '''
     Fonction qui résoud une équation différentielle par la méthode d'Euler:
 
@@ -242,11 +241,11 @@ def calculTemperaturesEuler(FenetreDeTemps, T0, h,num_du_scenario = 1, delta_t =
     
     h -> pas de temps nécessaire à la résolution avec Euler (entier)
    
-    delta_t -> temps (float64) supplémentaire pour le scénario 4, par défaut n'est pas utilisé (défini) = none
+    delta_t -> temps (float64) supplémentaire pour le scénario 4, par défaut n'est pas utilisé (défini) = None
 
-    num_descenario -> scenario choisi, de 1 à 5 (5 = debug), par défaut le 1 est utilisé
+    num_du_scenario -> scenario choisi, de 1 à 5 (5 = customisé), par défaut le 1 est utilisé
 
-    Force_heating -> bool (flase or true), default = false, si on met ce paramètre, on peut dire si on veut chauffer, refroidire ou couper sur le cycle complet. (on peut aussi le faire avec le scénario 5 et delta_t = )
+    Force_heating -> entier de 1 à 3 . 1 éteint, 2 refroidit et 3 chauffe. Par défaut on ne force pas le chauffage (ce pourquoi False)
 
     OUT:
     
@@ -322,7 +321,7 @@ def question_3_4():
 #______________________________________________________________________________________________________#
 #question 3.5
 
-def cycles_apres_convergence(T0, FenetreDeTemps, h, tol=0.01, max_jours=30):
+def cycles_apres_convergence(T0, FenetreDeTemps, h, tol=0.01, max_jours=30,Force_heating = False):
     '''
     fonction qui va calculer itérativement chaque jour et va voir à partir de quand la température se stabilise entre les jours.
     
@@ -349,7 +348,7 @@ def cycles_apres_convergence(T0, FenetreDeTemps, h, tol=0.01, max_jours=30):
             return i+2 , T_total[:,-(1+journee_pas)]  #retourne le nombre de jours et les conditions de l'avant dernier jour
             
         else:
-            t,T = calculTemperaturesEuler(FenetreDeTemps,T_total[:,-1],h)
+            t,T = calculTemperaturesEuler(FenetreDeTemps, T_total[:,-1] , h , Force_heating= Force_heating)
             #ajouter le dernier jour à T_total et t_total
             T_total = np.concatenate((T_total,T),axis = 1)
             t_total = np.concatenate((t_total,t))
@@ -358,7 +357,7 @@ def cycles_apres_convergence(T0, FenetreDeTemps, h, tol=0.01, max_jours=30):
     return None, None
 
 
-def calculCycles(cycles,T0,FenetreDeTemps,h):
+def calculCycles(cycles,T0,FenetreDeTemps,h,Force_heating = None):
     '''
 
     Fonction qui calcule un nombre de cycles de chauffe (sur plusieurs jours potentiellement) et qui retourne des données plottables. avec le calcul de températures par Euler
@@ -388,7 +387,7 @@ def calculCycles(cycles,T0,FenetreDeTemps,h):
         if i > 0:
             t = t[:-1]
             T = T[:, :-1]
-        t, T = calculTemperaturesEuler(FenetreDeTemps, T0, h ) #T0 est de dimensions [5,0]
+        t, T = calculTemperaturesEuler(FenetreDeTemps, T0, h,Force_heating =Force_heating) #T0 est de dimensions [5,0]
         T_Total = np.concatenate((T_Total,T), axis = 1) 
         
         t_Total = np.concatenate((t_Total,(t + ((FenetreDeTemps[1]-FenetreDeTemps[0])*i) )))
@@ -405,7 +404,7 @@ def dessineDesCycles(cycles,num_du_scenario):
 def question_3_5():
     '''fonction qui va dessiner le graphe tes températures d'une journée jusqu'à arriver à un état staionnaire'''
     jours,T_2 = cycles_apres_convergence(T0, FenetreDeTemps,0.01)
-    plt.plot(np.arange(len(T_2))*h,T_2)
+    plt.plot( np.arange(len(T_2))*h ,T_2)
 
 
 

@@ -37,16 +37,20 @@ def T_max(delta_t, no_max = False, T0 = None):
 def question_4_1(delta_t,T_max_d):
 
     #TODO: Docstring de la fonction (description, commentaires)
-
-    MAX,t,T_confort = T_max(delta_t)
+    '''
+    fonction qui dessine le max de température de confort en apellant T_max et en plottant les températures adéquates.
+    
+    '''
+    MAX,t,T_confort = T_max(delta_t,T0 = kelvin(np.array([15,15,15,15,15])))
     if debug: print(celsius(MAX)) #print la température max sur l'intervalle en degrés celsius
     plt.xlabel("temps (24h)", fontsize = 8) # Labélisation de l'axe des ordonnées (copypaste du tuto)
     plt.ylabel("température optimale", fontsize = 8) # Labélisation de l'axe des abscisses (copypaste du tuto)
     plt.title(label = f'Température de confort sur 24h -> delta_t = {delta_t}')
-    plt.plot(t,celsius(T_confort)-T_max_d ,label= "prout")
+    plt.plot(t,celsius(T_confort)-T_max_d ,label= "température de confort")
     fonctiondroite(0)
     plt.legend( loc='best')
     plt.show()
+    return 0
  
 
 #______________________________________________________________________________________________________#
@@ -144,6 +148,5 @@ On ne peut pas changer correctement à la volée car CalculTempératuresEuler ca
 Ce qu'on pourrait faire par contre c'est à l'aide du paramètre delta_t et Force_heating anticiper ce qu'on voudrait 
 en fonction des conditions du jour précédent, et faire un scénario adapté. Ensuite il faudrait d'ailleurs 
 
-#TODO modifier la fonction cycles_apres_convergence() pour qu'elle et CalculTemperaturesEuler puissent se servir de ce paramètre
 
 '''
