@@ -43,27 +43,31 @@ def bissection(f, x0, x1, tol = 0.5e-7, max_iter=50): #par défaut une toléranc
     [x, status]
 
     '''
+    
     retour = hasRoots(f,x0,x1,tol)
     if retour[1] != 0:
         return retour
     
+    fx0 = f(x0)  # Calcul initial de f(x0)
+
     nombre_d_iterations = math.ceil(np.log2((x1 - x0) / (2 * tol))) #arrondi supérieur
 
     if(nombre_d_iterations <= 0 or nombre_d_iterations > max_iter):
         return [1984,-1] # on a un souci de convergence: un nombre négatif d'itérations... ou simplement trop
 
     for i in range(nombre_d_iterations):
-        x2 = (x0+x1) /2 #creation d'un point au milieu de x0 et x1 
-        fx2 = f(x2)     #STOCKAGE DE L'ESTIMATION DE LA FONCTION A UN POINT X2
-        fx0 = f(x0)     #STOCKAGE DE L'ESTIMATION DE LA FONCTION A UN POINT X0
-        if abs(fx2) < tol:
-            return [x2 , 0] #on a trouvé la racine exacte -> on quitte
-        elif(fx0 * fx2 < 0): #on compare le signe de x0 et x2 
-            x1 = x2 # f(x0) et f(x2) sont de signe contraire -> le zéro se trouve entre x0 et x2
-        else: 
-            x0 = x2 # les deux nombres sont de même signe -> le zéro se trouve entre x2 et x1
-        print(f"nouveau x2 trouvé dans la recherche de racine: {x2}")
-   
+        x2 = (x0 + x1) / 2  # Création du point au milieu
+        fx2 = f(x2) 
+        
+
+        if fx0 * fx2 < 0:
+            # Le zéro est entre x0 et x2 → Mettre à jour x1 (pas besoin de fx1)
+            x1 = x2  
+        else:
+            # Le zéro est entre x2 et x1 → Mettre à jour x0 et fx0
+            x0, fx0 = x2, fx2  
+
+        print(f"Nouveau x2 trouvé dans la recherche de racine: {x2}")
     return [x2,0]
    
 def secante(f, x0, x1, tol = 0.5e-7, max_iter=50):

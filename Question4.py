@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 from RechercheRacine import bissection
 import numpy as np
 from SimTABS import calculTemperaturesEuler,kelvin,celsius,cycles_apres_convergence,dessinemoassa, debug
-
+import time
 def fonctiondroite(hauteur, label = None):
     '''fonction qui va plot y = 0 sur le graphique'''
     if debug: plt.plot(np.arange(25),np.zeros(25) + hauteur , label = label)
@@ -15,11 +15,11 @@ def T_max(delta_t,  T0 = kelvin(np.array([15,15,15,15,15])) , no_max = False):
     '''
     Fonction qui calcule le maximum de température de confort d'un cycle (avec un delta T donné)
     
-    Fonction à annuler : T_max(deltaT) - T_dmax 
+    Fonction à annuler : T_max(delta_t) - T_dmax 
 
     IN:
 
-    - deltaT : durée de chauffage après 4h. (float64)
+    - delta_t : durée de chauffage après 4h. (float64)
 
     - T_dmax : valeur cible de Tmax (ex : 24°C). (float64)
     
@@ -47,7 +47,7 @@ def question_4_1(delta_t,T_max_d):
     
     '''
     MAX,t,T_confort = T_max(delta_t)
-    if debug: print(celsius(MAX)) #print la température max sur l'intervalle en degrés celsius
+    if debug: print(celsius(MAX)) #print la température max sur l'FenetreDeTemps en degrés celsius
     plt.xlabel("temps (24h)", fontsize = 8) # Labélisation de l'axe des ordonnées (copypaste du tuto)
     plt.ylabel("température optimale ", fontsize = 8) # Labélisation de l'axe des abscisses (copypaste du tuto)
     plt.title(label = f'Température de confort sur 24h -> delta_t = {delta_t}')
@@ -64,7 +64,7 @@ def question_4_1(delta_t,T_max_d):
 #______________________________________________________________________________________________________#
 #question 4.2
 #TODO : ON A CHANGE LA TOLERANCE DE 0.5e-7 à 0.5e-4 --> CORRIGER DANS LA VERSION FINALE
-def recherche_delta_t (T_max_d, intervalle = [0,24], tol = 0.5e-4, T0 = kelvin(np.array([15, 15, 15, 15, 15])),no_max = False):
+def recherche_delta_t (T_max_d, FenetreDeTemps = [0,24], tol = 0.5e-4, T0 = kelvin(np.array([15, 15, 15, 15, 15])),no_max = False):
     '''
         fonction qui va rechercher le delta_t tel que l'on ne dépassera jamais T_max_d sur un cycle de 24h
 
@@ -72,7 +72,7 @@ def recherche_delta_t (T_max_d, intervalle = [0,24], tol = 0.5e-4, T0 = kelvin(n
     
         T_max_d (float)--> Température maximale désirée en Kelvin.
         
-        intervalle (list[float, float])--> Intervalle de recherche pour delta_t (par défaut [0, 24]).
+        FenetreDeTemps (list[float, float])--> FenetreDeTemps de recherche pour delta_t (par défaut [0, 24]).
         
         tol (float)--> Tolérance pour la convergence de la méthode de la bissection (par défaut 0.5e-7).
         
@@ -84,13 +84,13 @@ def recherche_delta_t (T_max_d, intervalle = [0,24], tol = 0.5e-4, T0 = kelvin(n
         '''
 
 
-    f_difference = lambda deltaT: T_max(deltaT, T0,no_max = no_max)[0] - T_max_d 
+    f_difference = lambda delta_t: T_max(delta_t, T0,no_max = no_max)[0] - T_max_d 
     '''
     fonction qui fait la différence entre T_max qui varie en fonction de delta et T_max_d qui est choisis abritrairement, il faut en 
     rechercher la racine pour pouvoir trouver delta_t
     '''
     
-    delta_t ,statut = bissection(f_difference,intervalle[0],intervalle[1], tol=tol, max_iter=54)
+    delta_t ,statut = bissection(f_difference,FenetreDeTemps[0],FenetreDeTemps[1], tol=tol, max_iter=54)
     
     if statut !=0 : 
         print('erreur, problème de racine') 
@@ -110,7 +110,7 @@ def question_4_2(T_max_d):
 
 #EN15251 est une array contenant t0 et tf et Tmin et Tmax -> [8,19,19.5,24]
 EN15251 = np.array([8,19,19.5,24])
-def verification_EN15251(delta_t,EN15251,T0 = kelvin(np.array([15,15,15,15,15])) ):
+def verification_EN15251(delta_t,EN15251,T0 = kelvin(np.array([15,15,15,15,15])),tol = 0.5e-2 ):
     MAX,t,T_confort  = T_max(delta_t,T0 = T0 ,no_max = True)
     plt.plot(t,celsius(T_confort), label = 'température de confort')
     for i in range(2): 
@@ -121,8 +121,8 @@ def verification_EN15251(delta_t,EN15251,T0 = kelvin(np.array([15,15,15,15,15]))
     plt.show()
     for i in range(len(t)):
         T_confort_i = T_confort[i]
-        if (EN15251[0]<= t[i]<=  EN15251[1]):
-            if not(EN15251[2] < T_confort_i < EN15251[3]): #est ce que les extrémas sont pris avec ?
+        if (EN15251[0]<= t[i]<=  EN15251[1]):            
+            if not(EN15251[2]-tol <= celsius(T_confort_i) <= EN15251[3]+tol): #est ce que les extrémas sont pris avec ?
                 print("La norme EN15251 n'est pas respectée.")
                 return False
     print("La norme EN15251 est respectée.")
@@ -144,6 +144,36 @@ def question_4_3(T_max_d, EN15251 = np.array([8,19,19.5,24]), T0 = kelvin(np.arr
     return verification_EN15251(delta_t,EN15251,T0_new)
 
 
+def max_a_stabilisation(delta_t,EN15251 = np.array([8,19,19.5,24]), T0 = kelvin(np.array([15, 15, 15, 15, 15]))): 
+    '''
+    fonction qui rend le maximum stabilisé au dernier jour
+    
+    '''
+    h = 0.01
+    FenetreDeTemps = [0,24]
+    days_to_converge, T0_new = cycles_apres_convergence(T0,FenetreDeTemps,h,delta_t= delta_t,num_du_scenario=4 ) #T0_new est les conditions initiales du dernier jour
+    if days_to_converge ==None:
+        return("erreur de convergence")
+    print(T_max(delta_t,T0_new)[0]) #imprimer le maximum
+    return T_max(delta_t,T0_new)
+
+def question_4_3_bis(T_max_d,T0 = kelvin(np.array([15, 15, 15, 15, 15])),tol = 0.5e-3):
+    h = 0.01
+    FenetreDeTemps = [0,24]
+    start=time.time()
+    Temp_Max_delta_t =  lambda delta_t: celsius(max_a_stabilisation(delta_t, T0)[0]) - T_max_d  
+    delta_t ,statut = bissection(Temp_Max_delta_t,0,20, tol=tol, max_iter=54)
+    #TODO: optimiser
+    #T0_new est les conditions initiales du dernier jour
+   
+    T0_new = cycles_apres_convergence(T0,FenetreDeTemps,h,delta_t= delta_t,num_du_scenario=4,tol = tol,max_jours = 30,Force_heating = False, q_3_5 = False )
+    verification_EN15251(delta_t, EN15251,T0 = T0_new)
+    end=time.time()
+    print(f"Fin des opérations. Temps écoulé: {end-start} secondes")
+    return delta_t
+    ''
+
+
 '''commentaire supplémentaire: 
 
 on demande à un moment:
@@ -162,7 +192,7 @@ en fonction des conditions du jour précédent, et faire un scénario adapté. E
 
 
 OUI
-    1) 
+    1) fonction de la température finale après convergence en fonction de delta_t
     2) 
     3) vérifier la norme
 

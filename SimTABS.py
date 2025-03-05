@@ -12,7 +12,7 @@ def celsius(temp):
 #CONFIG
 FenetreDeTemps = np.array([0, 24]) # fenetre de test comme demandé -> taille du cycle
 h = 0.01  # pas de temps ( toutes les 6 minutes)
-T0 = kelvin(np.array([15,15,15,15,15])) #conitions initiales données -> ici mises en array en kelvins
+T0 = [15,15,15,15,15] #conitions initiales données -> ici mises en array en kelvins
 nombre_de_cycles = 11
 default_tol = 10e-10 #choix arbitraire
 
@@ -265,6 +265,7 @@ def calculTemperaturesEuler(FenetreDeTemps, T0, h,num_du_scenario = 1, delta_t =
         dT = odefunction(t[i-1], T[:, i-1], num_du_scenario, delta_t=delta_t,Force_heating = Force_heating)  #calcul des dérivées de tout pour chaque dernier élément de la colonne
         T[:, i] = T[:, i-1] + h * dT  # application de Euler 
     return [t, T]
+
 def question_3_2(num_du_scenario = 1):
     t,T = calculCycles(1,T0,FenetreDeTemps,0.01)
     dessinemoassa(t,T,['T_room','T_t','T_cc','T_c1','T_c2'],xlabel='Temps (heures)',ylabel='Température(°K)',titre= f'Euler: scénario {num_du_scenario}')
@@ -316,11 +317,23 @@ def question_3_4():
     '''Fonction qui dessine des graphiques de la différence entre la résolution par Euler et par Runge-Kutta pour estimer leur convergence l'une vers l'autre'''
     diff_entre_Euler_et_IVP() 
 
+def compare_avec_max(h_test):
+    '''fonction test pour comparer avec le maximum de précision --> a supprimer, c'est juste pour le choix de h'''
+    difference_avec_max = []
+    t_euler,T1 = calculTemperaturesEuler(FenetreDeTemps,T0,h_test)
+    t_max,T2 = calculTemperaturesEuler(FenetreDeTemps,T0,10e-6)
+    ratio_tol = h_test/10e-6
+    for i in range(len(T1)):
+        difference_avec_max.append(T2[i]-T1[i*ratio_tol]) 
+    plt.plot(t_euler,difference_avec_max)
+    plt.show
+    return difference_avec_max
+
 
 #______________________________________________________________________________________________________#
 #question 3.5
 
-def cycles_apres_convergence(T0, FenetreDeTemps, h,delta_t = 0,num_du_scenario = 1, tol=0.01, max_jours=30, Force_heating = False):
+def cycles_apres_convergence(T0, FenetreDeTemps, h,delta_t = 0,num_du_scenario = 1, tol=0.01, max_jours=30, Force_heating = False, q_3_5=True):
     '''
     fonction qui va calculer itérativement chaque jour et va voir à partir de quand la température se stabilise entre les jours.
 
@@ -357,13 +370,19 @@ def cycles_apres_convergence(T0, FenetreDeTemps, h,delta_t = 0,num_du_scenario =
     for i  in range(max_jours-2):
         if abs(T_total[0, -1] - T_total[0, -(1+journee_pas)]) <= tol:
             print(f"a convergé après {i+2} jours")
-            
-            if debug:
+            if q_3_5:
                 for j in range(0,5,4):
                     plt.plot(t_total/(FenetreDeTemps[1]-FenetreDeTemps[0]),celsius(T_total[j]))
                 plt.title(label = f"graphique de la température jusqu'à convergence (delta_t = {delta_t})")
                 plt.xlabel('nombre de cycles')
                 plt.ylabel('températures des objets')
+                plt.show()
+            if not q_3_5:
+                plt.plot(t_total/(FenetreDeTemps[1]-FenetreDeTemps[0]),(celsius(T_total[0])+celsius(T_total[4]))/2)
+                plt.title(label = f"graphique de la température de confort jusqu'à convergence (delta_t = {delta_t})")
+                plt.xlabel('nombre de cycles')
+                plt.ylabel('températures des objets')
+                plt.plot([0,i+2],np.full(2,max((celsius(T_total[0])+celsius(T_total[4]))/2)))
                 plt.show()
             return i+2 , T_total[:,-(1+journee_pas)]  #retourne le nombre de jours et les conditions de l'avant dernier jour
             
@@ -431,4 +450,4 @@ def question_3_5():
 def question_3_6():
     for i in range(3):
         t,T = calculTemperaturesEuler(FenetreDeTemps,T0,h,num_du_scenario = i+1)
-        dessinemoassa(t,T,['T_room','T_t','T_cc','T_c1','T_c2'],xlabel='Temps (heures)',ylabel='Température(°K)',titre= f'scénario {i}')
+        dessinemoassa(t,T,['T_room','T_t','T_cc','T_c1','T_c2'],xlabel='Temps (heures)',ylabel='Température(°K)',titre= f'scénario {i<+1}')
