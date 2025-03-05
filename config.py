@@ -1,4 +1,4 @@
-#DEPRECATED: NE PLUS UTILISER LES FONCTIONS QUI SONT ICI SAUF POUR DES TESTS
+#Ressuscité
 
 import numpy as np
 ''' 
@@ -7,20 +7,17 @@ module qui contient toutes les variables. Pour l'instant ça charge tout dans la
 '''
 
 def kelvin(temp):
-    return (temp+273.15) 
+    return (temp + 273.15) 
+def celsius(temp):
+    return (temp - 273.15)
 '''variables qu'on change pour le testing'''
 
 
+#CONFIG
 FenetreDeTemps = np.array([0, 24]) # fenetre de test comme demandé -> taille du cycle
-num_du_scenario = 1 # scénario 5 = scénario debug
 h = 0.01  # pas de temps ( toutes les 6 minutes)
-debug = True
-T0 = kelvin(np.array([15,15,15,15,15])) #conitions initiales données -> ici mises en array en kelvins
-delta_t = 0
-
-
-''' variables assez fixes'''
-
+T0 = np.array([15,15,15,15,15]) #conitions initiales données -> ici mises en array en kelvins
+nombre_de_cycles = 11
 default_tol = 10e-10 #choix arbitraire
 
 #FORME DE l'array T 
@@ -41,3 +38,5 @@ R_cc_moins_c1 = 0.05
 R_c2_moins_cc = 0.02
 R_r_moins_s = 0.1
 R_s_moins_c2 = 0.183
+
+debug = True

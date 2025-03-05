@@ -2,41 +2,12 @@ import numpy as np
 import matplotlib.pyplot as plt
 import scipy as scp
 from PerteEtGain import g
-
+from config import *
 
 def kelvin(temp):
     return (temp+273.15) 
 def celsius(temp):
     return (temp-273.15)
-
-#CONFIG
-FenetreDeTemps = np.array([0, 24]) # fenetre de test comme demandé -> taille du cycle
-h = 0.01  # pas de temps ( toutes les 6 minutes)
-T0 = [15,15,15,15,15] #conitions initiales données -> ici mises en array en kelvins
-nombre_de_cycles = 11
-default_tol = 10e-10 #choix arbitraire
-
-#FORME DE l'array T 
-
-# T = np.array([T_room, T_t, T_cc, T_c1,T_c2])
-
-C_room = 12 # Capacité de la pièce régulée (kJ/m²K)
-C_c1 = 50# Capacité de la partie supérieure béton (kJ/m²K)
-C_c2 = 10# Capacité de la partie inférieure béton (kJ/m²K)
-C_cc = 50 # Capacité de la partie centrale béton (kJ/m²K)
-C_w = 30 # Capacité de l'eau (kJ/m²K)
-C = np.array([C_room, C_w, C_cc, C_c1,C_c2, ])*1000 # kJ/m²K -> J/m²K
-
-
-R_x = 0.025 #Résistance de contact entre les tubes & la partie centrale du béton (m²K/W)
-R_w = 0.15 #Résistance de l'eau
-R_cc_moins_c1 = 0.05
-R_c2_moins_cc = 0.02
-R_r_moins_s = 0.1
-R_s_moins_c2 = 0.183
-
-debug = True
-
 def dessinemoassa(t,T,index,xlabel = None, ylabel = None, titre= None):
     ''' fonction qui plotte le graphe de ce qu'on lui a donné.
      IN: 
@@ -253,6 +224,7 @@ def calculTemperaturesEuler(FenetreDeTemps, T0, h,num_du_scenario = 1, delta_t =
     T -> un array des température correspondantes aux temps utilsiés, dim(5,24/h)
 
     '''
+    T0 = kelvin(T0)
     t0, tf = FenetreDeTemps
 
     t = np.arange(t0, tf + h, h)  # on fait des temps discrets distancés de h entre t0 et tf 
@@ -264,16 +236,16 @@ def calculTemperaturesEuler(FenetreDeTemps, T0, h,num_du_scenario = 1, delta_t =
     for i in range(1, n):
         dT = odefunction(t[i-1], T[:, i-1], num_du_scenario, delta_t=delta_t,Force_heating = Force_heating)  #calcul des dérivées de tout pour chaque dernier élément de la colonne
         T[:, i] = T[:, i-1] + h * dT  # application de Euler 
-    return [t, T]
+    return [t, celsius(T)]
 
 def question_3_2(num_du_scenario = 1):
-    t,T = calculCycles(1,T0,FenetreDeTemps,0.01)
+    t,T = calculTemperaturesEuler(FenetreDeTemps,T0,h,num_du_scenario=num_du_scenario)
     dessinemoassa(t,T,['T_room','T_t','T_cc','T_c1','T_c2'],xlabel='Temps (heures)',ylabel='Température(°K)',titre= f'Euler: scénario {num_du_scenario}')
 
 #______________________________________________________________________________________________________#
 #question 3.3
 
-def calculTemperaturesIVP(FenetreDeTemps, T0, rtol, t_eval = None):
+def calculTemperaturesIVP(FenetreDeTemps, T0, rtol,num_du_scenario = 1, t_eval = None,delta_t = 0, Force_heating = False):
     '''
     Fonction qui résoud une équation différentielle par la méthode de Runge-Kutta (ode45):
 
@@ -287,11 +259,12 @@ def calculTemperaturesIVP(FenetreDeTemps, T0, rtol, t_eval = None):
 
     t_eval -> paramètre pour forcer l'évaluation aux points de Euler pour pouvoir comparer à des t identiques. On pourrait interpoler mais je sais pas trop
     '''
-    solution = scp.integrate.solve_ivp(odefunction, FenetreDeTemps, T0, rtol= rtol,t_eval = t_eval) # forcer d'évaluer aux valeurs de t de Euler pour le dernier paramètre si on veut comparer Solve_IVP et Euler
-    return[solution.t, solution.y]
+    T0 = kelvin(T0)
+    solution = scp.integrate.solve_ivp(odefunction, FenetreDeTemps, T0, rtol= rtol,t_eval = t_eval,args=(num_du_scenario, delta_t, Force_heating)) # forcer d'évaluer aux valeurs de t de Euler pour le dernier paramètre si on veut comparer Solve_IVP et Euler
+    return[solution.t, celsius(solution.y)]
 
 def question_3_3(num_du_scenario = 1):
-    t,T = calculTemperaturesIVP(FenetreDeTemps,T0,10e-10)
+    t,T = calculTemperaturesIVP(FenetreDeTemps,T0,10e-10,num_du_scenario = num_du_scenario)
     dessinemoassa(t,T,['T_room','T_t','T_cc','T_c1','T_c2'],xlabel='Temps (heures)',ylabel='Température(°K)',titre= f'IVP: scénario {num_du_scenario}')
 
 
@@ -339,7 +312,7 @@ def cycles_apres_convergence(T0, FenetreDeTemps, h,delta_t = 0,num_du_scenario =
 
     IN: 
 
-    T0 -> conditions initiales (array dim(5,1))
+    T0 -> conditions initiales en celsius(array dim(5,1))
 
     FenetreDeTemps -> durée d'un cycle
 
@@ -372,19 +345,19 @@ def cycles_apres_convergence(T0, FenetreDeTemps, h,delta_t = 0,num_du_scenario =
             print(f"a convergé après {i+2} jours")
             if q_3_5:
                 for j in range(0,5,4):
-                    plt.plot(t_total/(FenetreDeTemps[1]-FenetreDeTemps[0]),celsius(T_total[j]))
+                    plt.plot(t_total/(FenetreDeTemps[1]-FenetreDeTemps[0]),T_total[j])
                 plt.title(label = f"graphique de la température jusqu'à convergence (delta_t = {delta_t})")
                 plt.xlabel('nombre de cycles')
                 plt.ylabel('températures des objets')
                 plt.show()
             if not q_3_5:
-                plt.plot(t_total/(FenetreDeTemps[1]-FenetreDeTemps[0]),(celsius(T_total[0])+celsius(T_total[4]))/2)
+                plt.plot(t_total/(FenetreDeTemps[1]-FenetreDeTemps[0]),(T_total[0]+T_total[4])/2)
                 plt.title(label = f"graphique de la température de confort jusqu'à convergence (delta_t = {delta_t})")
                 plt.xlabel('nombre de cycles')
                 plt.ylabel('températures des objets')
-                plt.plot([0,i+2],np.full(2,max((celsius(T_total[0])+celsius(T_total[4]))/2)))
+                plt.plot([0,i+2],np.full(2,max(T_total[0]+T_total[4])/2)) #plotter le maximum
                 plt.show()
-            return i+2 , T_total[:,-(1+journee_pas)]  #retourne le nombre de jours et les conditions de l'avant dernier jour
+            return i+2 , T_total[:,-(1+journee_pas)]  #retourne le nombre de jours et les conditions au début du dernier jour
             
         else:
             t,T = calculTemperaturesEuler(FenetreDeTemps, T_total[:,-1] , h ,num_du_scenario= num_du_scenario,delta_t = delta_t,Force_heating= Force_heating)
@@ -405,18 +378,17 @@ def calculCycles(cycles,T0,FenetreDeTemps,h,delta_t = 0,Force_heating = False):
 
     cycles: nombre de cycles d'évaluation (int)
 
-    T0: températures initiales sous forme d'array de dimensions(1,5) avec les éléments [T_room, T_t, T_cc, T_c1,T_c2]
+    T0-> températures initiales sous forme d'array de dimensions(1,5) avec les éléments [T_room, T_t, T_cc, T_c1,T_c2]
     
     FenetreDeTemps: durée d'un cycle sous forme d'array/liste [t0,tf] (ex: [0,24] -> cycle de 24h)
     
-    h: intervalle entre les instants de calcul de température (float64)
+    h-> intervalle entre les instants de calcul de température (float64)
 
     OUT: 
     
-
-    t: temps d'évaluation (array de array dim(1) de longueur -> intervalle/h )
+    t->  temps d'évaluation (array de array dim(1) de longueur -> intervalle/h )
     
-    T: array de dimensions (5, cycles*h +1)
+    T-> array de dimensions (5, cycles*h +1)
         '''
 
     T_Total = np.empty((5, 0))  # 5 lignes, 0 colonnes
@@ -450,4 +422,4 @@ def question_3_5():
 def question_3_6():
     for i in range(3):
         t,T = calculTemperaturesEuler(FenetreDeTemps,T0,h,num_du_scenario = i+1)
-        dessinemoassa(t,T,['T_room','T_t','T_cc','T_c1','T_c2'],xlabel='Temps (heures)',ylabel='Température(°K)',titre= f'scénario {i<+1}')
+        dessinemoassa(t,T,['T_room','T_t','T_cc','T_c1','T_c2'],xlabel='Temps (heures)',ylabel='Température(°K)',titre= f'scénario {i+1}')

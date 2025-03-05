@@ -2,6 +2,7 @@
 
 import numpy as np
 from SimTABS import odefunction
+from Question4 import *
 import scipy as scp
 from config import *
 
@@ -177,4 +178,19 @@ def convergeEfficace(h, T0, tolerance, temp=0):
     print("Erreur : la convergence n'a pas été atteinte en 30 jours.")
     return [T_Total, last_temps, "erreur: convergence de plus de 30 jours"]
 
+#______________________________________________________________________________________________________#
+#question 3.4 mauvais
+def question_4_3(T_max_d, EN15251 = np.array([8,19,19.5,24]), T0 = kelvin(np.array([15, 15, 15, 15, 15]))):
+    
+    h = 0.01
+    FenetreDeTemps = [0,24]
+    delta_t = recherche_delta_t(kelvin(T_max_d),T0 = T0) #OK
+    print(f"on a trouvé un delta_t de {delta_t}")
+    question_4_1(delta_t, T_max_d)   #montrer le graphe du premier jour 
+    days_to_converge, T0_new = cycles_apres_convergence(T0,FenetreDeTemps,h,delta_t= delta_t,num_du_scenario=4 ) #T0_new est les conditions initiales du dernier jour
+    if days_to_converge == None:
+        print("Les températures ne se sont pas stabilisées.")
+        return -1
+    plt.show()
 
+    return verification_EN15251(delta_t,EN15251,T0_new)
