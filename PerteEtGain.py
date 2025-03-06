@@ -16,4 +16,3 @@ if __name__ == "__main__":  # nécessaire pour tester le graphe si on débug
 def g(t):    
     val = scp.interpolate.CubicSpline(heures,flux,bc_type='periodic')
     return val(t)
-

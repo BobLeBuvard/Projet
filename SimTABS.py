@@ -3,7 +3,6 @@ import matplotlib.pyplot as plt
 import scipy as scp
 from PerteEtGain import g
 from config import *
-
 def kelvin(temp):
     return (temp+273.15) 
 def celsius(temp):
@@ -173,27 +172,28 @@ def odefunction(t, T,num_du_scenario = 1, delta_t = None,Force_heating = False):
     dT -> dérivées des températures à l'instant t (dim(5))
 
     '''
-    dT = np.zeros_like(T) # de même dimensions que T mais contient les dérivées
+    T = T.ravel() #passage d'un vecteur colonne en vecteur ligne --> si c'est déjà un vecteur ligne, ça n'est pas affecté. 
+    dT = np.empty_like(T) # de même dimensions que T mais contient les dérivées
 
     #CALCUL DE dT_room
-    dT[0] = (1/C[0])*((-1/(R_r_moins_s + R_s_moins_c2))*(T[0]-T[4]) +g(t))
+    dT[0] = inv_C[0]*((-1/(R_r_moins_s + R_s_moins_c2))*(T[0]-T[4]) +g(t))
                     
     #CALCUL DE dT_t 
 
     heating_mode = scenario(t, num_du_scenario, delta_t=delta_t)
-    if Force_heating != False: heating_mode = Force_heating
-    dT[1] = (1/C[1])*( (-1/R_x)*(T[1]-T[2]) - (1/R_w)*(T[1] - T_w(heating_mode, T[1])) )
+    #if Force_heating != False: heating_mode = Force_heating # mettre en commentaire si inutilisé. accélère le calcul si inutilisé
+    dT[1] = inv_C[1]*( (-1/R_x)*(T[1]-T[2]) - (1/R_w)*(T[1] - T_w(heating_mode, T[1])) )
 
     #CALCUL DE dT_cc
-    dT[2] = (1/C[2])*( (-1/(R_cc_moins_c1))*(T[2]-T[3])- (1/R_x)*(T[2]-T[1]) + (1/R_c2_moins_cc)*(T[4] - T[2]))
+    dT[2] = inv_C[2]*( (-1/(R_cc_moins_c1))*(T[2]-T[3])- (1/R_x)*(T[2]-T[1]) + (1/R_c2_moins_cc)*(T[4] - T[2]))
 
     #CALCUL DE dT_c1 
-    dT[3] = (1/C[3])*(-1/R_cc_moins_c1)*(T[3]-T[2])
+    dT[3] = inv_C[3]*(-1/R_cc_moins_c1)*(T[3]-T[2])
 
     #CALCUL DE dT_c2 
-    dT[4] = (1/C[4])* ((-1/R_c2_moins_cc)*(T[4]-T[2])+ (1/(R_r_moins_s + R_s_moins_c2))*(T[0] - T[4]))
-
-    return(dT*3600)
+    dT[4] = inv_C[4]* ((-1/R_c2_moins_cc)*(T[4]-T[2])+ (1/(R_r_moins_s + R_s_moins_c2))*(T[0] - T[4]))
+    dT *= 3600
+    return(dT)
 
 
 #______________________________________________________________________________________________________#
@@ -227,18 +227,18 @@ def calculTemperaturesEuler(FenetreDeTemps, T0, h,num_du_scenario = 1, delta_t =
     T0 = kelvin(T0)
     t0, tf = FenetreDeTemps
 
-    t = np.arange(t0, tf + h, h)  # on fait des temps discrets distancés de h entre t0 et tf 
-    n = len(t)  # nombre de points de temps -> je préfère faire ainsi parce que on demande d'utiliser n , sinon je ferais T = np.zeros((5, len(t)))
-    
+    n = int((tf - t0) / h) + 1   # nombre de points de temps -> je préfère faire ainsi parce que on demande d'utiliser n , sinon je ferais T = np.zeros((5, len(t)))
+
+    t = np.linspace(t0, tf, n)  # on fait des temps discrets distancés de h entre t0 et tf 
     T = np.zeros((5, n))  # 5*n températures en fonction du nombre de points de temps -> on est obligé de mettre sous cette forme 
     T[:, 0] = T0  # conditions initiales
-    
+        
     for i in range(1, n):
         dT = odefunction(t[i-1], T[:, i-1], num_du_scenario, delta_t=delta_t,Force_heating = Force_heating)  #calcul des dérivées de tout pour chaque dernier élément de la colonne
         T[:, i] = T[:, i-1] + h * dT  # application de Euler 
     return [t, celsius(T)]
 
-def question_3_2(num_du_scenario = 1):
+def question_3_2(num_du_scenario = 1,FenetreDeTemps = [0,24]):
     t,T = calculTemperaturesEuler(FenetreDeTemps,T0,h,num_du_scenario=num_du_scenario)
     dessinemoassa(t,T,['T_room','T_t','T_cc','T_c1','T_c2'],xlabel='Temps (heures)',ylabel='Température(°K)',titre= f'Euler: scénario {num_du_scenario}')
 
@@ -276,7 +276,7 @@ def diff_entre_Euler_et_IVP():
     '''Fonction qui dessine des graphiques de la différence entre la résolution par Euler et par Runge-Kutta pour estimer leur convergence l'une vers l'autre'''
 
     h_de_test = [0.001,0.01,0.1,0.25,0.5,1,2]
-    for i in range(len(h_de_test)):
+    for i, h in enumerate(h_de_test):  #énumérer les éléments de h 
         
         h = h_de_test[i]
         t_euler,T2 = calculTemperaturesEuler(FenetreDeTemps,T0,h)
@@ -284,7 +284,6 @@ def diff_entre_Euler_et_IVP():
         
         
         T = T1 -T2
-        if debug: print(f'T1 est de dimensions: {T1.shape} et T2 est de dimensions: {T2.shape}')
         dessinemoassa(t_euler,T,['T_room','T_t','T_cc','T_c1','T_c2'],xlabel='Temps (heures)',ylabel='Température(°K)',titre= f'différence entre Euler et Runge avec h = {h_de_test[i]}')
 def question_3_4():
     '''Fonction qui dessine des graphiques de la différence entre la résolution par Euler et par Runge-Kutta pour estimer leur convergence l'une vers l'autre'''
@@ -346,13 +345,13 @@ def cycles_apres_convergence(T0, FenetreDeTemps, h,delta_t = 0,num_du_scenario =
             if q_3_5:
                 for j in range(0,5,4):
                     plt.plot(t_total/(FenetreDeTemps[1]-FenetreDeTemps[0]),T_total[j])
-                plt.title(label = f"graphique de la température jusqu'à convergence (delta_t = {delta_t})")
+                plt.title(label = f"T_room et T-c2 jusqu'à stagnation (sc.{num_du_scenario})(delta_t = {round(delta_t,ndigits=2)})")#garder que 2 chiffres après la virgule
                 plt.xlabel('nombre de cycles')
                 plt.ylabel('températures des objets')
                 plt.show()
             if not q_3_5:
                 plt.plot(t_total/(FenetreDeTemps[1]-FenetreDeTemps[0]),(T_total[0]+T_total[4])/2)
-                plt.title(label = f"graphique de la température de confort jusqu'à convergence (delta_t = {delta_t})")
+                plt.title(label = f" température de confort jusqu'à stagnation (delta_t = {delta_t})")
                 plt.xlabel('nombre de cycles')
                 plt.ylabel('températures des objets')
                 plt.plot([0,i+2],np.full(2,max(T_total[0]+T_total[4])/2)) #plotter le maximum
@@ -421,5 +420,5 @@ def question_3_5():
 # question 3.6
 def question_3_6():
     for i in range(3):
-        t,T = calculTemperaturesEuler(FenetreDeTemps,T0,h,num_du_scenario = i+1)
-        dessinemoassa(t,T,['T_room','T_t','T_cc','T_c1','T_c2'],xlabel='Temps (heures)',ylabel='Température(°K)',titre= f'scénario {i+1}')
+        cycles_apres_convergence(T0,FenetreDeTemps,h,delta_t = 0,num_du_scenario= i+1)
+        
