@@ -71,7 +71,7 @@ def f(x):
     return x**3 - 4*x + 1  
 
 # Intervalle de recherche
-x0, x1 = -3, 3
+x0, x1 = -3,3
 print("test bissection:")
 res_bissection = bissection(f, x0, x1, tol=0.5e-7, max_iter=50) 
 print(f"résultat bissection:{res_bissection} ")
