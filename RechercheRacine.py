@@ -1,109 +1,76 @@
 import numpy as np
 import math
 
-def hasRoots(f, x0,x1,tol):
-
-    '''vérifie si la fonction possède les conditions nécessaires pour pouvoir trouver les racines: 
-    -intervertit les bornes si elles sont inversées
-    -vérifie si les bornes sont bien de signe opposé'''
-    # Vérification des conditions
-    fx0 = f(x0)
-    fx1 = f(x1)
-    if ( fx0 * fx1 > 0) or (tol == 0):
-        return [1984, 1]
-    elif fx0 == 0:
-        return [x0, 0]
-    elif fx1 == 0:
-        return [x1, 0]
-    
-    if x1 < x0:
-        x1, x0 = x0, x1
-    
-    # Ajoute un return par défaut pour éviter None
-    return [1984, 0] 
- 
-def bissection(f, x0, x1, tol = 0.5e-7, max_iter=50): #par défaut une tolérance de 8 décimales correctes, et un nombre d'itérations max de 50 
+def hasRoots(f, x0, x1, tol,sec = False):
+    ''' 
+    Vérifie si la fonction possède les conditions nécessaires pour la recherche de racine :
+    - Vérifie si les bornes sont bien de signe opposé
+    - Intervertit les bornes si nécessaire
+    - Retourne un code d'erreur si les conditions ne sont pas respectées
     '''
-    Recherche de racine par dichotomie -> on coupe l'intervalle en deux et on regarde le signe de ce terme pour diminuer la taille de l'intervalle d'un facteur 1/2
-    une fois que les limites de l'intervalle sont suffisamment proches de zéro, on retourne la valeur de x à cet endroit ansi qu'un code d'erreur s'il y a eu un problème.
+    fx0, fx1 = f(x0), f(x1)
     
-    f : fonction d'entrée
-
-    x0: début (ou fin) de l'intervalle de recherche de racine
-
-    x1: fin (ou début) de l'intervalle de recherche de racine
-
-    tol: tolérance de l'imprécision de la racine (par défaut 0.5e-7)
-
-    max_iter: nombre maximal d'itérations de la recherche
-
+    if tol <= 0:
+        print("Une tolérance égale à 0 ou négative est impossible à atteindre.")
+        return[None, 1]
+    if fx0 * fx1 > 0 and not sec:
+        print("La fonction a le même signe aux extrémité de l'intervalle considéré, à éviter.")
+        return [None, 1]  # Erreur 1 : Pas de changement de signe, donc pas de racine unique
+    if abs(fx0) <= tol:
+        print(f"La solution est {x0}")
+        return [x0, 0]  # x0 est déjà une racine
     
-    Sortie sous la forme:
-
-    [x, status]
-
-    '''
+    if abs(fx1) <= tol:
+        print(f"La solution est {x1}")
+        return [x1, 0]  # x1 est déjà une racine
     
-    retour = hasRoots(f,x0,x1,tol)
-    if retour[1] != 0:
-        return retour
-    
-    fx0 = f(x0)  # Calcul initial de f(x0)
+    return [None, 0]  # Tout va bien, on peut continuer
 
+def bissection(f, x0, x1, tol=0.5e-7, max_iter=50):
+    '''Recherche de racine par dichotomie (bissection).'''
+    
+    retour = hasRoots(f, x0, x1, tol)
+    if retour[1] != 0 or retour[0] != None:
+        return retour  # Renvoie l'erreur ou la racine trouvée immédiatement
+    
+    
     nombre_d_iterations = math.ceil(np.log2((x1 - x0) / (2 * tol))) #arrondi supérieur
 
     if(nombre_d_iterations <= 0 or nombre_d_iterations > max_iter):
         return [1984,-1] # on a un souci de convergence: un nombre négatif d'itérations... ou simplement trop
+    fx0 = f(x0)
+    for _ in range(max_iter):
+        x2 = (x0 + x1) / 2  # Point milieu
+        fx2 = f(x2)
 
-    for i in range(nombre_d_iterations):
-        x2 = (x0 + x1) / 2  # Création du point au milieu
-        fx2 = f(x2) 
+        if abs(fx2) < tol:  # Critère d'arrêt basé sur la fonction
+            return [x2, 0]
         
-
         if fx0 * fx2 < 0:
-            # Le zéro est entre x0 et x2 → Mettre à jour x1 (pas besoin de fx1)
-            x1 = x2  
+            x1 = x2
         else:
-            # Le zéro est entre x2 et x1 → Mettre à jour x0 et fx0
-            x0, fx0 = x2, fx2  
+            x0, fx0 = x2, fx2  # Mise à jour
 
-        print(f"Nouveau x2 trouvé dans la recherche de racine: {x2}")
-    return [x2,0]
-   
-def secante(f, x0, x1, tol = 0.5e-7, max_iter=50):
-    '''
-    Recherche de racine par sécante -> on va créer une droite qui part de x0 et qui arrive à x2 et on va prendre son intersection avec zéro en x
-    ensuite on prend cette valeur et on compare la valeur de la fonction à ce x précis avec zéro (en prenant en compte les tolérances)
+    return [x2, -1]  # Erreur -1 : pas de convergence après max_iter
 
-    f : fonction d'entrée
+def secante(f, x0, x1, tol=0.5e-7, max_iter=65):
+    '''Recherche de racine par la méthode de la sécante.'''
 
-    x0: début (ou fin) de l'intervalle de recherche de racine
-
-    x1: fin (ou début) de l'intervalle de recherche de racine
-
-    tol: tolérance de l'imprécision de la racine (par défaut 0.5e-7)
-
-    max_iter: nombre maximal d'itérations de la recherche
-    
-    Sortie sous la forme:
-
-    [x, status]  
-    '''
-    retour = hasRoots(f,x0,x1,tol) #fonction qui détermine si la fonction a plus d'une racine
-    if retour[1] != 0:
-        return retour   # la fonction a plus d'une racine
-
+    retour = hasRoots(f, x0, x1, tol,sec = True)
+    if retour[1] != 0 or retour[0] != None:
+        return retour  
+    fx0, fx1 = f(x0), f(x1)
     for i in range(max_iter):
-        fx1 = f(x1)     #STOCKAGE DE L'ESTIMATION DE LA FONCTION A UN POINT X1
-        fx0 = f(x0)     #STOCKAGE DE L'ESTIMATION DE LA FONCTION A UN POINT X0
+        if abs(fx1 - fx0) < 1e-12:  # Évite la division par zéro 1e-12 = "zéro machine"
+            return [None, -1]  # Erreur -1 : division par zéro
+        
+        x2 = x1 - fx1 * (x1 - x0) / (fx1 - fx0)
+        if abs(fx1)<= tol:
+            return [x2,0]
+        #if abs(x2 - x1) < tol:
+        #    return [x2, 0]  # Racine trouvée avec tolérance
 
-        if abs(fx1 - fx0) ==0 : # on veut pas diviser par zéro
-            return [1984, -1]
-        #maintenant on calcule la formule du point de la fonction à l:
-        
-        x2 = x1 -  fx1* (x1 - x0) / (fx1 - fx0) # on calcule le nouveau point x
-        if abs(x2 - x1) < tol:
-            return [x2, 0] #on a trouvé la racine correcte (avec tolérances en valeur absolue) !
-        
-        x0, x1 = x1, x2  # Sinon on met les valeurs à jour x1 devient x0 et x2 devient x1  
-    return [x2,0]
+        x0, x1 = x1, x2
+        fx0, fx1 = fx1, f(x1)
+
+    return [x2, -1]  # Erreur -1 : pas de convergence

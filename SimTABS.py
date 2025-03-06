@@ -159,7 +159,7 @@ def odefunction(t, T,num_du_scenario = 1, delta_t = None,Force_heating = False):
     
     t -> instant de temps (float64)
     
-    T -> array des températures (dim (1,5)) dans l'ordre [T_room, T_t, T_cc, T_c1,T_c2]
+    T -> array des températures (dim (5,1)) dans l'ordre [T_room, T_t, T_cc, T_c1,T_c2]
 
     delta_t = intervalle de temps (float64) supplémentaire pour le scénario 4, par défaut n'est pas utilisé (défini) = None
 
