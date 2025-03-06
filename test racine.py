@@ -65,3 +65,21 @@ def secante(f, x0, x1, tol=0.5e-7, max_iter=50):
         x0, x1 = x1, x2
 
     return [x2, -1]  # Erreur -1 : pas de convergence
+
+
+def f(x):
+    return x**3 - 4*x + 1  
+
+# Intervalle de recherche
+x0, x1 = -3, 3
+print("test bissection:")
+res_bissection = bissection(f, x0, x1, tol=0.5e-7, max_iter=50) 
+print(f"résultat bissection:{res_bissection} ")
+print ("test sécante: ")
+res_secante = secante (f,x0,x1,tol = 0.5e-7,max_iter=50)
+print(f"résultat secante:{res_secante} ")
+
+if res_bissection[1] == 0:
+    print(f"Vérification: f({res_bissection[0]}) = {f(res_bissection[0])}")
+if res_secante[1] == 0:
+    print(f"Vérification: f({res_secante[0]}) = {f(res_secante[0])}")
