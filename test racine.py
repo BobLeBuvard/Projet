@@ -1,78 +1,14 @@
-import numpy as np
-import math
-
-def hasRoots(f, x0, x1, tol,sec = False):
-    ''' 
-    Vérifie si la fonction possède les conditions nécessaires pour la recherche de racine :
-    - Vérifie si les bornes sont bien de signe opposé
-    - Intervertit les bornes si nécessaire
-    - Retourne un code d'erreur si les conditions ne sont pas respectées
-    '''
-    fx0, fx1 = f(x0), f(x1)
-    
-    if tol <= 0:
-        print("Une tolérance égale à 0 ou négative est impossible à atteindre.")
-        return[None, 1]
-    if fx0 * fx1 > 0 and not sec:
-        print("La fonction a le même signe aux extrémité de l'intervalle considéré, à éviter.")
-        return [None, 1]  # Erreur 1 : Pas de changement de signe, donc pas de racine unique
-    if abs(fx0) <= tol:
-        print(f"La solution est {x0}")
-        return [x0, 0]  # x0 est déjà une racine
-    
-    if abs(fx1) <= tol:
-        print(f"La solution est {x1}")
-        return [x1, 0]  # x1 est déjà une racine
-    
-    return [None, 0]  # Tout va bien, on peut continuer
-
-def bissection(f, x0, x1, tol=0.5e-7, max_iter=50):
-    '''Recherche de racine par dichotomie (bissection).'''
-    
-    retour = hasRoots(f, x0, x1, tol)
-    if retour[1] != 0 or retour[0] != None:
-        return retour  # Renvoie l'erreur ou la racine trouvée immédiatement
-    
-    
-    nombre_d_iterations = math.ceil(np.log2((x1 - x0) / (2 * tol))) #arrondi supérieur
-
-    if(nombre_d_iterations <= 0 or nombre_d_iterations > max_iter):
-        return [1984,-1] # on a un souci de convergence: un nombre négatif d'itérations... ou simplement trop
-    fx0 = f(x0)
-    for _ in range(max_iter):
-        x2 = (x0 + x1) / 2  # Point milieu
-        fx2 = f(x2)
-
-        if abs(fx2) < tol:  # Critère d'arrêt basé sur la fonction
-            return [x2, 0]
-        
-        if fx0 * fx2 < 0:
-            x1 = x2
-        else:
-            x0, fx0 = x2, fx2  # Mise à jour
-
-    return [x2, -1]  # Erreur -1 : pas de convergence après max_iter
-
-def secante(f, x0, x1, tol=0.5e-7, max_iter=65):
-    '''Recherche de racine par la méthode de la sécante.'''
-
-    retour = hasRoots(f, x0, x1, tol,sec = True)
-    if retour[1] != 0 or retour[0] != None:
-        return retour  
-    fx0, fx1 = f(x0), f(x1)
-    for i in range(max_iter):
-        if abs(fx1 - fx0) < 1e-12:  # Évite la division par zéro 1e-12 = "zéro machine"
-            return [None, -1]  # Erreur -1 : division par zéro
-        
-        x2 = x1 - fx1 * (x1 - x0) / (fx1 - fx0)
-        if abs(fx1)<= tol:
-            return [x2,0]
-        #if abs(x2 - x1) < tol:
-        #    return [x2, 0]  # Racine trouvée avec tolérance
-
-        x0, x1 = x1, x2
-        fx0, fx1 = fx1, f(x1)
-
-    return [x2, -1]  # Erreur -1 : pas de convergence
-
-
+import time
+from RechercheRacine import *
+sc = [bissection, secante, hybride]
+x0 = 0
+x1 = 10
+def f(x):
+    time.sleep(0.1)
+    return x**2 -3
+for i in range(3):
+    start = time.time()
+    racine, statut = sc[i](f,x0,x1)
+    print(f"racine et statut: {racine,statut}")
+    end = time.time()
+    print(f"temps {end-start}")
