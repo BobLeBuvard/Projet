@@ -52,7 +52,7 @@ def question_4_1(delta_t,T_max_d):
     plt.ylabel("température optimale ", fontsize = 8) # Labélisation de l'axe des abscisses (copypaste du tuto)
     plt.title(label = f'Température de confort sur 24h -> delta_t = {delta_t}')
     plt.plot(t,T_confort ,label= "température de confort")
-    fonctiondroite(T_max_d, label = 'température préférée')
+    fonctiondroite(T_max_d, label = 'T_max_d')
     plt.plot(4,T_max_d,'.', label = f'début de la période de chauffe ({4}h)')
     plt.plot(4+delta_t,T_max_d,'.', label = f'fin de la période de chauffe ({4+delta_t}h)')
     
@@ -93,12 +93,15 @@ def recherche_delta_t (T_max_d, FenetreDeTemps = [0,24], tol = 0.5e-7, T0 = np.a
     
     if statut !=0 : 
         print('erreur, problème de racine') 
-        return(statut)
+        return (-1, statut)
     return delta_t
 
 def question_4_2(T_max_d):
     '''T_max_d en degrés celsius'''
     delta_t = recherche_delta_t(T_max_d)
+    if isinstance(delta_t, tuple):
+        print("fin avortée")
+        return delta_t[1]
     print(f'on a trouvé un delta_t approchant la T_d désirée: {delta_t} heures')
     question_4_1(delta_t,T_max_d)
     
@@ -120,9 +123,12 @@ def verification_EN15251(delta_t,EN15251,T0 = np.array([15,15,15,15,15]),tol = 0
     plt.title(label = "graphique de la température de confort pendant la dernière journée")
     plt.xlabel('heures de la journée (h)')
     plt.ylabel('température (°C)')
-    plt.plot(4,0,'.', label = f'début de la période de chauffe ({4}h)')
-    plt.plot(4+delta_t,0,'.', label = f'fin de la période de chauffe ({4+delta_t}h)')
-    plt.legend( loc='best')
+    points_to_plot = [('début de la période de chauffe (4h)',4,EN15251[2]),(f'fin de la période de chauffe ({4+delta_t}h)',4+delta_t,EN15251[2]),('début des heures de bureau',EN15251[0],EN15251[2]),('fin des heures de bureau',EN15251[1],EN15251[2])] 
+    for i in range(len(points_to_plot)):
+        label,x,y = points_to_plot[i]
+        plt.plot(x,y,'.', label = label)
+    
+    
     plt.show()
     for i in range(len(t)):
         T_confort_i = T_confort[i]
@@ -136,13 +142,13 @@ def verification_EN15251(delta_t,EN15251,T0 = np.array([15,15,15,15,15]),tol = 0
 
 
 
-def max_a_stabilisation(delta_t, T0 = np.array([15, 15, 15, 15, 15]), h = 0.01 ): 
+def max_a_stabilisation(delta_t, T0 = np.array([15, 15, 15, 15, 15]), h = 0.01,tol_temp =0.01 ): 
     '''
     fonction qui rend le maximum stabilisé au dernier jour
     
     '''
     FenetreDeTemps = [0,24]
-    days_to_converge, T0_new = cycles_apres_convergence(T0,FenetreDeTemps,h,delta_t= delta_t,num_du_scenario=4 ) #T0_new est les conditions initiales du dernier jour
+    days_to_converge, T0_new = cycles_apres_convergence(T0,FenetreDeTemps,h,delta_t= delta_t,num_du_scenario=4,tol = tol_temp,max_jours = 30,Force_heating = False, q_3_5 = False ) #T0_new est les conditions initiales du dernier jour
     if days_to_converge ==None:
         return("erreur de convergence")
     print(T_max(delta_t,T0_new)[0]) #imprimer le maximum
