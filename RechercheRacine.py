@@ -73,7 +73,7 @@ def secante(f, x0, x1, tol=0.5e-7, max_iter=65):
 
     return [x2, -1]  # Erreur -1 : pas de convergence
 
-def hybride(f,x0,x1,tol =0.5e-7,tol_bisect = 10 ,max_iter = 30,alentours_secante = 1):
+def hybride(f,x0,x1,tol =0.5e-7,tol_bisect = 3 ,max_iter = 30,alentours_secante = 1):
     #vérif conditions initiales
     fx0, fx1 = f(x0), f(x1)
     

@@ -172,7 +172,6 @@ def odefunction(t, T,num_du_scenario = 1, delta_t = None,Force_heating = False):
     dT -> dérivées des températures à l'instant t (dim(5))
 
     '''
-    T = T.ravel() #passage d'un vecteur colonne en vecteur ligne --> si c'est déjà un vecteur ligne, ça n'est pas affecté. 
     dT = np.empty_like(T) # de même dimensions que T mais contient les dérivées
 
     #CALCUL DE dT_room
@@ -194,7 +193,6 @@ def odefunction(t, T,num_du_scenario = 1, delta_t = None,Force_heating = False):
     dT[4] = inv_C[4]* ((-1/R_c2_moins_cc)*(T[4]-T[2])+ (1/(R_r_moins_s + R_s_moins_c2))*(T[0] - T[4]))
     dT *= 3600
     return(dT)
-
 
 #______________________________________________________________________________________________________#
 #question 3.2 
@@ -289,16 +287,28 @@ def question_3_4():
     '''Fonction qui dessine des graphiques de la différence entre la résolution par Euler et par Runge-Kutta pour estimer leur convergence l'une vers l'autre'''
     diff_entre_Euler_et_IVP() 
 
-def compare_avec_max(h_test):
-    '''fonction test pour comparer avec le maximum de précision --> a supprimer, c'est juste pour le choix de h'''
+def compare_avec_max(h_test,Max):
+    '''Fonction pour comparer avec le maximum de précision. À supprimer après test.'''
     difference_avec_max = []
-    t_euler,T1 = calculTemperaturesEuler(FenetreDeTemps,T0,h_test)
-    t_max,T2 = calculTemperaturesEuler(FenetreDeTemps,T0,10e-6)
-    ratio_tol = h_test/10e-6
-    for i in range(len(T1)):
-        difference_avec_max.append(T2[i]-T1[i*ratio_tol]) 
-    plt.plot(t_euler,difference_avec_max)
-    plt.show
+    
+    # Calcul des températures avec différentes précisions
+    t_euler, T1 = calculTemperaturesEuler(FenetreDeTemps, T0, h_test)
+    t_max, T2 = calculTemperaturesEuler(FenetreDeTemps, T0,Max )
+    
+    ratio_tol = int(h_test / Max)  # Assurer un entier pour l'indexation
+    
+    # Comparaison des valeurs
+    for i in range(min(len(T1[0]), len(T2[0]) // ratio_tol)):  # Ajustement des indices
+        difference_avec_max.append(T2[:, i * ratio_tol] - T1[:, i])  
+    
+    # Tracer la différence
+    plt.plot(t_euler[:len(difference_avec_max)],abs( np.array(difference_avec_max).T[0]))
+    plt.xlabel("Temps (s)")
+    plt.ylabel("Différence avec max précision")
+    plt.title(f"Comparaison Euler (h={h_test}) vs Max Précision (h=10e-6)")
+    plt.legend([f"T{i}" for i in range(1, 6)])
+    plt.show()
+    
     return difference_avec_max
 
 
@@ -421,4 +431,16 @@ def question_3_5():
 def question_3_6():
     for i in range(3):
         cycles_apres_convergence(T0,FenetreDeTemps,h,delta_t = 0,num_du_scenario= i+1)
+        
+        
+        
+def check_time(sous_question,*args):
+    questions = [print,question_3_2,question_3_3,question_3_4,question_3_5,question_3_6,calculTemperaturesEuler]
+    import time
+    start = time.time()
+    #questions[sous_question-1](args)
+    calculTemperaturesEuler(FenetreDeTemps, T0, h)
+    end = time.time()
+    print(end-start)
+    
         

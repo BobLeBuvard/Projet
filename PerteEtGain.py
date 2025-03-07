@@ -4,6 +4,8 @@ import matplotlib.pyplot as plt
 PERTE_ET_GAIN = np.loadtxt('PerteEtGain.txt') # array constante du fichier texte 
 heures = PERTE_ET_GAIN[0]
 flux = PERTE_ET_GAIN[1]
+val = scp.interpolate.CubicSpline(heures,flux,bc_type='periodic')
+
 if __name__ == "__main__":  # nécessaire pour tester le graphe si on débug
     val = scp.interpolate.CubicSpline(heures,flux,bc_type='periodic')
     plt.plot(heures, val(heures),label='Spline')
@@ -14,5 +16,4 @@ if __name__ == "__main__":  # nécessaire pour tester le graphe si on débug
     plt.legend(loc = 'best')
     plt.show()     # Louis a besoin de plt.show() pour afficher le graph
 def g(t):    
-    val = scp.interpolate.CubicSpline(heures,flux,bc_type='periodic')
     return val(t)
