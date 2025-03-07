@@ -146,10 +146,11 @@ def hybride(f,x0,x1,tol =0.5e-7,tol_bisect = 3 ,max_iter = 30,alentours_secante 
     x0,x1 = x0_new-alentours_secante,x0_new+alentours_secante
     for i in range(max_iter):
         if abs(fx1 - fx0) < 1e-12:  # Évite la division par zéro 1e-12 = "zéro machine"
-            return [None, -1]  # Erreur -1 : division par zéro
+            return [x2, -1] #tolérance atteinte (none -> x2 par louis)
         
         x2 = x1 - fx1 * (x1 - x0) / (fx1 - fx0)
         if abs(fx1)<= tol:
+            
             return [x2,0]
 
         x0, x1 = x1, x2

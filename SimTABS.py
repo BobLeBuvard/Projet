@@ -172,7 +172,7 @@ def odefunction(t, T,num_du_scenario = 1, delta_t = None,Force_heating = False):
     dT -> dérivées des températures à l'instant t (dim(5))
 
     '''
-    dT = np.empty_like(T) # de même dimensions que T mais contient les dérivées
+    dT = np.empty(len(T), dtype=np.float64) # de même dimensions que T mais contient les dérivées
 
     #CALCUL DE dT_room
     dT[0] = inv_C[0]*((-1/(R_r_moins_s + R_s_moins_c2))*(T[0]-T[4]) +g(t))
