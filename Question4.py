@@ -1,5 +1,5 @@
 import matplotlib.pyplot as plt
-from RechercheRacine import bissection, hybride
+from RechercheRacine import bissection, hybride,secante
 import numpy as np
 from SimTABS import*
 import time
@@ -160,7 +160,7 @@ def question_4_3(T_max_d,T0 = np.array([15, 15, 15, 15, 15]),tol_bisect = 0.5e-3
     FenetreDeTemps = [0,24]
     if debug: start=time.time()
     Temp_Max_delta_t =  lambda delta_t: max_a_stabilisation(delta_t, T0,h)[0] - T_max_d  
-    delta_t ,statut = hybride(Temp_Max_delta_t,0,20, tol=tol_bisect, max_iter=54)
+    delta_t ,statut = bissection(Temp_Max_delta_t,0,20, tol=tol_bisect, max_iter=54)
     print(delta_t)
     #TODO: vérifier le statut de la bissection. 
     #T0_new est les conditions initiales du dernier jour

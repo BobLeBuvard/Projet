@@ -16,7 +16,7 @@ def celsius(temp):
 #CONFIG
 FenetreDeTemps = np.array([0, 24]) # fenetre de test comme demandé -> taille du cycle
 h = 0.01  # pas de temps ( toutes les 6 minutes)
-T0 = np.array([15,15,15,15,15])  #conitions initiales données -> ici mises en array en kelvins
+T0 = np.array([15,15,15,15,15])  #conitions initiales données 
 default_tol = 10e-10 #choix arbitraire
 
 #FORME DE l'array T 
@@ -36,7 +36,8 @@ R_w = 0.15 #Résistance de l'eau
 R_cc_moins_c1 = 0.05
 R_c2_moins_cc = 0.02
 R_r_moins_s = 0.1
-R_s_moins_c2 = 0.
+R_s_moins_c2 = 0.183
+'''
 moins_inv_R_r_moins_s_plus_R_s_moins_c2 = (-1/(R_r_moins_s + R_s_moins_c2))
 inv_R_x = 1/R_x
 moins_inv_R_x = -1/R_x
@@ -45,5 +46,5 @@ moins_inv_R_cc_moins_c1 = -1/R_cc_moins_c1
 inv_R_c2_moins_cc = 1/R_c2_moins_cc
 moins_inv_R_c2_moins_cc = -1/R_c2_moins_cc
 inv_R_r_moins_s_plus_R_s_moins_c2 = 1/(R_r_moins_s + R_s_moins_c2)
-
+'''
 debug = True
