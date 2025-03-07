@@ -144,14 +144,23 @@ def hybride(f,x0,x1,tol =0.5e-7,tol_bisect = 3 ,max_iter = 30,alentours_secante 
 
     #partie sécante
     x0,x1 = x0_new-alentours_secante,x0_new+alentours_secante
-    for i in range(max_iter):
-        if abs(fx1 - fx0) < 1e-12:  # Évite la division par zéro 1e-12 = "zéro machine"
-            return [x2, -1] #tolérance atteinte (none -> x2 par louis)
-        
-        x2 = x1 - fx1 * (x1 - x0) / (fx1 - fx0)
-        if abs(fx1)<= tol:
-            
-            return [x2,0]
+    
 
+    for i in range(max_iter):
+        # Vérifie si la division par zéro pourrait se produire
+        if abs(fx1 - fx0) < 1e-12:  # Évite la division par zéro
+            return [None, -1]  # Si on évite la division par zéro, on renvoie une erreur
+
+        # Calcul de x2 (sécante)
+        x2 = x1 - fx1 * (x1 - x0) / (fx1 - fx0)
+
+        # Vérification si la solution est suffisamment proche de zéro
+        if abs(fx1) <= tol or abs(x1 - x0) <= tol:  # Critère basé sur x1 ou la différence entre x1 et x0
+            return [x2, 0]
+
+        # Mise à jour de x0, x1 et des valeurs des fonctions
         x0, x1 = x1, x2
         fx0, fx1 = fx1, f(x1)
+
+# Si on atteint le max d'itérations sans solution, on renvoie une erreur
+    return [None, -1]  # Si la solution n'est pas trouvée dans le nombre d'itérations
