@@ -5,7 +5,7 @@ from SimTABS import*
 import time
 def fonctiondroite(hauteur, label = None):
     '''fonction qui va plot y = 0 sur le graphique'''
-    if debug: plt.plot(np.arange(25),np.zeros(25) + hauteur , label = label)
+    plt.plot(np.arange(25),np.zeros(25) + hauteur , label = label)
 
 #______________________________________________________________________________________________________#
 # question 4.1
@@ -148,10 +148,10 @@ def max_a_stabilisation(delta_t, T0 = np.array([15, 15, 15, 15, 15]), h = 0.01,t
     
     '''
     FenetreDeTemps = [0,24]
-    days_to_converge, T0_new = cycles_apres_convergence(T0,FenetreDeTemps,h,delta_t= delta_t,num_du_scenario=4,tol = tol_temp,max_jours = 30,Force_heating = False, q_3_5 = False ) #T0_new est les conditions initiales du dernier jour
-    if days_to_converge ==None:
-        return("erreur de convergence")
-    print(T_max(delta_t,T0_new)[0]) #imprimer le maximum
+    days_to_stabilize, T0_new = cycles_apres_convergence(T0,FenetreDeTemps,h,delta_t= delta_t,num_du_scenario=4,tol = tol_temp,max_jours = 30,Force_heating = False, q_3_5 = False ) #T0_new est les conditions initiales du dernier jour
+    if days_to_stabilize ==None:
+        return("erreur de stabilisation")
+    if debug : print(T_max(delta_t,T0_new)[0]) #imprimer le maximum
     return T_max(delta_t,T0_new)
 
 def question_4_3(T_max_d,T0 = np.array([15, 15, 15, 15, 15]),tol_bisect = 0.5e-3,tol_temp = 0.1):
@@ -162,15 +162,17 @@ def question_4_3(T_max_d,T0 = np.array([15, 15, 15, 15, 15]),tol_bisect = 0.5e-3
     Temp_Max_delta_t =  lambda delta_t: max_a_stabilisation(delta_t, T0,h)[0] - T_max_d  
     delta_t ,statut = bissection(Temp_Max_delta_t,0,20, tol=tol_bisect, max_iter=54)
     print(delta_t)
-    #TODO: vérifier le statut de la bissection. 
+    if statut:
+        print(" il y a eu un souci dans la recherche de racine. On n'a pas trouvé de delta_t qui pouvait atteindre T_max_d")
     #T0_new est les conditions initiales du dernier jour
-   
-    T0_new = cycles_apres_convergence(T0,FenetreDeTemps,h,delta_t= delta_t,num_du_scenario=4,tol = tol_temp,max_jours = 30,Force_heating = False, q_3_5 = False )[1]
-    verification_EN15251(delta_t, EN15251,T0 = T0_new, tol = tol_temp)
+    else:
+        T0_new = cycles_apres_convergence(T0,FenetreDeTemps,h,delta_t= delta_t,num_du_scenario=4,tol = tol_temp,max_jours = 30,Force_heating = False, q_3_5 = False )[1]
+        verification_EN15251(delta_t, EN15251,T0 = T0_new, tol = tol_temp)
+        return delta_t
     if debug: 
         end=time.time()
         print(f"Fin des opérations. Temps écoulé: {end-start} secondes")
-    return delta_t
+    return -1
     ''
 
 

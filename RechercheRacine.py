@@ -1,5 +1,6 @@
 import numpy as np
 import math
+from config import debug
 
 def hasRoots(f, x0, x1, tol,sec = False):
     ''' 
@@ -47,11 +48,11 @@ def bissection(f, x0, x1, tol=0.5e-7, max_iter=50):
         if abs(fx2) < tol:  # Critère d'arrêt basé sur la fonction
             return [x2, 0]
         
-        if fx0 * fx2 < 0:
+        if fx0 * fx2 <= 0:
             x1 = x2
         else:
             x0, fx0 = x2, fx2  # Mise à jour
-            print(f"Nouveau x2 trouvé dans la recherche de racine: {x2}")
+            # if debug : print(f"Nouveau x2 trouvé dans la recherche de racine: {x2}")
     return [x2, 0]
 
 
@@ -110,7 +111,7 @@ def hybride(f,x0,x1,tol =0.5e-7,tol_bisect = 0.1 ,max_iter = 30):
     #partie bissection:
     if not fx0 * fx1 > 0:
         nombre_d_iterations = math.ceil(np.log2((x1 - x0) / (2 * tol_bisect))) #arrondi supérieur
-        print(nombre_d_iterations)
+        if debug: print(nombre_d_iterations)
         if (nombre_d_iterations <= 0 or nombre_d_iterations > max_iter):
             print('souci de convergence, ce sera juste la méthode de la sécante')
             racine,statut = secante_precalculee(f, x0, x1, tol, fx0, fx1, max_iter)

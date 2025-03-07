@@ -143,9 +143,9 @@ def T_w(heating_mode,T_t):
     
     '''
     if heating_mode == 3:
-        return kelvin(28)
+        return 28
     elif heating_mode == 2: 
-        return kelvin(18)
+        return 18
     else:
         return T_t #le dernier terme est annulé donc il faut que T_t - T_w = 0 -> T_w = T_t
 
@@ -159,7 +159,7 @@ def odefunction(t, T,num_du_scenario = 1, delta_t = None,Force_heating = False):
     
     t -> instant de temps (float64)
     
-    T -> array des températures (dim (5,1)) dans l'ordre [T_room, T_t, T_cc, T_c1,T_c2]
+    T -> array des températures (dim (5,1)) dans l'ordre [T_room, T_t, T_cc, T_c1,T_c2] -> celsius ou kelvins peu importe on fait que des différences de températures
 
     delta_t = intervalle de temps (float64) supplémentaire pour le scénario 4, par défaut n'est pas utilisé (défini) = None
 
@@ -222,7 +222,6 @@ def calculTemperaturesEuler(FenetreDeTemps, T0, h,num_du_scenario = 1, delta_t =
     T -> un array des température correspondantes aux temps utilsiés, dim(5,24/h)
 
     '''
-    T0 = kelvin(T0)
     t0, tf = FenetreDeTemps
 
     n = int((tf - t0) / h) + 1   # nombre de points de temps -> je préfère faire ainsi parce que on demande d'utiliser n , sinon je ferais T = np.zeros((5, len(t)))
@@ -234,7 +233,7 @@ def calculTemperaturesEuler(FenetreDeTemps, T0, h,num_du_scenario = 1, delta_t =
     for i in range(1, n):
         dT = odefunction(t[i-1], T[:, i-1], num_du_scenario, delta_t=delta_t,Force_heating = Force_heating)  #calcul des dérivées de tout pour chaque dernier élément de la colonne
         T[:, i] = T[:, i-1] + h * dT  # application de Euler 
-    return [t, celsius(T)]
+    return [t, T]
 
 def question_3_2(num_du_scenario = 1,FenetreDeTemps = [0,24]):
     t,T = calculTemperaturesEuler(FenetreDeTemps,T0,h,num_du_scenario=num_du_scenario)
@@ -257,9 +256,9 @@ def calculTemperaturesIVP(FenetreDeTemps, T0, rtol,num_du_scenario = 1, t_eval =
 
     t_eval -> paramètre pour forcer l'évaluation aux points de Euler pour pouvoir comparer à des t identiques. On pourrait interpoler mais je sais pas trop
     '''
-    T0 = kelvin(T0)
+    
     solution = scp.integrate.solve_ivp(odefunction, FenetreDeTemps, T0, rtol= rtol,t_eval = t_eval,args=(num_du_scenario, delta_t, Force_heating)) # forcer d'évaluer aux valeurs de t de Euler pour le dernier paramètre si on veut comparer Solve_IVP et Euler
-    return[solution.t, celsius(solution.y)]
+    return[solution.t, solution.y]
 
 def question_3_3(num_du_scenario = 1):
     t,T = calculTemperaturesIVP(FenetreDeTemps,T0,10e-10,num_du_scenario = num_du_scenario)
@@ -351,7 +350,7 @@ def cycles_apres_convergence(T0, FenetreDeTemps, h,delta_t = 0,num_du_scenario =
     t_total = np.copy(t)
     for i  in range(max_jours-2):
         if abs(T_total[0, -1] - T_total[0, -(1+journee_pas)]) <= tol:
-            print(f"a convergé après {i+2} jours")
+            if debug: print(f"a convergé après {i+2} jours")
             if q_3_5:
                 for j in range(0,5,4):
                     plt.plot(t_total/(FenetreDeTemps[1]-FenetreDeTemps[0]),T_total[j])
@@ -359,7 +358,7 @@ def cycles_apres_convergence(T0, FenetreDeTemps, h,delta_t = 0,num_du_scenario =
                 plt.xlabel('nombre de cycles')
                 plt.ylabel('températures des objets')
                 plt.show()
-            if not q_3_5:
+            if not q_3_5 and debug:
                 plt.plot(t_total/(FenetreDeTemps[1]-FenetreDeTemps[0]),(T_total[0]+T_total[4])/2)
                 plt.title(label = f" température de confort jusqu'à stagnation (delta_t = {delta_t})")
                 plt.xlabel('nombre de cycles')
@@ -373,7 +372,7 @@ def cycles_apres_convergence(T0, FenetreDeTemps, h,delta_t = 0,num_du_scenario =
             #ajouter le dernier jour à T_total et t_total
             T_total = np.concatenate((T_total,T),axis = 1)
             t_total = np.concatenate((t_total,t+(i+2)*(FenetreDeTemps[1]-FenetreDeTemps[0])))
-            print(f"n'a pas convergé après {i+2} jours")
+            if debug : print(f"n'a pas convergé après {i+2} jours")
     print(f"n'a pas convergé après {max_jours} , ajoutez plus de jours")
     return None, None
 
