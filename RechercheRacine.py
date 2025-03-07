@@ -18,7 +18,7 @@ def hasRoots(f, x0, x1, tol,sec = False):
         return [None, 1]  # Erreur 1 : Pas de changement de signe, donc pas de racine unique
     if abs(fx0) <= tol:
         print(f"La solution est {x0}")
-        return [x0, 0]  # x0 est déjà une racine
+        return [x0, 0]  #x0 est déjà une racine
     
     if abs(fx1) <= tol:
         print(f"La solution est {x1}")
