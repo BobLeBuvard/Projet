@@ -48,10 +48,10 @@ def bissection(f, x0, x1, tol=0.5e-7, max_iter=50):
         if abs(fx2) < tol:  # Critère d'arrêt basé sur la fonction
             return [x2, 0]
         
-        if fx0 * fx2 <= 0:
+        if fx0 * fx2 < 0:  # Signe opposé → la racine est entre x0 et x2
             x1 = x2
-        else:
-            x0, fx0 = x2, fx2  # Mise à jour
+        else:  # Sinon, elle est entre x2 et x1
+            x0, fx0 = x2, fx2
             # if debug : print(f"Nouveau x2 trouvé dans la recherche de racine: {x2}")
     return [x2, 0]
 
