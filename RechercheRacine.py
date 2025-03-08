@@ -11,12 +11,12 @@ def hasRoots(f, x0, x1, tol,sec = False):
     '''
     fx0, fx1 = f(x0), f(x1)
     
-    if tol <= 0:
+    if tol <= 0 or abs(x0- x1)<= tol :
         print("Une tolérance égale à 0 ou négative est impossible à atteindre.")
-        return[None, 1]
+        return[fx0, 1]
     if fx0 * fx1 > 0 and not sec:
         print("La fonction a le même signe aux extrémité de l'intervalle considéré, à éviter.")
-        return [None, 1]  # Erreur 1 : Pas de changement de signe, donc pas de racine unique
+        return [None, -1]  # Erreur 1 : Pas de changement de signe, donc pas de racine unique
     if abs(fx0) <= tol:
         print(f"La solution est {x0}")
         return [x0, 0]  #x0 est déjà une racine
