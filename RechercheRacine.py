@@ -9,6 +9,8 @@ def hasRoots(f, x0, x1, tol, sec=False):
     - Vérifie si x0 ou x1 est déjà une racine
     - Retourne un statut 1 si les conditions ne sont pas respectées
     '''
+    if not isinstance(x0, (int, float)) or not isinstance(x1, (int, float)): #vérifier que x0 et x1 existent bel et bien
+        return ["x0 ou x1 ne sont pas définis",1]
     fx0, fx1 = f(x0), f(x1)
 
     if tol <= 0 or abs(x0 - x1) <= tol:
@@ -32,6 +34,7 @@ def hasRoots(f, x0, x1, tol, sec=False):
 
 def bissection(f, x0, x1, tol=0.5e-7, max_iter=50):
     '''Recherche de racine par dichotomie (bissection).'''
+    
     
     retour = hasRoots(f, x0, x1, tol)
     if retour[1] != 0 or retour[0] is not None:
@@ -80,7 +83,7 @@ def secante(f, x0, x1, tol=0.5e-7, max_iter=65):
     for i in range(max_iter):
         if abs(fx1 - fx0) < 1e-12:  # Évite la division par zéro
             print("Problème de convergence : division par zéro.")
-            return [None, -1]  
+            return [None, 1]  
 
         x2 = x1 - fx1 * (x1 - x0) / (fx1 - fx0)
         fx2 = f(x2)
@@ -102,7 +105,7 @@ def secante_precalculee(f,x0,x1,tol,fx0,fx1,max_iter):
             print("division par zéro")
             print(f'{fx0} {fx1}')
             return [None, -1]  # Erreur -1 : division par zéro
-        x2 = x1 - fx1 * (x1 - x0) / fx1 - fx0
+        x2 = x1 - fx1 * (x1 - x0) / (fx1 - fx0)
 
         x0, x1 = x1, x2
         fx0, fx1 = fx1, f(x1)
