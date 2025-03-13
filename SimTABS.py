@@ -164,12 +164,6 @@ def odefunction(t, T,other_args):
     
     T -> array des températures (dim (5,1)) dans l'ordre [T_room, T_t, T_cc, T_c1,T_c2] -> celsius ou kelvins peu importe on fait que des différences de températures
 
-    delta_t = intervalle de temps (float64) supplémentaire pour le scénario 4, par défaut n'est pas utilisé (défini) = None
-
-    num_du_scenario -> scenario choisi, de 1 à 5 (5 = customisé), par défaut le 1 est utilisé
-
-    Force_heating -> entier de 1 à 3 . 1 éteint, 2 refroidit et 3 chauffe. Par défaut on ne force pas le chauffage (ce pourquoi False)
-
     OUT:
 
     dT -> dérivées des températures à l'instant t (dim(5))
@@ -212,12 +206,6 @@ def calculTemperaturesEuler(FenetreDeTemps, T0, h,**kwargs):
     
     h -> pas de temps nécessaire à la résolution avec Euler (entier)
    
-    delta_t -> temps (float64) supplémentaire pour le scénario 4, par défaut n'est pas utilisé (défini) = None
-
-    num_du_scenario -> scenario choisi, de 1 à 5 (5 = customisé), par défaut le 1 est utilisé
-
-    Force_heating -> entier de 1 à 3 . 1 éteint, 2 refroidit et 3 chauffe. Par défaut on ne force pas le chauffage (ce pourquoi False)
-
     OUT:
     
     t -> un array des temps, dim(1,24/h)
@@ -327,20 +315,7 @@ def cycles_apres_convergence(T0, FenetreDeTemps,**kwargs):
     T0 -> conditions initiales en celsius(array dim(5,1))
 
     FenetreDeTemps -> durée d'un cycle
-
-    h -> pas du calcul de la fonction (0.01)
-
-    tol -> tolérance de convergence (par défault = 0.01), erreur maximum tolérée pour dire que les températures convergent
-
-    max_jour -> Si ce nombre de jours est dépassé, la fonction s'arrête même si les températures n'ont pas convergé après x jours (30)
-    par défaut)
-
-    delta_t -> intervalle de temps de chauffe utile pour la question 4
     
-    Force_heating -> entier de 1 à 3 . 1 éteint, 2 refroidit et 3 chauffe. Par défaut on ne force pas le chauffage (ce pourquoi False)
-    
-    
-
     OUT :
 
     Graphique des température sur la durée qui assure la convergence.
@@ -348,10 +323,12 @@ def cycles_apres_convergence(T0, FenetreDeTemps,**kwargs):
 
     '''
     #unpack kwargs pour n'en garder que les éléments utiles dans cete partie de code
-    h = kwargs.pop('h',0.01)
+    global h,tol_temp,max_jours
+    kwargs['h'] = kwargs.get('h',h)
+    h = kwargs.get('h')
     q_3_5 = kwargs.pop('q_3_5',True)
-    max_jours = kwargs.pop('max_jours',30)
-    tol = kwargs.pop('tol_temp',0.01)
+    max_jours = kwargs.pop('max_jours',max_jours)
+    tol_temp = kwargs.pop('tol_temp',tol_temp)
     num_du_scenario = kwargs.get('num_du_scenario',1)
     delta_t = kwargs.get('delta_t',0)
     
@@ -360,14 +337,17 @@ def cycles_apres_convergence(T0, FenetreDeTemps,**kwargs):
     t,T = calculCycles(2,T0,FenetreDeTemps,**kwargs)
     T_total = np.copy(T)
     t_total = np.copy(t)
+    #plus besoin de h dans kwargs -> on le retire
+    kwargs.pop('h')
+    
     for i  in range(max_jours-2):
-        if abs(T_total[0, -1] - T_total[0, -(1+journee_pas)]) <= tol:
+        
+        if abs(T_total[0, -1] - T_total[0, -(1+journee_pas)]) <= tol_temp:
             if debug: print(f"a convergé après {i+2} jours")
             if q_3_5:
                 for j in range(0,5,4):
                     plt.plot(t_total/(FenetreDeTemps[1]-FenetreDeTemps[0]),T_total[j])
                     
-                
                 
                 plt.title(label = f"T_room et T-c2 jusqu'à stagnation (sc.{num_du_scenario})(delta_t = {round(delta_t,ndigits=2)})")#garder que 2 chiffres après la virgule
                 plt.xlabel('nombre de cycles')
@@ -388,7 +368,12 @@ def cycles_apres_convergence(T0, FenetreDeTemps,**kwargs):
             T_total = np.concatenate((T_total,T),axis = 1)
             t_total = np.concatenate((t_total,t+(i+2)*(FenetreDeTemps[1]-FenetreDeTemps[0])))
             if debug : print(f"n'a pas convergé après {i+2} jours")
-    print(f"n'a pas convergé après {max_jours} , ajoutez plus de jours")
+    print(f"n'a pas convergé après {max_jours} jours, ajoutez plus de jours")
+    
+    if debug:
+        plt.plot(t_total,T_total[0])
+        plt.show()
+    
     return None, None
 
 
@@ -413,13 +398,15 @@ def calculCycles(cycles,T0,FenetreDeTemps,**kwargs):
     
     T-> array de dimensions (5, cycles*h +1)
         '''
-    h = kwargs.pop('h',0.01) #on le retire de kwargs parce qu'on n'en veut plus dedans
+    global h
+    h = kwargs.pop('h',h) #on le retire de kwargs parce qu'on n'en veut plus dedans
     T_Total = np.empty((5, 0))  # 5 lignes, 0 colonnes
     t_Total = np.array([])
     for i in range(cycles):
         if i > 0:
             t = t[:-1]
             T = T[:, :-1]
+        
         t, T = calculTemperaturesEuler(FenetreDeTemps, T0, h,**kwargs) #T0 est de dimensions [5,0]
         T_Total = np.concatenate((T_Total,T), axis = 1) 
         
@@ -427,6 +414,7 @@ def calculCycles(cycles,T0,FenetreDeTemps,**kwargs):
         
         T0 = T[:, -1] #prendre les 5 dernières valeurs de l'itération précédentes comme valeurs initiales -> la dernière colonne de t et T
 
+    
 
     return(t_Total,T_Total)
 

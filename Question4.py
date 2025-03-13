@@ -5,8 +5,9 @@ from SimTABS import*
 import time
 
 def fonctiondroite(hauteur, label = None):
+    global FenetreDeTemps
     '''fonction qui va plot y = 0 sur le graphique'''
-    plt.plot(np.arange(25),np.zeros(25) + hauteur , label = label)
+    plt.plot(np.arange(FenetreDeTemps[1]-FenetreDeTemps[0]+1),np.zeros(FenetreDeTemps[1]-FenetreDeTemps[0]+1) + hauteur , label = label)
 
 
 #______________________________________________________________________________________________________#
@@ -29,10 +30,11 @@ def T_max(delta_t, **kwargs):
     
     - Différence entre Tmax obtenu et Tmax souhaité.
     '''
+    global h,T0
     kwargs['delta_t'] = delta_t #ajout aux arguments si ce n'est pas déjà le cas
-    T0 =kwargs.pop('T0',np.array([15,15,15,15,15]))
+    T0 =kwargs.pop('T0',T0)
     no_max = kwargs.pop('no_max', False)
-    h = kwargs.pop('h',0.01)
+    h = kwargs.pop('h',h)
     global FenetreDeTemps
     FenetreDeTemps = kwargs.pop('FenetreDeTemps',FenetreDeTemps)
     MAX = 0
@@ -166,14 +168,17 @@ def max_a_stabilisation(delta_t,**kwargs):
     fonction qui rend le maximum stabilisé au dernier jour
     
     '''
-    global T0
+    global T0,FenetreDeTemps
     T0 = kwargs.pop('T0',T0)
     kwargs['delta_t'] = delta_t
-    
+    FenetreDeTemps = kwargs.pop('FenetreDeTemps',FenetreDeTemps)
     #le plot se fait ici
+    
     days_to_stabilize, T0_new = cycles_apres_convergence(T0,FenetreDeTemps,**kwargs) #T0_new est les conditions initiales du dernier jour 
     
     kwargs['T0'] = T0_new
+    
+    
     if days_to_stabilize == None:
         return("erreur de stabilisation")
     delta_t = kwargs.pop('delta_t',0) # cas par défaut for the sake of it
@@ -183,9 +188,11 @@ def max_a_stabilisation(delta_t,**kwargs):
 
 def question_4_3(T_max_d, **kwargs):
     global h, searchInterval,tol_rac,T0,FenetreDeTemps
+    if kwargs['num_du_scenario'] != 4 : print("scénario incorrect. Remise à scénario 4 ")
     kwargs['num_du_scenario'] = 4 
-    kwargs['h'] = h
-    kwargs['tol_rac'] = tol_rac
+    
+    kwargs['h'] = kwargs.get('h',h)
+    kwargs['tol_rac'] = kwargs.get('tol_rac',tol_rac)
     kwargs['q_3_5'] = False
     if debug: start=time.time()
     Temp_Max_delta_t =  lambda delta_t: max_a_stabilisation(delta_t,**kwargs)[0] - T_max_d  

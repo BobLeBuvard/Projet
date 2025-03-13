@@ -21,6 +21,7 @@ default_tol = 10e-10 #choix arbitraire
 searchInterval = [0,20]
 tol_rac = h
 tol_temp = 0.01
+max_jours = 30
 
 #FORME DE l'array T 
 
