@@ -226,8 +226,14 @@ def calculTemperaturesEuler(FenetreDeTemps, T0, h,**kwargs):
         T[:, i] = T[:, i-1] + h * dT  # application de Euler 
     return [t, T]
 
-def question_3_2(num_du_scenario = 1,FenetreDeTemps = FenetreDeTemps ):
-    t,T = calculTemperaturesEuler(FenetreDeTemps,T0,h,num_du_scenario=num_du_scenario)
+def question_3_2(**kwargs):
+    global FenetreDeTemps,h,T0
+    num_du_scenario = kwargs.get('num_du_scenario',1) 
+    FenetreDeTemps = kwargs.pop('FenetreDeTemps',FenetreDeTemps) 
+    T0 = kwargs.pop('T0',T0) 
+    h = kwargs.pop('h',h) 
+    
+    t,T = calculTemperaturesEuler(FenetreDeTemps,T0,h,**kwargs)
     dessinemoassa(t,T,['T_room','T_t','T_cc','T_c1','T_c2'],xlabel='Temps (heures)',ylabel='Température(°K)',titre= f'Euler: scénario {num_du_scenario}')
 
 #______________________________________________________________________________________________________#
@@ -252,8 +258,14 @@ def calculTemperaturesIVP(FenetreDeTemps, T0, rtol,**kwargs):
     solution = scp.integrate.solve_ivp(odefunction, FenetreDeTemps, T0, rtol= rtol,t_eval = t_eval,args=(kwargs,)) # forcer d'évaluer aux valeurs de t de Euler pour le dernier paramètre si on veut comparer Solve_IVP et Euler
     return[solution.t, solution.y]
 
-def question_3_3(num_du_scenario = 1):
-    t,T = calculTemperaturesIVP(FenetreDeTemps,T0,default_tol,   num_du_scenario = num_du_scenario,) #LAISSER LA VIRGULE A LA FIN (pour kwargs)
+def question_3_3(**kwargs):
+    global FenetreDeTemps,h,T0
+    num_du_scenario = kwargs.get('num_du_scenario',1) 
+    FenetreDeTemps = kwargs.pop('FenetreDeTemps',FenetreDeTemps) 
+    T0 = kwargs.pop('T0',T0) 
+    kwargs.pop('h',h) 
+    
+    t,T = calculTemperaturesIVP(FenetreDeTemps,T0,default_tol,   **kwargs)
     dessinemoassa(t,T,['T_room','T_t','T_cc','T_c1','T_c2'],xlabel='Temps (heures)',ylabel='Température(°K)',titre= f'IVP: scénario {num_du_scenario}')
 
 

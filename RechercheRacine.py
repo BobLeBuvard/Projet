@@ -150,7 +150,8 @@ def hybride(f,x0,x1,**kwargs):
 
                 if abs(fx2) < tol_bisect:  # Critère d'arrêt basé sur la fonction
                     x0_new = x2
-                    break
+
+                    return [x0_new,0]
                 
                 if fx0 * fx2 < 0:
                     x1 = x2
@@ -159,9 +160,10 @@ def hybride(f,x0,x1,**kwargs):
             
         
     else:
+        #Partie secante.
         print("La fonction a le même signe aux extrémité de l'intervalle considéré, à éviter. Passage direct à la sécante") 
-        for k in range(max_iter):
-            for i in range(max_iter):
+        for i in range(max_iter):
+            for j in range(max_iter):
                 racine,statut = secante_precalculee(f, x0, x1, tol, fx0, fx1, max_iter)
             if not statut:
                 return[racine,statut]

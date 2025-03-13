@@ -58,7 +58,7 @@ def question_4_1(**kwargs):
     delta_t = kwargs.pop('delta_t',0)
     T_max_d = kwargs.pop('T_max_d',0)
     MAX,t,T_confort = T_max(delta_t, **kwargs)
-    if debug: print(f"maximum: {MAX}") #print la température max sur l'intervalle en degrés celsius
+    print(f"maximum: {MAX}") #print la température max sur l'intervalle en degrés celsius
     plt.xlabel(f"temps ({FenetreDeTemps[1] - FenetreDeTemps[0]}h)") # Labélisation de l'axe des ordonnées (copypaste du tuto)
     plt.ylabel("température optimale ") # Labélisation de l'axe des abscisses (copypaste du tuto)
     plt.title(label = f'Température de confort sur {FenetreDeTemps[1]-FenetreDeTemps[0]}h -> delta_t = {delta_t}')
@@ -69,7 +69,7 @@ def question_4_1(**kwargs):
     
     plt.legend( loc='best')
     plt.show()
-    return 0
+    return MAX
  
 
 #______________________________________________________________________________________________________#
@@ -188,7 +188,6 @@ def max_a_stabilisation(delta_t,**kwargs):
 
 def question_4_3(T_max_d, **kwargs):
     global h, searchInterval,tol_rac,T0,FenetreDeTemps
-    if kwargs['num_du_scenario'] != 4 : print("scénario incorrect. Remise à scénario 4 ")
     kwargs['num_du_scenario'] = 4 
     
     kwargs['h'] = kwargs.get('h',h)
@@ -197,7 +196,7 @@ def question_4_3(T_max_d, **kwargs):
     if debug: start=time.time()
     Temp_Max_delta_t =  lambda delta_t: max_a_stabilisation(delta_t,**kwargs)[0] - T_max_d  
     
-    
+    return 0 
     x0,x1 = kwargs.get('search_x0',searchInterval[0]),kwargs.get('search_x0',searchInterval[1])
     
     delta_t ,statut = bissection(Temp_Max_delta_t,x0,x1,**kwargs)
@@ -242,6 +241,24 @@ Ce qu'on pourrait faire par contre c'est à l'aide du paramètre delta_t et Forc
 en fonction des conditions du jour précédent, et faire un scénario adapté. Ensuite il faudrait d'ailleurs 
 
 '''    
+
+def plot_T_max_delta_t(**kwargs):
+    global searchInterval
+    kwargs['num_du_scenario'] = 4
+    T_max_d = kwargs.get('T_max_d',24)
+    
+    delta_test = np.arange(searchInterval[0],searchInterval[1],0.5)
+    T_max_a_delta_t = np.zeros_like(delta_test)
+    Temp_Max_delta_t =  lambda delta_t: max_a_stabilisation(delta_t,**kwargs)[0] - T_max_d  
+    for i in range(len(delta_test)):
+        T_max_a_delta_t[i] = Temp_Max_delta_t(delta_test[i])
+    plt.plot(delta_test,T_max_a_delta_t,'.', label="Temp_Max_delta_t")
+    plt.xlabel("delta_t")
+    plt.ylabel("Temp_Max_delta_t")
+    plt.title("Courbe de Temp_Max_delta_t en fonction de delta_t")
+    plt.legend()
+    plt.grid(True)
+    plt.show()
 
 
 
