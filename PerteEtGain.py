@@ -7,7 +7,6 @@ flux = PERTE_ET_GAIN[1]
 val = scp.interpolate.CubicSpline(heures,flux,bc_type='periodic')
 
 if __name__ == "__main__":  # nécessaire pour tester le graphe si on débug
-    val = scp.interpolate.CubicSpline(heures,flux,bc_type='periodic')
     plt.plot(heures, val(heures),label='Spline')
     plt.plot(PERTE_ET_GAIN[0],PERTE_ET_GAIN[1],'o')
     plt.xlabel("Heures")  # Nom de l'axe des X

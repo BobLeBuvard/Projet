@@ -3,15 +3,17 @@ from RechercheRacine import bissection, hybride,secante
 import numpy as np
 from SimTABS import*
 import time
+
 def fonctiondroite(hauteur, label = None):
     '''fonction qui va plot y = 0 sur le graphique'''
     plt.plot(np.arange(25),np.zeros(25) + hauteur , label = label)
+
 
 #______________________________________________________________________________________________________#
 # question 4.1
 
 
-def T_max(delta_t,  T0 = np.array([15,15,15,15,15]) , no_max = False):
+def T_max(delta_t, **kwargs):
     '''
     Fonction qui calcule le maximum de température de confort d'un cycle (avec un delta T donné)
     
@@ -19,38 +21,45 @@ def T_max(delta_t,  T0 = np.array([15,15,15,15,15]) , no_max = False):
 
     IN:
 
-    - delta_t : durée de chauffage après 4h. (float64)
+    delta_t -> durée de chauffage après 4h. (float64)
 
-    - T_dmax : valeur cible de Tmax (ex : 24°C). (float64)
+    **kwargs -> se référer aux arguments qu'on peut mettre
     
     OUT:
     
     - Différence entre Tmax obtenu et Tmax souhaité.
     '''
+    kwargs['delta_t'] = delta_t #ajout aux arguments si ce n'est pas déjà le cas
+    T0 =kwargs.pop('T0',np.array([15,15,15,15,15]))
+    no_max = kwargs.pop('no_max', False)
+    h = kwargs.pop('h',0.01)
+    global FenetreDeTemps
+    FenetreDeTemps = kwargs.pop('FenetreDeTemps',FenetreDeTemps)
     MAX = 0
-    t, T = calculTemperaturesEuler([0, 24], T0,  0.01,num_du_scenario = 4, delta_t = delta_t)
+
+    t, T = calculTemperaturesEuler(FenetreDeTemps, T0,h,**kwargs)
     T_confort = (T[0, :] + T[4, :]) / 2  # T_room = T[0], T_c2 = T[4]
     if no_max: 
-        return None,t,T_confort
+        return t,T_confort
     MAX = np.max(T_confort)
     return MAX, t, T_confort#si on ne veut pas de max --> no_max=True ben on ne le calcule pas.
 
 
-def question_4_1(delta_t,T_max_d):
+def question_4_1(**kwargs):
     '''
     
     fonction qui dessine le max de température de confort en apellant T_max et en plottant les températures adéquates.
     
-    T_max_d en degrés celsius
-    
     delta_t en heures
     
     '''
-    MAX,t,T_confort = T_max(delta_t)
-    if debug: print(MAX) #print la température max sur l'intervalle en degrés celsius
-    plt.xlabel("temps (24h)", fontsize = 8) # Labélisation de l'axe des ordonnées (copypaste du tuto)
-    plt.ylabel("température optimale ", fontsize = 8) # Labélisation de l'axe des abscisses (copypaste du tuto)
-    plt.title(label = f'Température de confort sur 24h -> delta_t = {delta_t}')
+    delta_t = kwargs.pop('delta_t',0)
+    T_max_d = kwargs.pop('T_max_d',0)
+    MAX,t,T_confort = T_max(delta_t, **kwargs)
+    if debug: print(f"maximum: {MAX}") #print la température max sur l'intervalle en degrés celsius
+    plt.xlabel(f"temps ({FenetreDeTemps[1] - FenetreDeTemps[0]}h)") # Labélisation de l'axe des ordonnées (copypaste du tuto)
+    plt.ylabel("température optimale ") # Labélisation de l'axe des abscisses (copypaste du tuto)
+    plt.title(label = f'Température de confort sur {FenetreDeTemps[1]-FenetreDeTemps[0]}h -> delta_t = {delta_t}')
     plt.plot(t,T_confort ,label= "température de confort")
     fonctiondroite(T_max_d, label = 'T_max_d')
     plt.plot(4,T_max_d,'.', label = f'début de la période de chauffe ({4}h)')
@@ -63,47 +72,51 @@ def question_4_1(delta_t,T_max_d):
 
 #______________________________________________________________________________________________________#
 #question 4.2
-def recherche_delta_t (T_max_d, FenetreDeTemps = [0,24], tol = 0.5e-7, T0 = np.array([15, 15, 15, 15, 15]),no_max = False):
+def recherche_delta_t (T_max_d,**kwargs):
     '''
         fonction qui va rechercher le delta_t tel que l'on ne dépassera jamais T_max_d sur un cycle de 24h
 
         IN:
     
-        T_max_d (float)--> Température maximale désirée en celsius.
+        T_max_d (float) -> Température maximale désirée en celsius.
         
-        FenetreDeTemps (list[float, float])--> FenetreDeTemps de recherche pour delta_t (par défaut [0, 24]).
+        **kwargs -> se référer aux arguments qu'on peut mettre
         
-        tol (float)--> Tolérance pour la convergence de la méthode de la bissection (par défaut 0.5e-7).
-        
-        T0 (numpy.ndarray)--> Tableau numpy des températures initiales en celsius (par défaut [288.15, 288.15, 288.15, 288.15, 288.15]).
+         OUT:
 
-        OUT:
-
-        delta_t (float)--> Période delta_t nécessaire pour ne pas dépasser T_max_d.
+        delta_t (float) -> Période delta_t nécessaire pour ne pas dépasser T_max_d.
         '''
 
-
-    f_difference = lambda delta_t: T_max(delta_t, T0,no_max = no_max)[0] - T_max_d 
+    
+    kwargs.pop('delta_t',None) #on efface le delta_t des kwargs pour la recherche 
+    kwargs['T_max_d'] = T_max_d #on ajoute T_max_d aux arguments pour T_max
+    kwargs['num_du_scenario'] = 4
+    kwargs['tol_rac'] = kwargs['h']# on ne peut pas avoir une précision parfaite à cause du h choisi impossible d'avoir plus précis que h (déterminé par essai erreur).
+    f_difference = lambda delta_t: T_max(delta_t,**kwargs)[0] - T_max_d 
     '''
-    fonction qui fait la différence entre T_max qui varie en fonction de delta et T_max_d qui est choisis abritrairement, il faut en 
+    fonction qui fait la différence entre T_max qui varie en fonction de delta et T_max_d qui est choisie abritrairement, il faut en 
     rechercher la racine pour pouvoir trouver delta_t
     '''
-    
-    delta_t ,statut = bissection(f_difference,FenetreDeTemps[0],FenetreDeTemps[1], tol=tol, max_iter=54)
+    global searchInterval
+    x0,x1 = kwargs.get('search_x0',searchInterval[0]),kwargs.get('search_x0',searchInterval[1])
+    delta_t ,statut = bissection(f_difference,x0,x1,**kwargs) #delta_t est compris entre 0h et 20h 
     
     if statut !=0 : 
         print('erreur, problème de racine') 
         return (-1, statut)
     return delta_t
 
-def question_4_2(T_max_d):
+def question_4_2(T_max_d,**kwargs):
     '''T_max_d en degrés celsius'''
-    delta_t = recherche_delta_t(T_max_d)
+    delta_t = recherche_delta_t(T_max_d,**kwargs)
+    kwargs['delta_t'] = delta_t
+    kwargs['T_max_d'] = T_max_d
+
     if isinstance(delta_t, tuple):
         print("fin avortée")
         return delta_t[1]
-    print(f'on a trouvé un delta_t approchant la T_d désirée: {delta_t} heures')
-    question_4_1(delta_t,T_max_d)
+    print(f"delta_t correspondant aux critères demandés{delta_t}")
+    question_4_1(num_du_scenario = 4 ,**kwargs)
     
 #______________________________________________________________________________________________________#
 # question 4.3
@@ -111,12 +124,18 @@ def question_4_2(T_max_d):
 
 
 #EN15251 est une array contenant t0 et tf et Tmin et Tmax -> [8,19,19.5,24]
-EN15251 = np.array([8,19,19.5,24])
-def verification_EN15251(delta_t,EN15251,T0 = np.array([15,15,15,15,15]),tol = 0.01 ):
+
+def verification_EN15251(delta_t,**kwargs ):
+    global tol_temp
+    EN15251 = kwargs.pop('EN15251',np.array([8,19,19.5,24]))
+    tol_temp = kwargs.pop('tol_temp', tol_temp)
+    kwargs['no_max'] = True
+
     '''
     ATTENTION ICI tol c'est la tolérance en température pour savoir à quel point c'est convergé
     '''
-    MAX,t,T_confort  = T_max(delta_t,T0 = T0 ,no_max = True)
+
+    t,T_confort  = T_max(delta_t,**kwargs)
     plt.plot(t,T_confort, label = 'température de confort')
     for i in range(2): 
         fonctiondroite(EN15251[i+2], label = ['température minimale','température maximale'][i])
@@ -133,7 +152,7 @@ def verification_EN15251(delta_t,EN15251,T0 = np.array([15,15,15,15,15]),tol = 0
     for i in range(len(t)):
         T_confort_i = T_confort[i]
         if (EN15251[0]<= t[i]<=  EN15251[1]):            
-            if not(EN15251[2]-tol <= T_confort_i <= EN15251[3]+tol): #est ce que les extrémas sont pris avec ?
+            if not(EN15251[2]-tol_temp <= T_confort_i <= EN15251[3]+tol_temp): #est ce que les extrémas sont pris avec ?
                 print("La norme EN15251 n'est pas respectée.")
                 return False
     print("La norme EN15251 est respectée.")
@@ -142,37 +161,61 @@ def verification_EN15251(delta_t,EN15251,T0 = np.array([15,15,15,15,15]),tol = 0
 
 
 
-def max_a_stabilisation(delta_t, T0 = np.array([15, 15, 15, 15, 15]), h = 0.01,tol_temp =0.01 ): 
+def max_a_stabilisation(delta_t,**kwargs): 
     '''
     fonction qui rend le maximum stabilisé au dernier jour
     
     '''
-    FenetreDeTemps = [0,24]
-    days_to_stabilize, T0_new = cycles_apres_convergence(T0,FenetreDeTemps,h,delta_t= delta_t,num_du_scenario=4,tol = tol_temp,max_jours = 30,Force_heating = False, q_3_5 = False ) #T0_new est les conditions initiales du dernier jour
-    if days_to_stabilize ==None:
+    global T0
+    T0 = kwargs.pop('T0',T0)
+    kwargs['delta_t'] = delta_t
+    
+    #le plot se fait ici
+    days_to_stabilize, T0_new = cycles_apres_convergence(T0,FenetreDeTemps,**kwargs) #T0_new est les conditions initiales du dernier jour 
+    
+    kwargs['T0'] = T0_new
+    if days_to_stabilize == None:
         return("erreur de stabilisation")
-    if debug : print(T_max(delta_t,T0_new)[0]) #imprimer le maximum
-    return T_max(delta_t,T0_new)
+    delta_t = kwargs.pop('delta_t',0) # cas par défaut for the sake of it
+    retour = T_max(delta_t,**kwargs)
+    if debug: print(f'maximum: {retour[0]}') 
+    return retour
 
-def question_4_3(T_max_d,T0 = np.array([15, 15, 15, 15, 15]),tol_bisect = 0.5e-3,tol_temp = 0.1):
-    start = time.time()
-    h = 0.01
-    FenetreDeTemps = [0,24]
+def question_4_3(T_max_d, **kwargs):
+    global h, searchInterval,tol_rac,T0,FenetreDeTemps
+    kwargs['num_du_scenario'] = 4 
+    kwargs['h'] = h
+    kwargs['tol_rac'] = tol_rac
+    kwargs['q_3_5'] = False
     if debug: start=time.time()
-    Temp_Max_delta_t =  lambda delta_t: max_a_stabilisation(delta_t, T0,h)[0] - T_max_d  
-    delta_t ,statut = bissection(Temp_Max_delta_t,0,20, tol=tol_bisect, max_iter=54)
-    print(delta_t)
+    Temp_Max_delta_t =  lambda delta_t: max_a_stabilisation(delta_t,**kwargs)[0] - T_max_d  
+    
+    
+    x0,x1 = kwargs.get('search_x0',searchInterval[0]),kwargs.get('search_x0',searchInterval[1])
+    
+    delta_t ,statut = bissection(Temp_Max_delta_t,x0,x1,**kwargs)
+    print(f'delta_t : {delta_t}')
+    
     if statut:
         print(" il y a eu un souci dans la recherche de racine. On n'a pas trouvé de delta_t qui pouvait atteindre T_max_d")
-    #T0_new est les conditions initiales du dernier jour
+        return -1
+    
     else:
-        T0_new = cycles_apres_convergence(T0,FenetreDeTemps,h,delta_t= delta_t,num_du_scenario=4,tol = tol_temp,max_jours = 30,Force_heating = False, q_3_5 = False )[1]
-        verification_EN15251(delta_t, EN15251,T0 = T0_new, tol = tol_temp)
-        return delta_t
+        
+        kwargs['delta_t'] = delta_t #mise a jour de delta_t des kwargs
+        T0 = kwargs.pop('T0',T0)
+        FenetreDeTemps = kwargs.pop('FenetreDeTemps',FenetreDeTemps)
+        
+        kwargs['T0']= cycles_apres_convergence(T0,FenetreDeTemps,**kwargs)[1] #Mise a jour de T0 pour les conditions du dernier jour
+        
+        #on doit a nouveau se débarasser de delta_t de kwargs
+        delta_t = kwargs.pop('delta_t',0) #fallback on sait jamais
+        
+        resultat_verif = verification_EN15251(delta_t,**kwargs)
     if debug: 
         end=time.time()
         print(f"Fin des opérations. Temps écoulé: {end-start} secondes")
-    return -1
+    return resultat_verif, delta_t
     ''
 
 

@@ -18,6 +18,9 @@ FenetreDeTemps = np.array([0, 24]) # fenetre de test comme demandé -> taille du
 h = 0.01  # pas de temps ( toutes les 6 minutes)
 T0 = np.array([15,15,15,15,15])  #conitions initiales données 
 default_tol = 10e-10 #choix arbitraire
+searchInterval = [0,20]
+tol_rac = h
+tol_temp = 0.01
 
 #FORME DE l'array T 
 
@@ -47,4 +50,4 @@ inv_R_c2_moins_cc = 1/R_c2_moins_cc
 moins_inv_R_c2_moins_cc = -1/R_c2_moins_cc
 inv_R_r_moins_s_plus_R_s_moins_c2 = 1/(R_r_moins_s + R_s_moins_c2)
 '''
-debug = True
+debug = False

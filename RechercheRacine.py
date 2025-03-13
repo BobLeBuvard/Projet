@@ -32,7 +32,9 @@ def hasRoots(f, x0, x1, tol, sec=False):
     return [None, 0]  # Tout va bien, on peut continuer
 
 
-def bissection(f, x0, x1, tol=0.5e-7, max_iter=50):
+def bissection(f, x0, x1, **kwargs):
+    tol = kwargs.get('tol_rac',0.5e-7)
+    max_iter = kwargs.get('max_iter',50)
     '''Recherche de racine par dichotomie (bissection).'''
     
     
@@ -46,8 +48,7 @@ def bissection(f, x0, x1, tol=0.5e-7, max_iter=50):
         return [None, -1]
 
     nombre_d_iterations = math.ceil(np.log2((x1 - x0) / (2 * tol)))
-
-    if nombre_d_iterations <= 0 or nombre_d_iterations > max_iter:
+    if nombre_d_iterations < 1 or nombre_d_iterations > max_iter:
         print("Problème de convergence : trop d'itérations nécessaires.")
         return [None, -1]  # Pas de convergence
     
@@ -71,9 +72,10 @@ def bissection(f, x0, x1, tol=0.5e-7, max_iter=50):
 
 
 
-def secante(f, x0, x1, tol=0.5e-7, max_iter=65):
+def secante(f, x0, x1,**kwargs):
     '''Recherche de racine par la méthode de la sécante.'''
-
+    tol = kwargs.get('tol_rac',0.5e-7)
+    max_iter = kwargs.get('max_iter',50)
     retour = hasRoots(f, x0, x1, tol, sec=True)
     if retour[1] != 0 or retour[0] is not None:
         return retour  
@@ -111,7 +113,10 @@ def secante_precalculee(f,x0,x1,tol,fx0,fx1,max_iter):
         fx0, fx1 = fx1, f(x1)
     print('pas de convergence de la secante')
     return [None,-1]
-def hybride(f,x0,x1,tol =0.5e-7,tol_bisect = 0.1 ,max_iter = 30):
+def hybride(f,x0,x1,**kwargs):
+    tol = kwargs.get('tol_rac',0.5e-7)
+    max_iter = kwargs.get('max_iter',30)
+    tol_bisect = kwargs.get('tol_bisect_hybride',0.1)
     #vérif conditions initiales
     fx0, fx1 = f(x0), f(x1)
     

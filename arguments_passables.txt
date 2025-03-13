@@ -1,0 +1,19 @@
+On peut mettre comme arguments de kwargs les valeurs suivantes:
+
+Fenetre_de_temps : la durée d'un cycle
+
+h : le pas de calcul pour Euler
+
+delta_t : utile pour la question 4: le temps de chauffe
+
+num_du_scenario : le numéro du scénario utilisé
+
+tol_temp : tolérance au niveau de la température pour la stagnation
+
+tol_rac : tolérance au niveau de la recherche de racine
+
+T0 : les conditions initiales du problème
+
+max_iter : le nombre maximal d'itérations que la recherche de racines peut faire
+
+tol_bisect_hybride : la tolérance de la bissection dans le cas de la recherche de racine hybride
