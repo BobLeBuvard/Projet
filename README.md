@@ -41,5 +41,6 @@ CURRENT advencement:
 #question 4.3 OK
 
 #TODO - > dans Question4 et SimTABS +mAj de l'index
+#TODO vérifier pourquoi bissection ne converge pas pour par exemple T_max_d = 21 dans question_4_3
 #rapport      ChatGPT
 
