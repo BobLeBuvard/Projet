@@ -110,9 +110,13 @@ def recherche_delta_t (T_max_d,**kwargs):
 
 def question_4_2(T_max_d,**kwargs):
     '''T_max_d en degrés celsius'''
+    global h
+    h = kwargs.get('h',h)
+    kwargs['h'] = h
     delta_t = recherche_delta_t(T_max_d,**kwargs)
     kwargs['delta_t'] = delta_t
     kwargs['T_max_d'] = T_max_d
+    kwargs.pop('num_du_scenario',0)
 
     if isinstance(delta_t, tuple):
         print("fin avortée")
@@ -163,14 +167,19 @@ def verification_EN15251(delta_t,**kwargs ):
 
 
 
-def max_a_stabilisation(delta_t,**kwargs): 
+def max_a_stabilisation(**kwargs): 
     '''
     fonction qui rend le maximum stabilisé au dernier jour
     
     '''
     global T0,FenetreDeTemps
     T0 = kwargs.pop('T0',T0)
+    kwargs['q_3_5'] = False
+    delta_t = kwargs.get('delta_t',0)
     kwargs['delta_t'] = delta_t
+    if delta_t != 0 :
+        kwargs['num_du_scenario'] = 4
+    print (f'on passe au scenario numero {kwargs.get('num_du_scenario')}.')
     FenetreDeTemps = kwargs.pop('FenetreDeTemps',FenetreDeTemps)
     #le plot se fait ici
     
@@ -196,7 +205,6 @@ def question_4_3(T_max_d, **kwargs):
     if debug: start=time.time()
     Temp_Max_delta_t =  lambda delta_t: max_a_stabilisation(delta_t,**kwargs)[0] - T_max_d  
     
-    return 0 
     x0,x1 = kwargs.get('search_x0',searchInterval[0]),kwargs.get('search_x0',searchInterval[1])
     
     delta_t ,statut = bissection(Temp_Max_delta_t,x0,x1,**kwargs)
@@ -245,6 +253,7 @@ en fonction des conditions du jour précédent, et faire un scénario adapté. E
 def plot_T_max_delta_t(**kwargs):
     global searchInterval
     kwargs['num_du_scenario'] = 4
+    kwargs['q_3_5'] = False
     T_max_d = kwargs.get('T_max_d',24)
     
     delta_test = np.arange(searchInterval[0],searchInterval[1],0.5)
@@ -259,6 +268,7 @@ def plot_T_max_delta_t(**kwargs):
     plt.legend()
     plt.grid(True)
     plt.show()
+    
 
 
 

@@ -22,7 +22,6 @@ searchInterval = [0,20]
 tol_rac = h
 tol_temp = 0.01
 max_jours = 30
-
 #FORME DE l'array T 
 
 # T = np.array([T_room, T_t, T_cc, T_c1,T_c2])
@@ -41,14 +40,5 @@ R_cc_moins_c1 = 0.05
 R_c2_moins_cc = 0.02
 R_r_moins_s = 0.1
 R_s_moins_c2 = 0.183
-'''
-moins_inv_R_r_moins_s_plus_R_s_moins_c2 = (-1/(R_r_moins_s + R_s_moins_c2))
-inv_R_x = 1/R_x
-moins_inv_R_x = -1/R_x
-inv_R_w =  1/R_w
-moins_inv_R_cc_moins_c1 = -1/R_cc_moins_c1
-inv_R_c2_moins_cc = 1/R_c2_moins_cc
-moins_inv_R_c2_moins_cc = -1/R_c2_moins_cc
-inv_R_r_moins_s_plus_R_s_moins_c2 = 1/(R_r_moins_s + R_s_moins_c2)
-'''
-debug = False
+
+debug = True

@@ -70,6 +70,9 @@ def scenario4(t, delta_t =None ):
         heating_mode = 3 #chauffe
     elif((4+delta_t)<t<=24 ):
         heating_mode = 1 # éteint
+    else:
+        #si t trop gand, osef de delta_t
+        heating_mode = 1 #éteint
     return heating_mode
 
 def scenario5(t,delta_t = None):
@@ -354,16 +357,17 @@ def cycles_apres_convergence(T0, FenetreDeTemps,**kwargs):
     
     for i  in range(max_jours-2):
         
-        if abs(T_total[0, -1] - T_total[0, -(1+journee_pas)]) <= tol_temp:
+        if abs(T_total[0, -1] - T_total[0, -(1+journee_pas)]) < tol_temp:
             if debug: print(f"a convergé après {i+2} jours")
             if q_3_5:
                 for j in range(0,5,4):
-                    plt.plot(t_total/(FenetreDeTemps[1]-FenetreDeTemps[0]),T_total[j])
+                    plt.plot(t_total/(FenetreDeTemps[1]-FenetreDeTemps[0]),T_total[j], label = ['T_room',None,None,None,'T_c2'][j])
                     
                 
                 plt.title(label = f"T_room et T-c2 jusqu'à stagnation (sc.{num_du_scenario})(delta_t = {round(delta_t,ndigits=2)})")#garder que 2 chiffres après la virgule
                 plt.xlabel('nombre de cycles')
                 plt.ylabel('températures des objets')
+                plt.legend(loc = 'best')
                 plt.show()
             if not q_3_5 and debug:
                 plt.plot(t_total/(FenetreDeTemps[1]-FenetreDeTemps[0]),(T_total[0]+T_total[4])/2)
@@ -430,11 +434,18 @@ def calculCycles(cycles,T0,FenetreDeTemps,**kwargs):
 
     return(t_Total,T_Total)
 
-def dessineDesCycles(cycles,num_du_scenario):
-    t,T = calculCycles(cycles,T0,FenetreDeTemps)
+def dessineDesCycles(cycles,**kwargs):
+    global T0, FenetreDeTemps,num_du_scenario
+    T0 = kwargs.get('T0',T0)
+    FenetreDeTemps = kwargs.get('FenetreDeTemps',FenetreDeTemps)
+    t,T = calculCycles(cycles,T0,FenetreDeTemps,**kwargs)
+    num_du_scenario = kwargs.get('num_du_scenario',1)
     dessinemoassa(t,T,['T_room','T_t','T_cc','T_c1','T_c2'],xlabel='Temps (heures)',ylabel='Température(°K)',titre= f'Euler: scénario {num_du_scenario}')
 
 def question_3_5(**kwargs):
+    global T0, FenetreDeTemps
+    T0 = kwargs.pop('T0',T0)
+    FenetreDeTemps = kwargs.pop('FenetreDeTemps',FenetreDeTemps)
     '''fonction qui va dessiner le graphe tes températures d'une journée jusqu'à arriver à un état staionnaire'''
     cycles_apres_convergence(T0, FenetreDeTemps,**kwargs)
 
