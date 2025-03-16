@@ -293,14 +293,19 @@ def question_3_4():
     '''Fonction qui dessine des graphiques de la différence entre la résolution par Euler et par Runge-Kutta pour estimer leur convergence l'une vers l'autre'''
     diff_entre_Euler_et_IVP() 
 
-def compare_avec_max(h_test,Max):
+def compare_avec_max(h_test,Max,**kwargs):
+    
+    
     '''Fonction pour comparer avec le maximum de précision. À supprimer après test.'''
+    global FenetreDeTemps,T0
+    FenetreDeTemps = kwargs.pop('FenetreDeTemps',FenetreDeTemps) 
+    T0 = kwargs.pop('T0',T0) 
+    
     difference_avec_max = []
     
     # Calcul des températures avec différentes précisions
-    t_euler, T1 = calculTemperaturesEuler(FenetreDeTemps, T0, h_test)
-    T2 = calculTemperaturesEuler(FenetreDeTemps, T0,Max )[0]
-    
+    t_euler, T1 = calculTemperaturesEuler(FenetreDeTemps, T0, h_test,**kwargs)
+    t_max, T2 = calculTemperaturesEuler(FenetreDeTemps, T0,Max ,**kwargs)
     ratio_tol = int(h_test / Max)  # Assurer un entier pour l'indexation
     
     # Comparaison des valeurs
@@ -311,7 +316,7 @@ def compare_avec_max(h_test,Max):
     plt.plot(t_euler[:len(difference_avec_max)],abs( np.array(difference_avec_max).T[0]))
     plt.xlabel("Temps (s)")
     plt.ylabel("Différence avec max précision")
-    plt.title(f"Comparaison Euler (h={h_test}) vs Max Précision (h=10e-6)")
+    plt.title(f"Comparaison Euler (h={h_test}) vs Max Précision (h={Max})")
     plt.legend([f"T{i}" for i in range(1, 6)])
     plt.show()
     
