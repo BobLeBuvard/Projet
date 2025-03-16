@@ -301,25 +301,20 @@ def compare_avec_max(h_test,Max,**kwargs):
     FenetreDeTemps = kwargs.pop('FenetreDeTemps',FenetreDeTemps) 
     T0 = kwargs.pop('T0',T0) 
     
-    difference_avec_max = []
+    
     
     # Calcul des températures avec différentes précisions
     t_euler, T1 = calculTemperaturesEuler(FenetreDeTemps, T0, h_test,**kwargs)
     t_max, T2 = calculTemperaturesEuler(FenetreDeTemps, T0,Max ,**kwargs)
     ratio_tol = int(h_test / Max)  # Assurer un entier pour l'indexation
+    n_points = min(len(T1[0]), len(T2[0]) // ratio_tol) # // pour division ronde (ex : 5//7 = 0 et 7//2 = 3)
     
+    difference_avec_max = np.zeros((T1.shape[0], n_points+1)) # n_points +1 car Euler compte le départ et l'arrivée
     # Comparaison des valeurs
-    for i in range(min(len(T1[0]), len(T2[0]) // ratio_tol)):  # Ajustement des indices
-        difference_avec_max.append(T2[:, i * ratio_tol] - T1[:, i])  
+    for i in range(n_points):  
+        difference_avec_max[:, i+1] = T2[:, i * ratio_tol] - T1[:, i]
     
-    # Tracer la différence
-    plt.plot(t_euler[:len(difference_avec_max)],abs( np.array(difference_avec_max).T[0]))
-    plt.xlabel("Temps (s)")
-    plt.ylabel("Différence avec max précision")
-    plt.title(f"Comparaison Euler (h={h_test}) vs Max Précision (h={Max})")
-    plt.legend([f"T{i}" for i in range(1, 6)])
-    plt.show()
-    
+    dessinemoassa(t_euler, difference_avec_max,['T_room','T_t','T_cc','T_c1','T_c2'])
     return difference_avec_max
 
 
