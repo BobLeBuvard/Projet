@@ -121,7 +121,7 @@ def question_4_2(T_max_d,**kwargs):
     if isinstance(delta_t, tuple):
         print("fin avortée")
         return delta_t[1]
-    print(f"delta_t correspondant aux critères demandés{delta_t}")
+    print(f"delta_t correspondant aux critères demandés {delta_t}")
     question_4_1(num_du_scenario = 4 ,**kwargs)
     
 #______________________________________________________________________________________________________#
@@ -131,7 +131,7 @@ def question_4_2(T_max_d,**kwargs):
 
 #EN15251 est une array contenant t0 et tf et Tmin et Tmax -> [8,19,19.5,24]
 
-def verification_EN15251(delta_t,**kwargs ):
+def verification_EN15251(delta_t,**kwargs):
     global tol_temp
     EN15251 = kwargs.pop('EN15251',np.array([8,19,19.5,24]))
     tol_temp = kwargs.pop('tol_temp', tol_temp)
@@ -172,14 +172,15 @@ def max_a_stabilisation(**kwargs):
     fonction qui rend le maximum stabilisé au dernier jour
     
     '''
-    global T0,FenetreDeTemps
+    global T0,FenetreDeTemps,num_du_scenario
+    num_du_scenario = kwargs.get('num_du_scenario', num_du_scenario)
     T0 = kwargs.pop('T0',T0)
     kwargs['q_3_5'] = False
     delta_t = kwargs.get('delta_t',0)
     kwargs['delta_t'] = delta_t
     if delta_t != 0 :
         kwargs['num_du_scenario'] = 4
-    print (f'on passe au scenario numero {kwargs.get('num_du_scenario')}.')
+    print (f"on passe au scenario numéro {num_du_scenario}.")
     FenetreDeTemps = kwargs.pop('FenetreDeTemps',FenetreDeTemps)
     #le plot se fait ici
     

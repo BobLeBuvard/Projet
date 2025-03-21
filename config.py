@@ -6,19 +6,13 @@ module qui contient toutes les variables. Pour l'instant ça charge tout dans la
 
 '''
 
-def kelvin(temp):
-    return (temp + 273.15) 
-def celsius(temp):
-    return (temp - 273.15)
-'''variables qu'on change pour le testing'''
-
 
 #CONFIG
 FenetreDeTemps = np.array([0, 24]) # fenetre de test comme demandé -> taille du cycle
 h = 0.01  # pas de temps ( toutes les 6 minutes)
 T0 = np.array([15,15,15,15,15])  #conitions initiales données 
 default_tol = 10e-10 #choix arbitraire
-searchInterval = [0,20]
+searchInterval = [0,20] # pour le delta_t qui varie entre 4h et 24h donc delta_t entre 0 et 20h
 tol_rac = h
 tol_temp = 0.01
 max_jours = 30

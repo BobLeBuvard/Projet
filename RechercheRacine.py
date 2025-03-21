@@ -47,7 +47,7 @@ def bissection(f, x0, x1, **kwargs):
         print("Intervalle initial trop petit pour la bissection.")
         return [None, -1]
 
-    nombre_d_iterations = math.ceil(np.log2((x1 - x0) / (2 * tol)))
+    nombre_d_iterations = math.ceil(np.log2((x1 - x0) / (2 * tol)))+1
     if nombre_d_iterations < 1 or nombre_d_iterations > max_iter:
         print("Problème de convergence : trop d'itérations nécessaires.")
         return [None, -1]  # Pas de convergence
@@ -102,7 +102,7 @@ def secante(f, x0, x1,**kwargs):
 def secante_precalculee(f,x0,x1,tol,fx0,fx1,max_iter):
     for i in range(max_iter):
         if abs(fx1)<= tol:
-            return [x2,0]
+            return [x1,0] # je sais pas..., c'était [x2,0]
         if abs(fx1 - fx0) < 1e-12 or  abs(x1 - x0) < tol:  # Évite la division par zéro 1e-12 = "zéro machine"
             print("division par zéro")
             print(f'{fx0} {fx1}')
