@@ -44,7 +44,7 @@ def T_max(delta_t, **kwargs):
     if no_max: 
         return t,T_confort
     MAX = np.max(T_confort)
-    return MAX, t, T_confort#si on ne veut pas de max --> no_max=True ben on ne le calcule pas.
+    return MAX, t, T_confort #si on ne veut pas de max --> no_max=True ben on ne le calcule pas.
 
 
 def question_4_1(**kwargs):
@@ -55,10 +55,11 @@ def question_4_1(**kwargs):
     delta_t en heures
     
     '''
+
     delta_t = kwargs.pop('delta_t',0)
     T_max_d = kwargs.pop('T_max_d',0)
     MAX,t,T_confort = T_max(delta_t, **kwargs)
-    indice_max = np.argmax(T_confort)
+    indice_max = np.where(T_confort  == MAX)[0][0]
 
 # Récupérer le temps t correspondant à ce maximum
     t_max = t[indice_max]
@@ -114,6 +115,7 @@ def recherche_delta_t (T_max_d,**kwargs):
     return delta_t
 
 def question_4_2(T_max_d,**kwargs):
+    kwargs.pop('num_du_scenario',0) # on veut pas de numéro du scénario
     '''T_max_d en degrés celsius'''
     global h
     h = kwargs.get('h',h)
@@ -121,13 +123,13 @@ def question_4_2(T_max_d,**kwargs):
     delta_t = recherche_delta_t(T_max_d,**kwargs)
     kwargs['delta_t'] = delta_t
     kwargs['T_max_d'] = T_max_d
-    kwargs.pop('num_du_scenario',0)
+    kwargs['num_du_scenario'] = 4
 
     if isinstance(delta_t, tuple):
         print("fin avortée")
         return delta_t[1]
     print(f"delta_t correspondant aux critères demandés {delta_t}")
-    question_4_1(num_du_scenario = 4 ,**kwargs)
+    question_4_1(**kwargs)
     
 #______________________________________________________________________________________________________#
 # question 4.3
@@ -172,7 +174,7 @@ def verification_EN15251(delta_t,**kwargs):
 
 
 
-def max_a_stabilisation(**kwargs): 
+def max_a_stabilisation(delta_t,**kwargs): 
     '''
     fonction qui rend le maximum stabilisé au dernier jour
     
@@ -181,11 +183,7 @@ def max_a_stabilisation(**kwargs):
     num_du_scenario = kwargs.get('num_du_scenario', num_du_scenario)
     T0 = kwargs.pop('T0',T0)
     kwargs['q_3_5'] = False
-    delta_t = kwargs.get('delta_t',0)
     kwargs['delta_t'] = delta_t
-    if delta_t != 0 :
-        kwargs['num_du_scenario'] = 4
-    print (f"on passe au scenario numéro {num_du_scenario}.")
     FenetreDeTemps = kwargs.pop('FenetreDeTemps',FenetreDeTemps)
     #le plot se fait ici
     

@@ -16,6 +16,7 @@ searchInterval = [0,20] # pour le delta_t qui varie entre 4h et 24h donc delta_t
 tol_rac = h
 tol_temp = 0.01
 max_jours = 30
+num_du_scenario = 1
 #FORME DE l'array T 
 
 # T = np.array([T_room, T_t, T_cc, T_c1,T_c2])
