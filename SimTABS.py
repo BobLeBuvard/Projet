@@ -230,11 +230,11 @@ def calculTemperaturesEuler(FenetreDeTemps, T0, h,**kwargs):
     return [t, T]
 
 def question_3_2(**kwargs):
-    global FenetreDeTemps,h,T0
-    num_du_scenario = kwargs.get('num_du_scenario',1) 
-    FenetreDeTemps = kwargs.pop('FenetreDeTemps',FenetreDeTemps) 
-    T0 = kwargs.pop('T0',T0) 
-    h = kwargs.pop('h',h) 
+    global gl_FenetreDeTemps,gl_h,gl_T0
+    num_du_scenario = kwargs.get('num_du_scenario',gl_num_du_scenario) 
+    FenetreDeTemps = kwargs.pop('FenetreDeTemps',gl_FenetreDeTemps) 
+    T0 = kwargs.pop('T0',gl_T0) 
+    h = kwargs.pop('h',gl_h) 
     
     t,T = calculTemperaturesEuler(FenetreDeTemps,T0,h,**kwargs)
     dessinemoassa(t,T,['T_room','T_t','T_cc','T_c1','T_c2'],xlabel='Temps (heures)',ylabel='Température(°K)',titre= f'Euler: scénario {num_du_scenario}, pas h = {h}')
@@ -262,13 +262,13 @@ def calculTemperaturesIVP(FenetreDeTemps, T0, rtol,**kwargs):
     return[solution.t, solution.y]
 
 def question_3_3(**kwargs):
-    global FenetreDeTemps,h,T0
-    num_du_scenario = kwargs.get('num_du_scenario',1) 
-    FenetreDeTemps = kwargs.pop('FenetreDeTemps',FenetreDeTemps) 
-    T0 = kwargs.pop('T0',T0) 
-    kwargs.pop('h',h) 
+    global gl_FenetreDeTemps,gl_h,gl_T0
+    num_du_scenario = kwargs.get('num_du_scenario',gl_num_du_scenario) 
+    FenetreDeTemps = kwargs.pop('FenetreDeTemps',gl_FenetreDeTemps) 
+    T0 = kwargs.pop('T0',gl_T0) 
+    kwargs.pop('h',gl_h) 
     
-    t,T = calculTemperaturesIVP(FenetreDeTemps,T0,default_tol,   **kwargs)
+    t,T = calculTemperaturesIVP(FenetreDeTemps,T0,gl_default_tol,   **kwargs)
     dessinemoassa(t,T,['T_room','T_t','T_cc','T_c1','T_c2'],xlabel='Temps (heures)',ylabel='Température(°K)',titre= f'IVP: scénario {num_du_scenario}')
 
 
@@ -283,8 +283,8 @@ def diff_entre_Euler_et_IVP():
     for i, h in enumerate(h_de_test):  #énumérer les éléments de h 
         
         h = h_de_test[i]
-        t_euler,T2 = calculTemperaturesEuler(FenetreDeTemps,T0,h)
-        t,T1 = calculTemperaturesIVP(FenetreDeTemps,T0, rtol=10e-10,t_eval=t_euler)
+        t_euler,T2 = calculTemperaturesEuler(gl_FenetreDeTemps,gl_T0,h)
+        t,T1 = calculTemperaturesIVP(gl_FenetreDeTemps,gl_T0, rtol=10e-10,t_eval=t_euler)
         
         
         T = T1 -T2
@@ -297,9 +297,9 @@ def compare_avec_max(h_test,Max,**kwargs):
     
     
     '''Fonction pour comparer avec le maximum de précision. À supprimer après test.'''
-    global FenetreDeTemps,T0
-    FenetreDeTemps = kwargs.pop('FenetreDeTemps',FenetreDeTemps) 
-    T0 = kwargs.pop('T0',T0) 
+    global gl_FenetreDeTemps,gl_T0
+    FenetreDeTemps = kwargs.pop('FenetreDeTemps',gl_FenetreDeTemps) 
+    T0 = kwargs.pop('T0',gl_T0) 
     
     
     
@@ -338,15 +338,15 @@ def cycles_apres_convergence(T0, FenetreDeTemps,**kwargs):
 
     '''
     #unpack kwargs pour n'en garder que les éléments utiles dans cete partie de code
-    global h,tol_temp,max_jours
-    kwargs['h'] = kwargs.get('h',h)
+    global gl_h,tol_temp,max_jours,gl_num_du_scenario
+    kwargs['h'] = kwargs.get('h',gl_h)
     kwargs['T0'] = T0
     kwargs['FenetreDeTemps'] = FenetreDeTemps
     h = kwargs.get('h')
     q_3_5 = kwargs.pop('q_3_5',True)
     max_jours = kwargs.pop('max_jours',max_jours)
     tol_temp = kwargs.pop('tol_temp',tol_temp)
-    num_du_scenario = kwargs.get('num_du_scenario',1)
+    num_du_scenario = kwargs.get('num_du_scenario',gl_num_du_scenario)
     delta_t = kwargs.get('delta_t',0)
     
     # calculer les 2 premiers jours
@@ -417,10 +417,10 @@ def calculCycles(cycles,**kwargs):
     
     T-> array de dimensions (5, cycles*h +1)
         '''
-    global h,T0,FenetreDeTemps
-    T0 = kwargs.pop('T0',T0)
-    FenetreDeTemps = kwargs.pop('FenetreDeTemps',FenetreDeTemps)
-    h = kwargs.pop('h',h) #on le retire de kwargs parce qu'on n'en veut plus dedans
+    global gl_h,gl_T0,gl_FenetreDeTemps
+    T0 = kwargs.pop('T0',gl_T0)
+    FenetreDeTemps = kwargs.pop('FenetreDeTemps',gl_FenetreDeTemps)
+    h = kwargs.pop('h',gl_h) #on le retire de kwargs parce qu'on n'en veut plus dedans
     T_Total = np.empty((5, 0))  # 5 lignes, 0 colonnes
     t_Total = np.array([])
     for i in range(cycles):
@@ -439,15 +439,15 @@ def calculCycles(cycles,**kwargs):
     return(t_Total,T_Total)
 
 def dessineDesCycles(cycles,**kwargs):
-    global num_du_scenario
-    num_du_scenario = kwargs.get('num_du_scenario',1)
-    t,T = calculCycles(cycles,T0,FenetreDeTemps,**kwargs)
+    global gl_num_du_scenario,gl_T0,gl_FenetreDeTemps
+    num_du_scenario = kwargs.get('num_du_scenario',gl_num_du_scenario)
+    t,T = calculCycles(cycles,gl_T0,gl_FenetreDeTemps,**kwargs)
     dessinemoassa(t,T,['T_room','T_t','T_cc','T_c1','T_c2'],xlabel='Temps (heures)',ylabel='Température(°K)',titre= f'Euler: scénario {num_du_scenario}')
 
 def question_3_5(**kwargs):
-    global T0, FenetreDeTemps
-    T0 = kwargs.pop('T0',T0)
-    FenetreDeTemps = kwargs.pop('FenetreDeTemps',FenetreDeTemps)
+    global gl_T0, gl_FenetreDeTemps
+    T0 = kwargs.pop('T0',gl_T0)
+    FenetreDeTemps = kwargs.pop('FenetreDeTemps',gl_FenetreDeTemps)
     '''fonction qui va dessiner le graphe tes températures d'une journée jusqu'à arriver à un état stationnaire'''
     cycles_apres_convergence(T0, FenetreDeTemps,**kwargs)
 
@@ -456,7 +456,9 @@ def question_3_5(**kwargs):
 #______________________________________________________________________________________________________#
 # question 3.6
 def question_3_6(**kwargs):
-    kwargs.pop('num_du_scenario')
+    global gl_T0,gl_FenetreDeTemps
+    T0,FenetreDeTemps = gl_T0,gl_FenetreDeTemps 
+    kwargs.pop('num_du_scenario',None)
     for i in range(3):
         cycles_apres_convergence(T0,FenetreDeTemps,     num_du_scenario = i+1,**kwargs)#LAISSER LA VIRGULE A LA FIN (requis pour kwargs soit fonctionnel (+ de 1 argument) )!!!
         

@@ -5,9 +5,9 @@ from SimTABS import*
 import time
 
 def fonctiondroite(hauteur, label = None):
-    global FenetreDeTemps
+    global gl_FenetreDeTemps
     '''fonction qui va plot y = 0 sur le graphique'''
-    plt.plot(np.arange(FenetreDeTemps[1]-FenetreDeTemps[0]+1),np.zeros(FenetreDeTemps[1]-FenetreDeTemps[0]+1) + hauteur , label = label)
+    plt.plot(np.arange(gl_FenetreDeTemps[1]-gl_FenetreDeTemps[0]+1),np.zeros(gl_FenetreDeTemps[1]-gl_FenetreDeTemps[0]+1) + hauteur , label = label)
 
 
 #______________________________________________________________________________________________________#
@@ -30,13 +30,13 @@ def T_max(delta_t, **kwargs):
     
     - Différence entre Tmax obtenu et Tmax souhaité.
     '''
-    global h,T0
+    global gl_h,gl_T0
     kwargs['delta_t'] = delta_t #ajout aux arguments si ce n'est pas déjà le cas
-    T0 =kwargs.pop('T0',T0)
+    T0 =kwargs.pop('T0',gl_T0)
     no_max = kwargs.pop('no_max', False)
-    h = kwargs.pop('h',h)
+    h = kwargs.pop('h',gl_h)
     global FenetreDeTemps
-    FenetreDeTemps = kwargs.pop('FenetreDeTemps',FenetreDeTemps)
+    FenetreDeTemps = kwargs.pop('FenetreDeTemps',gl_FenetreDeTemps)
     MAX = 0
 
     t, T = calculTemperaturesEuler(FenetreDeTemps, T0,h,**kwargs)
@@ -105,8 +105,8 @@ def recherche_delta_t (T_max_d,**kwargs):
     fonction qui fait la différence entre T_max qui varie en fonction de delta et T_max_d qui est choisie abritrairement, il faut en 
     rechercher la racine pour pouvoir trouver delta_t
     '''
-    global searchInterval
-    x0,x1 = kwargs.get('search_x0',searchInterval[0]),kwargs.get('search_x0',searchInterval[1])
+    global gl_searchInterval
+    x0,x1 = kwargs.get('search_x0',gl_searchInterval[0]),kwargs.get('search_x0',gl_searchInterval[1])
     delta_t ,statut = bissection(f_difference,x0,x1,**kwargs) #delta_t est compris entre 0h et 20h 
     
     if statut !=0 : 
@@ -117,9 +117,8 @@ def recherche_delta_t (T_max_d,**kwargs):
 def question_4_2(T_max_d,**kwargs):
     kwargs.pop('num_du_scenario',0) # on veut pas de numéro du scénario
     '''T_max_d en degrés celsius'''
-    global h
-    h = kwargs.get('h',h)
-    kwargs['h'] = h
+    global gl_h
+    kwargs.setdefault('h', gl_h)
     delta_t = recherche_delta_t(T_max_d,**kwargs)
     kwargs['delta_t'] = delta_t
     kwargs['T_max_d'] = T_max_d
@@ -179,12 +178,12 @@ def max_a_stabilisation(delta_t,**kwargs):
     fonction qui rend le maximum stabilisé au dernier jour
     
     '''
-    global T0,FenetreDeTemps,num_du_scenario
-    num_du_scenario = kwargs.get('num_du_scenario', num_du_scenario)
-    T0 = kwargs.pop('T0',T0)
+    global gl_T0,gl_FenetreDeTemps,gl_num_du_scenario
+    num_du_scenario = kwargs.get('num_du_scenario', gl_num_du_scenario)
+    T0 = kwargs.pop('T0',gl_T0)
     kwargs['q_3_5'] = False
     kwargs['delta_t'] = delta_t
-    FenetreDeTemps = kwargs.pop('FenetreDeTemps',FenetreDeTemps)
+    FenetreDeTemps = kwargs.pop('FenetreDeTemps',gl_FenetreDeTemps)
     #le plot se fait ici
     
     days_to_stabilize, T0_new = cycles_apres_convergence(T0,FenetreDeTemps,**kwargs) #T0_new est les conditions initiales du dernier jour 
@@ -200,16 +199,16 @@ def max_a_stabilisation(delta_t,**kwargs):
     return retour
 
 def question_4_3(T_max_d, **kwargs):
-    global h, searchInterval,tol_rac,T0,FenetreDeTemps
+    global gl_h, gl_searchInterval,tol_rac,gl_T0,gl_FenetreDeTemps
     kwargs['num_du_scenario'] = 4 
     
-    kwargs['h'] = kwargs.get('h',h)
+    kwargs['h'] = kwargs.get('h',gl_h)
     kwargs['tol_rac'] = kwargs.get('tol_rac',tol_rac)
     kwargs['q_3_5'] = False
     if debug: start=time.time()
     Temp_Max_delta_t =  lambda delta_t: max_a_stabilisation(delta_t,**kwargs)[0] - T_max_d  
     
-    x0,x1 = kwargs.get('search_x0',searchInterval[0]),kwargs.get('search_x0',searchInterval[1])
+    x0,x1 = kwargs.get('search_x0',gl_searchInterval[0]),kwargs.get('search_x0',gl_searchInterval[1])
     
     delta_t ,statut = bissection(Temp_Max_delta_t,x0,x1,**kwargs)
     print(f'delta_t : {delta_t}')
@@ -221,8 +220,8 @@ def question_4_3(T_max_d, **kwargs):
     else:
         
         kwargs['delta_t'] = delta_t #mise a jour de delta_t des kwargs
-        T0 = kwargs.pop('T0',T0)
-        FenetreDeTemps = kwargs.pop('FenetreDeTemps',FenetreDeTemps)
+        T0 = kwargs.pop('T0',gl_T0)
+        FenetreDeTemps = kwargs.pop('FenetreDeTemps',gl_FenetreDeTemps)
         
         kwargs['T0']= cycles_apres_convergence(T0,FenetreDeTemps,**kwargs)[1] #Mise a jour de T0 pour les conditions du dernier jour
         

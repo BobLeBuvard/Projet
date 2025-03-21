@@ -1,5 +1,3 @@
-#Ressuscité
-
 import numpy as np
 ''' 
 module qui contient toutes les variables. Pour l'instant ça charge tout dans la mémoire, on verra pour changer si on veut juste charger certaines parties pour certaines fonctions par la suite
@@ -8,15 +6,15 @@ module qui contient toutes les variables. Pour l'instant ça charge tout dans la
 
 
 #CONFIG
-FenetreDeTemps = np.array([0, 24]) # fenetre de test comme demandé -> taille du cycle
-h = 0.01  # pas de temps ( toutes les 6 minutes)
-T0 = np.array([15,15,15,15,15])  #conitions initiales données 
-default_tol = 10e-10 #choix arbitraire
-searchInterval = [0,20] # pour le delta_t qui varie entre 4h et 24h donc delta_t entre 0 et 20h
-tol_rac = h
+gl_FenetreDeTemps = np.array([0, 24]) # fenetre de test comme demandé -> taille du cycle
+gl_h = 0.01  # pas de temps ( toutes les 6 minutes)
+gl_T0 = np.array([15,15,15,15,15])  #conitions initiales données 
+gl_default_tol = 10e-10 #choix arbitraire
+gl_searchInterval = [0,20] # pour le delta_t qui varie entre 4h et 24h donc delta_t entre 0 et 20h
+tol_rac = gl_h
 tol_temp = 0.01
 max_jours = 30
-num_du_scenario = 1
+gl_num_du_scenario = 1
 #FORME DE l'array T 
 
 # T = np.array([T_room, T_t, T_cc, T_c1,T_c2])
