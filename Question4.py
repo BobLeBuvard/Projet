@@ -58,7 +58,12 @@ def question_4_1(**kwargs):
     delta_t = kwargs.pop('delta_t',0)
     T_max_d = kwargs.pop('T_max_d',0)
     MAX,t,T_confort = T_max(delta_t, **kwargs)
-    print(f"maximum: {MAX}") #print la température max sur l'intervalle en degrés celsius
+    indice_max = np.argmax(T_confort)
+
+# Récupérer le temps t correspondant à ce maximum
+    t_max = t[indice_max]
+    t_max_seconde = t_max * 3600
+    print(f"maximum de température de confort: {MAX}°C à t = {t_max_seconde}s, c'est à dire {t_max}h")#print la température max sur l'intervalle en degrés celsius
     plt.xlabel(f"temps ({FenetreDeTemps[1] - FenetreDeTemps[0]}h)") # Labélisation de l'axe des ordonnées (copypaste du tuto)
     plt.ylabel("température optimale ") # Labélisation de l'axe des abscisses (copypaste du tuto)
     plt.title(label = f'Température de confort sur {FenetreDeTemps[1]-FenetreDeTemps[0]}h -> delta_t = {delta_t}')
