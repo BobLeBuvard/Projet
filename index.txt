@@ -1,0 +1,151 @@
+                                                                        SimTABS
+
+
+
+kelvin(temp)
+    -> passage de celsius  à kelvin
+
+celsius(temp)  
+    -> passage de celsius  à kelvin
+
+dessinemoassa(x,y,index,xlabel = None, ylabel = None, titre= None)
+    -> dessine un graphique de ce qu'on veut. index est une liste des différentes lignes que l'on veut voir apparaitre sur le graphique
+    si y est à deux dimensions, ce sera la ligne correspondant à son numéro dans l'index qui aura le label associé
+
+scenario(t,num,delta_t = None)
+    -> retourne le mode de chauffe en fonction du numéro du scénario à l'instant t. requiert delta_t pour le scénario 4
+
+odefunction()
+    -> si tu sais pas, vas te pendre.
+
+calculTemperaturesEuler(FenetreDeTemps, T0, h,**kwargs)
+    -> retourne les dérivées sous forme d'array et leur temps correspondants sur la durée déterminée par FenetreDeTemps
+
+question_3_2(**kwargs)
+    -> applique question 3.2 mais en plottant le résultat.
+
+calculTemperaturesIVP(FenetreDeTemps, T0, rtol,**kwargs)
+    -> retourne les dérivées sous forme d'array et leur temps correspondants sur la durée déterminée par FenetreDeTemps
+
+question_3_3(**kwargs)
+    -> applique question 3.3 mais en plottant le résultat.
+
+diff_entre_Euler_et_IVP()
+    -> plotte la différence entre Euler et IVP à des h différents [0.001,0.01,0.1,0.25,0.5,1,2]
+
+question_3_4()
+    -> appelle juste diff_entre_Euler_et_IVP()
+
+compare_avec_max(h_test,Max,**kwargs)
+    -> compare différents h entre eux. h_test c'est le test et Max, c'est le h de référence ( ex: 0.00001)
+
+cycles_apres_convergence(T0, FenetreDeTemps,**kwargs)
+    -> compte le nombre de jours requis pour que la stabilisation soit atteinte. retourne le nombre de jours pour stabiliser et les conditions au début du dernier jour
+    -> peut plot pour la question 3.5 ou pour la question 4.2- 4.3 également. 
+
+calculCycles(cycles,**kwargs)
+    -> calcule le nombre de cycles demandé dans le premier argument. Admet des cycles plus petits que 24h si besoin. 
+    -> retourne la totalité des températures et des temps évaluéscsous forme d'arrays.
+
+dessineDesCycles(cycles,**kwargs) 
+    -> utilise calculCycles mais le plotte en plus de ça
+
+question_3_5(**kwargs)
+    -> fonction qui va dessiner le graphe tes températures d'une journée jusqu'à arriver à un état stationnaire
+
+question_3_6(**kwargs)
+    -> dessine les 3 scénarios ( les plotte quoi)
+
+check_time(sous_question,*args,**kwargs)
+    -> mesure le temps que prend une sous question. Faut la modifier directement pour l'utiliser. Elle est broken.
+
+
+
+                                                                    Question4
+
+fonctiondroite(hauteur, label = None)
+    -> dessine une droite horizontale sur un graphique à une hauteur définie.
+
+T_max(delta_t, **kwargs)
+    -> trouve la température de confort maximale sur une journée à un delta t donné
+    -> retourne le MAX, les temps évalués et la température de confort à ces t précis. 
+
+question_4_1(**kwargs)
+    -> applique T_max mais plotte les températures en plus, et retourne le maximum sur cet intervalle uniquement.
+    -> plotte aussi le début et la fin de période de chauffe, ainsi que la température T_max_d
+
+recherche_delta_t (T_max_d,**kwargs)
+    -> trouve le delta t optimal pour atteindre un T_max_d optimal lors de la première journée (à ne pas dépasser).
+    -> tolérance par défaut est de 0.01 parce que la convergence est à 0.01 donc on combine les erreurs :/ 
+
+question_4_2(T_max_d,**kwargs)
+    -> trouve le delta_t et le plotte, ainsi que de print la température max de confort de ce jour là. ( question 4.2 + dessin et vérification avec 4.1)
+
+verification_EN15251(delta_t,**kwargs)
+    -> vérifie si la norme est respectée à un certain jour avec les conditions initiales données dans kwargs, et le delta_t fourni comme argument. 
+    La norme peut être modifiée facilement. [8,19,19.5,24] correspondent à [t0 , tf,  Tmin , Tmax ]
+
+max_a_stabilisation(**kwargs)
+    -> retourne la température maximale à stabilisation de la température. 
+
+question_4_3(T_max_d, **kwargs)
+    -> utilisation des fonctions précédentes pour trouver par bissection la solution au problème. On donne une température cible et la fonction va l'atteindre
+    en faisant varier delta_t et  une fois atteinte, vérifie les conditions de confort 
+
+
+
+                                                                PerteEtGain
+
+g(t)
+    -> si tu sais pas, va te pendre.
+
+
+                                                                RechercheRacine
+
+hasRoots(f, x0, x1, tol, sec=False)
+    -> input la fonction et les conditions, et vérifie si on peut trouver une racine à la fonction. 
+    Le paramètre sec = False est pour différentier la sécante de la bissection qui n'ont pas les mêmes conditions de convergence.
+
+bissection(f, x0, x1, **kwargs)
+    -> trouve une racine par dichotomie. Pas sûr pour le nombre d'itérations mais j'ai mis un +1 et ça marche ... 
+    -> si tu sais toujours pas, va te pendre. 
+
+secante(f, x0, x1,**kwargs)
+    -> trouve une racine par méthode de la sécante, converge moins souvent et ne trouve pas forcément sa racine entre x0 et x1 
+    -> si tu sais pas t'en servir, à nouveau, va te pendre. 
+
+
+                                                                config
+
+FenetreDeTemps 
+h 
+T0
+default_tol
+searchInterval 
+tol_rac 
+tol_temp 
+max_jours
+
+T de forme [T_room, T_t, T_cc, T_c1,T_c2]
+
+C_room 
+C_c1 
+C_c2 
+C_cc 
+C_w 
+C = de forme [C_room, C_w, C_cc, C_c1,C_c2] multiplié par 1000 
+inv_C = 1/C
+
+R_x 
+R_w 
+R_cc_moins_c1
+R_c2_moins_cc
+R_r_moins_s 
+R_s_moins_c2
+
+debug
+
+
+                                                                arguments_passables
+
+-> si tu sais pas t'en servir, tu es vraiment le roi des neuneus
