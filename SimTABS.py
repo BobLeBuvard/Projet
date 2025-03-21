@@ -356,7 +356,8 @@ def cycles_apres_convergence(T0, FenetreDeTemps,**kwargs):
     t_total = np.copy(t)
     #plus besoin de h dans kwargs -> on le retire
     kwargs.pop('h')
-    
+    kwargs.pop('T0')
+    kwargs.pop('FenetreDeTemps')
     for i  in range(max_jours-2):
         
         if abs(T_total[0, -1] - T_total[0, -(1+journee_pas)]) < tol_temp:
@@ -418,7 +419,7 @@ def calculCycles(cycles,**kwargs):
         '''
     global h,T0,FenetreDeTemps
     T0 = kwargs.pop('T0',T0)
-    FenetreDeTemps = kwargs.pop('FenetreDeTemps0',FenetreDeTemps)
+    FenetreDeTemps = kwargs.pop('FenetreDeTemps',FenetreDeTemps)
     h = kwargs.pop('h',h) #on le retire de kwargs parce qu'on n'en veut plus dedans
     T_Total = np.empty((5, 0))  # 5 lignes, 0 colonnes
     t_Total = np.array([])
@@ -426,7 +427,6 @@ def calculCycles(cycles,**kwargs):
         if i > 0:
             t = t[:-1]
             T = T[:, :-1]
-        
         t, T = calculTemperaturesEuler(FenetreDeTemps, T0, h,**kwargs) #T0 est de dimensions [5,0]
         T_Total = np.concatenate((T_Total,T), axis = 1) 
         
