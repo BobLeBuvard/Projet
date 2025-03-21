@@ -159,7 +159,7 @@ def verification_EN15251(delta_t,**kwargs):
         label,x,y = points_to_plot[i]
         plt.plot(x,y,'.', label = label)
     
-    
+    plt.legend(fontsize="5", loc = 'lower right')
     plt.show()
     for i in range(len(t)):
         T_confort_i = T_confort[i]
@@ -254,12 +254,12 @@ en fonction des conditions du jour précédent, et faire un scénario adapté. E
 '''    
 
 def plot_T_max_delta_t(**kwargs):
-    global searchInterval
+    global gl_searchInterval
     kwargs['num_du_scenario'] = 4
     kwargs['q_3_5'] = False
     T_max_d = kwargs.get('T_max_d',24)
     
-    delta_test = np.arange(searchInterval[0],searchInterval[1],0.5)
+    delta_test = np.arange(gl_searchInterval[0],gl_searchInterval[1],0.5)
     T_max_a_delta_t = np.zeros_like(delta_test)
     Temp_Max_delta_t =  lambda delta_t: max_a_stabilisation(delta_t,**kwargs)[0] - T_max_d  
     for i in range(len(delta_test)):
