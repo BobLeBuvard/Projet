@@ -17,3 +17,7 @@ T0 : les conditions initiales du problème
 max_iter : le nombre maximal d'itérations que la recherche de racines peut faire
 
 tol_bisect_hybride : la tolérance de la bissection dans le cas de la recherche de racine hybride
+
+search_x0 : nouvelle borne
+
+search_x1 : nouvelle borne
