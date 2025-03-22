@@ -372,7 +372,7 @@ def cycles_apres_convergence(T0, FenetreDeTemps,**kwargs):
                 plt.ylabel('températures des objets')
                 plt.legend(loc = 'best')
                 plt.show()
-            if not q_3_5 and debug:
+            if  q_3_5==False and debug==True:
                 plt.plot(t_total/(FenetreDeTemps[1]-FenetreDeTemps[0]),(T_total[0]+T_total[4])/2)
                 plt.title(label = f" température de confort jusqu'à stagnation (delta_t = {delta_t})")
                 plt.xlabel('nombre de cycles')
