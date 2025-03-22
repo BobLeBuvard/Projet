@@ -15,6 +15,7 @@ tol_rac = gl_h
 tol_temp = 0.01
 max_jours = 30
 gl_num_du_scenario = 1
+norme = np.array([8,19,19.5,24])
 #FORME DE l'array T 
 
 # T = np.array([T_room, T_t, T_cc, T_c1,T_c2])

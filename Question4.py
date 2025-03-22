@@ -138,8 +138,8 @@ def question_4_2(T_max_d,**kwargs):
 #EN15251 est une array contenant t0 et tf et Tmin et Tmax -> [8,19,19.5,24]
 
 def verification_EN15251(delta_t,**kwargs):
-    global tol_temp
-    EN15251 = kwargs.pop('EN15251',np.array([8,19,19.5,24]))
+    global tol_temp, norme
+    EN15251 = kwargs.pop('EN15251',norme)
     tol_temp = kwargs.pop('tol_temp', tol_temp)
     kwargs['no_max'] = True
 

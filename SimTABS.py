@@ -32,7 +32,7 @@ def dessinemoassa(t,T,index,xlabel = None, ylabel = None, titre= None):
     plt.ylabel(ylabel, fontsize = 8) # Labélisation de l'axe des ordonnées (copypaste du tuto)
     for i in range(T.shape[0]):  
         plt.plot(t, T[i], label=index[i])  # en fonction du nombre de variables dans T, on affiche plus ou moins de fonctions
-    plt.legend( loc='best')
+    plt.legend( loc='best', fontsize = 7)
     plt.title(label = titre)
     plt.show()  
 
@@ -117,8 +117,6 @@ def scenario5(t,delta_t = None):
                 return heating_mode
     #on a pas trouvé de valeur pour laquelle on veut chauffer ou refroidir.
     return default_mode
-            
-
 
 def scenario(t,num,delta_t = None): # delta_t = None définit s'il y a un argument supplémentaire (delta_t)
     '''

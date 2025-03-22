@@ -62,6 +62,7 @@ def bissection(f, x0, x1, **kwargs):
         
         if fx0 * fx2 < 0:
             x1 = x2
+            
         else:
             x0, fx0 = x2, fx2
     
