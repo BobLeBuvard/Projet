@@ -7,7 +7,7 @@ module qui contient toutes les variables. Pour l'instant ça charge tout dans la
 
 #CONFIG
 gl_FenetreDeTemps = np.array([0, 24]) # fenetre de test comme demandé -> taille du cycle
-gl_h = 0.01  # pas de temps ( toutes les 6 minutes)
+gl_h = 0.01  # pas de temps ( toutes les 36 secondes)
 gl_T0 = np.array([15,15,15,15,15])  #conitions initiales données 
 gl_default_tol = 10e-10 #choix arbitraire
 gl_searchInterval = [0,20] # pour le delta_t qui varie entre 4h et 24h donc delta_t entre 0 et 20h

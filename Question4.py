@@ -81,6 +81,7 @@ def question_4_1(**kwargs):
 #______________________________________________________________________________________________________#
 #question 4.2
 def recherche_delta_t (T_max_d,**kwargs):
+    global gl_h, tol_rac
     '''
         fonction qui va rechercher le delta_t tel que l'on ne dépassera jamais T_max_d sur un cycle de 24h
 
@@ -95,18 +96,19 @@ def recherche_delta_t (T_max_d,**kwargs):
         delta_t (float) -> Période delta_t nécessaire pour ne pas dépasser T_max_d.
         '''
 
-    
+    kwargs.setdefault('h', gl_h)
+    kwargs.setdefault('tol_rac', tol_rac)
     kwargs.pop('delta_t',None) #on efface le delta_t des kwargs pour la recherche 
     kwargs['T_max_d'] = T_max_d #on ajoute T_max_d aux arguments pour T_max
     kwargs['num_du_scenario'] = 4
-    kwargs['tol_rac'] = kwargs['h']# on ne peut pas avoir une précision parfaite à cause du h choisi impossible d'avoir plus précis que h (déterminé par essai erreur).
+    
     f_difference = lambda delta_t: T_max(delta_t,**kwargs)[0] - T_max_d 
     '''
     fonction qui fait la différence entre T_max qui varie en fonction de delta et T_max_d qui est choisie abritrairement, il faut en 
     rechercher la racine pour pouvoir trouver delta_t
     '''
     global gl_searchInterval
-    x0,x1 = kwargs.get('search_x0',gl_searchInterval[0]),kwargs.get('search_x0',gl_searchInterval[1])
+    x0,x1 = kwargs.get('search_x0',gl_searchInterval[0]),kwargs.get('search_x1',gl_searchInterval[1])
     delta_t ,statut = bissection(f_difference,x0,x1,**kwargs) #delta_t est compris entre 0h et 20h 
     
     if statut !=0 : 
@@ -208,7 +210,7 @@ def question_4_3(T_max_d, **kwargs):
     if debug: start=time.time()
     Temp_Max_delta_t =  lambda delta_t: max_a_stabilisation(delta_t,**kwargs)[0] - T_max_d  
     
-    x0,x1 = kwargs.get('search_x0',gl_searchInterval[0]),kwargs.get('search_x0',gl_searchInterval[1])
+    x0,x1 = kwargs.get('search_x0',gl_searchInterval[0]),kwargs.get('search_x1',gl_searchInterval[1])
     
     delta_t ,statut = bissection(Temp_Max_delta_t,x0,x1,**kwargs)
     print(f'delta_t : {delta_t}')

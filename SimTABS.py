@@ -235,7 +235,7 @@ def question_3_2(**kwargs):
     h = kwargs.pop('h',gl_h) 
     
     t,T = calculTemperaturesEuler(FenetreDeTemps,T0,h,**kwargs)
-    dessinemoassa(t,T,['T_room','T_t','T_cc','T_c1','T_c2'],xlabel='Temps (heures)',ylabel='Température(°K)',titre= f'Euler: scénario {num_du_scenario}, pas h = {h}')
+    dessinemoassa(t,T,['T_room','T_t','T_cc','T_c1','T_c2'],xlabel='Temps (heures)',ylabel='Température(°C)',titre= f'Euler: scénario {num_du_scenario}, pas h = {h}')
 
 #______________________________________________________________________________________________________#
 #question 3.3
@@ -267,7 +267,7 @@ def question_3_3(**kwargs):
     kwargs.pop('h',gl_h) 
     
     t,T = calculTemperaturesIVP(FenetreDeTemps,T0,gl_default_tol,   **kwargs)
-    dessinemoassa(t,T,['T_room','T_t','T_cc','T_c1','T_c2'],xlabel='Temps (heures)',ylabel='Température(°K)',titre= f'IVP: scénario {num_du_scenario}')
+    dessinemoassa(t,T,['T_room','T_t','T_cc','T_c1','T_c2'],xlabel='Temps (heures)',ylabel='Température(°C)',titre= f'IVP: scénario {num_du_scenario}')
 
 
 #______________________________________________________________________________________________________#
@@ -370,7 +370,7 @@ def cycles_apres_convergence(T0, FenetreDeTemps,**kwargs):
                 plt.ylabel('températures des objets')
                 plt.legend(loc = 'best')
                 plt.show()
-            if not q_3_5 and debug:
+            if  q_3_5==False and debug==True:
                 plt.plot(t_total/(FenetreDeTemps[1]-FenetreDeTemps[0]),(T_total[0]+T_total[4])/2)
                 plt.title(label = f" température de confort jusqu'à stagnation (delta_t = {delta_t})")
                 plt.xlabel('nombre de cycles')
