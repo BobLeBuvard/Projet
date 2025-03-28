@@ -3,12 +3,7 @@ import math
 from config import debug
 
 def hasRoots(f, x0, x1, tol, sec=False):
-    ''' 
-    Vérifie si la fonction possède les conditions nécessaires pour la recherche de racine :
-    - Vérifie si les bornes sont bien de signe opposé (pour la bissection)
-    - Vérifie si x0 ou x1 est déjà une racine
-    - Retourne un statut 1 si les conditions ne sont pas respectées
-    '''
+    
     if not isinstance(x0, (int, float)) or not isinstance(x1, (int, float)): #vérifier que x0 et x1 existent bel et bien
         return ["x0 ou x1 ne sont pas définis",1]
     fx0, fx1 = f(x0), f(x1)
@@ -35,8 +30,7 @@ def hasRoots(f, x0, x1, tol, sec=False):
 def bissection(f, x0, x1, **kwargs):
     tol = kwargs.get('tol_rac',0.5e-7)
     max_iter = kwargs.get('max_iter',50)
-    '''Recherche de racine par dichotomie (bissection).'''
-    
+        
     
     retour = hasRoots(f, x0, x1, tol)
     if retour[1] != 0 or retour[0] is not None:
@@ -54,7 +48,7 @@ def bissection(f, x0, x1, **kwargs):
     
     fx0 = f(x0)
     for _ in range(nombre_d_iterations):
-        x2 = (x0 + x1) / 2  # Point milieu
+        x2 = (x0 + x1) / 2  
         fx2 = f(x2)
 
         if abs(fx2) <= tol:
@@ -169,7 +163,7 @@ def hybride(f,x0,x1,**kwargs):
             if not statut:
                 return[racine,statut]
             intervalle = abs(x0 - x1) 
-            x0 = x0 + intervalle * 0.1 #on a eu un problème d'intervalle, on peut recommencer avec un x0 
+            x0 = x0 + intervalle * 0.1 # on a eu un problème d'intervalle, on peut recommencer avec un x0 
             fx0 = f(x0)
         return ["fonction à la con, aucun résultat trouvé",-1]
 
