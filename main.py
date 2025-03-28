@@ -519,3 +519,9 @@ for i in range(T.shape[0]):
 plt.legend( loc='best')
 plt.title(label = str(h))
 plt.show()  
+
+
+def fonctiondroite(hauteur, label = None):
+    '''fonction qui va plot y = 0 sur le graphique'''
+    global gl_FenetreDeTemps
+    plt.plot(np.arange(gl_FenetreDeTemps[1]-gl_FenetreDeTemps[0]+1),np.zeros(gl_FenetreDeTemps[1]-gl_FenetreDeTemps[0]+1) + hauteur , label = label)
