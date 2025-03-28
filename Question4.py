@@ -100,11 +100,6 @@ def recherche_delta_t (T_max_d,**kwargs):
 def question_4_2(T_max_d,**kwargs):
 
     # Initialisation des variables    
-    global gl_h
-    
-    kwargs.setdefault('h', gl_h)
-    kwargs['delta_t'] = delta_t
-    kwargs['T_max_d'] = T_max_d
     kwargs['num_du_scenario'] = 4
 
     # Calcul
@@ -116,7 +111,7 @@ def question_4_2(T_max_d,**kwargs):
     print(f"delta_t correspondant aux critères demandés {delta_t}")
 
     # Dessin (paresseux)
-    question_4_1(**kwargs)
+    question_4_1(T_max_d = T_max_d,delta_t = delta_t, **kwargs)
     
 #______________________________________________________________________________________________________#
 # question 4.3
@@ -146,8 +141,8 @@ def verification_EN15251(delta_t,**kwargs):
             if not(EN15251[2]-tol_temp <= T_confort_i <= EN15251[3]+tol_temp): #est ce que les extrémas sont pris avec ?
                 print("La norme EN15251 n'est pas respectée.")
                 EstRespecté = False
-    
-    print("La norme EN15251 est respectée.")
+                break
+    if EstRespecté: print("La norme EN15251 est respectée.")
 
     # Dessin
     plt.plot(t,T_confort, label = 'température de confort')
