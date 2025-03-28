@@ -129,6 +129,7 @@ def verification_EN15251(delta_t,**kwargs):
     """
     Fonction vérifiant si une norme de conditions de travail est respectée. Par défaut c'est la norme EN15251.
     """
+    
     # Initialisation des variables
     global tol_temp, norme
     EN15251 = kwargs.pop('EN15251',norme)
@@ -245,7 +246,3 @@ def plot_T_max_delta_t(**kwargs):
     plt.legend()
     plt.grid(True)
     plt.show()
-    
-
-
-
