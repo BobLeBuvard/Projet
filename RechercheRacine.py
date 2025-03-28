@@ -7,7 +7,7 @@ def hasRoots(f, x0, x1, tol, sec=False):
 
     if tol <= 0 or abs(x0 - x1) <= tol:
         print("Erreur : Tolérance invalide ou intervalle trop petit.")
-        return [None, 1]  # ERREUR (statut 1)
+        return [None, 1]  
 
     if abs(fx0) <= tol:
         print(f"Racine trouvée immédiatement : {x0}")
@@ -19,9 +19,9 @@ def hasRoots(f, x0, x1, tol, sec=False):
 
     if not sec and fx0 * fx1 > 0:  # Vérification pour la bissection
         print("Erreur : Pas de changement de signe (pas de racine unique garantie).")
-        return [None, 1]  # ERREUR (statut 1) pour respecter l'énoncé
+        return [None, 1]  
 
-    return [None, 0]  # Tout va bien, on peut continuer
+    return [None, 0]  
 
 
 def bissection(f, x0, x1, **kwargs):
