@@ -268,7 +268,8 @@ def afficher_scenario(t_total, T_total, FenetreDeTemps, num_du_scenario, delta_t
             plt.plot(
                 t_total / (FenetreDeTemps[1] - FenetreDeTemps[0]),
                 T_total[j],
-                label=['T_room', None, None, None, 'T_c2'][j]
+                label=['T_room', None, None, None, 'T_c2'][j],
+                linestyle = "--"
             )
 
         plt.title(f"T_room et T_c2 jusqu'à stagnation (sc.{num_du_scenario}) (delta_t = {round(delta_t, 2)})")
@@ -285,7 +286,7 @@ def afficher_scenario(t_total, T_total, FenetreDeTemps, num_du_scenario, delta_t
         plt.title(f"Température de confort jusqu'à stagnation (delta_t = {delta_t})")
         plt.xlabel('nombre de cycles')
         plt.ylabel('températures des objets')
-        plt.plot([0, i + 2], np.full(2, max(T_total[0] + T_total[4]) / 2))  # Trace la ligne du max
+        plt.plot([0, i + 2], np.full(2, max(T_total[0] + T_total[4]) / 2), linestyle = "--")  # Trace la ligne du max
         plt.show()
     
 def cycles_apres_convergence(T0, FenetreDeTemps,**kwargs):
@@ -302,15 +303,15 @@ def cycles_apres_convergence(T0, FenetreDeTemps,**kwargs):
 
     # Initialisation des variables
     global gl_h,tol_temp,max_jours,gl_num_du_scenario
-    kwargs['h'] = kwargs.get('h',gl_h)
     kwargs['T0'] = T0
     kwargs['FenetreDeTemps'] = FenetreDeTemps
+    kwargs['h'] = kwargs.get('h',gl_h)
     h = kwargs.get('h')
+    num_du_scenario = kwargs.get('num_du_scenario',gl_num_du_scenario)
+    delta_t = kwargs.get('delta_t',0)
     q_3_5 = kwargs.pop('q_3_5',True)
     max_jours = kwargs.pop('max_jours',max_jours)
     tol_temp = kwargs.pop('tol_temp',tol_temp)
-    num_du_scenario = kwargs.get('num_du_scenario',gl_num_du_scenario)
-    delta_t = kwargs.get('delta_t',0)
     journee_pas = round((FenetreDeTemps[1]-FenetreDeTemps[0])/h)
     
     # Calcul
