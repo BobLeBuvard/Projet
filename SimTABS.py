@@ -280,12 +280,18 @@ def afficher_scenario(t_total, T_total, FenetreDeTemps, num_du_scenario, delta_t
     elif not q_3_5 and debug:
         plt.plot(
             t_total / (FenetreDeTemps[1] - FenetreDeTemps[0]),
-            (T_total[0] + T_total[4]) / 2
+            (T_total[0] + T_total[4]) / 2,
+            label = "température de confort"
         )
+        plt.plot([0, i + 2], np.full(2, max(T_total[0] + T_total[4]) / 2),
+                  linestyle = "--",
+                  label = "température maximale"
+                  )  # Trace la ligne du max
         plt.title(f"Température de confort jusqu'à stagnation (delta_t = {delta_t})")
         plt.xlabel('nombre de cycles')
         plt.ylabel('températures des objets')
-        plt.plot([0, i + 2], np.full(2, max(T_total[0] + T_total[4]) / 2), linestyle = "--")  # Trace la ligne du max
+        
+        plt.legend(loc = 'best')
         plt.show()
     
 def cycles_apres_convergence(T0, FenetreDeTemps,**kwargs):

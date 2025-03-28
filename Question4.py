@@ -131,6 +131,8 @@ def verification_EN15251(delta_t,**kwargs):
     tol_temp = kwargs.pop('tol_temp', tol_temp)
     kwargs['no_max'] = True
     EstRespecté = True
+    colors = ["green", "red"]
+    temperatures = ["température minimale", "température maximale"]
 
     # Calcul
 
@@ -147,7 +149,7 @@ def verification_EN15251(delta_t,**kwargs):
     # Dessin
     plt.plot(t,T_confort, label = 'température de confort')
     for i in range(2): 
-         plt.axhline(y=EN15251[i+2], linestyle="--", label =['température minimale','température maximale'][i], color=["blue", "red"][i])
+         plt.axhline(y=EN15251[i+2], linestyle="--", label =temperatures[i], color=colors[i])
     plt.title(label = "graphique de la température de confort pendant la dernière journée")
     plt.xlabel('heures de la journée (h)')
     plt.ylabel('température (°C)')
@@ -156,7 +158,7 @@ def verification_EN15251(delta_t,**kwargs):
         label,x,y = points_to_plot[i]
         plt.plot(x,y,'.', label = label)
     
-    plt.legend(fontsize="5", loc = 'lower right')
+    plt.legend(fontsize="7", loc = 'lower right')
     plt.show()
     return EstRespecté
 
