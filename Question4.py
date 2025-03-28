@@ -228,6 +228,9 @@ def question_4_3(T_max_d, **kwargs):
     return resultat_verif, delta_t
 
 
+#______________________________________________________________________________________________________#
+# Partie Bonus
+
 def plot_T_max_delta_t(**kwargs):
     global gl_searchInterval
     kwargs['num_du_scenario'] = 4
