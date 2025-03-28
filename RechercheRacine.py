@@ -10,7 +10,7 @@ def hasRoots(f, x0, x1, tol, sec=False):
 
     if tol <= 0 or abs(x0 - x1) <= tol:
         print("Erreur : Tolérance invalide ou intervalle trop petit.")
-        return [None, 1]  # ERREUR (statut 1)
+        return [None, 1]  
 
     if abs(fx0) <= tol:
         print(f"Racine trouvée immédiatement : {x0}")
@@ -22,9 +22,9 @@ def hasRoots(f, x0, x1, tol, sec=False):
 
     if not sec and fx0 * fx1 > 0:  # Vérification pour la bissection
         print("Erreur : Pas de changement de signe (pas de racine unique garantie).")
-        return [None, 1]  # ERREUR (statut 1) pour respecter l'énoncé
+        return [None, 1]  
 
-    return [None, 0]  # Tout va bien, on peut continuer
+    return [None, 0]  
 
 
 def bissection(f, x0, x1, **kwargs):
@@ -97,8 +97,8 @@ def secante(f, x0, x1,**kwargs):
 def secante_precalculee(f,x0,x1,tol,fx0,fx1,max_iter):
     for i in range(max_iter):
         if abs(fx1)<= tol:
-            return [x1,0] # je sais pas..., c'était [x2,0]
-        if abs(fx1 - fx0) < 1e-12 or  abs(x1 - x0) < tol:  # Évite la division par zéro 1e-12 = "zéro machine"
+            return [x1,0] 
+        if abs(fx1 - fx0) < 1e-12 or  abs(x1 - x0) < tol:  
             print("division par zéro")
             print(f'{fx0} {fx1}')
             return [None, -1]  # Erreur -1 : division par zéro
@@ -112,7 +112,7 @@ def hybride(f,x0,x1,**kwargs):
     tol = kwargs.get('tol_rac',0.5e-7)
     max_iter = kwargs.get('max_iter',30)
     tol_bisect = kwargs.get('tol_bisect_hybride',0.1)
-    #vérif conditions initiales
+    
     fx0, fx1 = f(x0), f(x1)
     
     if tol <= 0:
@@ -163,7 +163,7 @@ def hybride(f,x0,x1,**kwargs):
             if not statut:
                 return[racine,statut]
             intervalle = abs(x0 - x1) 
-            x0 = x0 + intervalle * 0.1 # on a eu un problème d'intervalle, on peut recommencer avec un x0 
+            x0 = x0 + intervalle * 0.1  
             fx0 = f(x0)
         return ["fonction à la con, aucun résultat trouvé",-1]
 
