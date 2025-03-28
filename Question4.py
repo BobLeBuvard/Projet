@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 from RechercheRacine import bissection, hybride,secante
 import numpy as np
 from SimTABS import*
-import time
+
 
 def fonctiondroite(hauteur, label = None):
     global gl_FenetreDeTemps
@@ -69,7 +69,7 @@ def question_4_1(**kwargs):
     plt.ylabel("température optimale ") # Labélisation de l'axe des abscisses (copypaste du tuto)
     plt.title(label = f'Température de confort sur {FenetreDeTemps[1]-FenetreDeTemps[0]}h -> delta_t = {delta_t}')
     plt.plot(t,T_confort ,label= "température de confort")
-    fonctiondroite(T_max_d, label = 'T_max_d')
+    plt.axhline(y=T_max_d, color="red", linestyle="--", label="T_max_d") 
     plt.plot(4,T_max_d,'.', label = f'début de la période de chauffe ({4}h)')
     plt.plot(4+delta_t,T_max_d,'.', label = f'fin de la période de chauffe ({4+delta_t}h)')
     
@@ -81,7 +81,7 @@ def question_4_1(**kwargs):
 #______________________________________________________________________________________________________#
 #question 4.2
 def recherche_delta_t (T_max_d,**kwargs):
-    global gl_h, tol_rac
+    
     '''
         fonction qui va rechercher le delta_t tel que l'on ne dépassera jamais T_max_d sur un cycle de 24h
 
@@ -94,20 +94,19 @@ def recherche_delta_t (T_max_d,**kwargs):
          OUT:
 
         delta_t (float) -> Période delta_t nécessaire pour ne pas dépasser T_max_d.
-        '''
-
+    '''
+    global gl_h, tol_rac, gl_searchInterval
     kwargs.setdefault('h', gl_h)
     kwargs.setdefault('tol_rac', tol_rac)
     kwargs.pop('delta_t',None) #on efface le delta_t des kwargs pour la recherche 
     kwargs['T_max_d'] = T_max_d #on ajoute T_max_d aux arguments pour T_max
     kwargs['num_du_scenario'] = 4
-    
     f_difference = lambda delta_t: T_max(delta_t,**kwargs)[0] - T_max_d 
     '''
-    fonction qui fait la différence entre T_max qui varie en fonction de delta et T_max_d qui est choisie abritrairement, il faut en 
-    rechercher la racine pour pouvoir trouver delta_t
+     fonction qui fait la différence entre T_max qui varie en fonction de delta et T_max_d qui est choisie abritrairement, il faut en 
+     rechercher la racine pour pouvoir trouver delta_t
     '''
-    global gl_searchInterval
+ 
     x0,x1 = kwargs.get('search_x0',gl_searchInterval[0]),kwargs.get('search_x1',gl_searchInterval[1])
     delta_t ,statut = bissection(f_difference,x0,x1,**kwargs) #delta_t est compris entre 0h et 20h 
     
@@ -152,7 +151,7 @@ def verification_EN15251(delta_t,**kwargs):
     t,T_confort  = T_max(delta_t,**kwargs)
     plt.plot(t,T_confort, label = 'température de confort')
     for i in range(2): 
-        fonctiondroite(EN15251[i+2], label = ['température minimale','température maximale'][i])
+         plt.axhline(y=EN15251[i+2], linestyle="--", label =['température minimale','température maximale'][i], color=["blue", "red"][i])
     plt.title(label = "graphique de la température de confort pendant la dernière journée")
     plt.xlabel('heures de la journée (h)')
     plt.ylabel('température (°C)')
@@ -207,7 +206,7 @@ def question_4_3(T_max_d, **kwargs):
     kwargs['h'] = kwargs.get('h',gl_h)
     kwargs['tol_rac'] = kwargs.get('tol_rac',tol_rac)
     kwargs['q_3_5'] = False
-    if debug: start=time.time()
+   
     Temp_Max_delta_t =  lambda delta_t: max_a_stabilisation(delta_t,**kwargs)[0] - T_max_d  
     
     x0,x1 = kwargs.get('search_x0',gl_searchInterval[0]),kwargs.get('search_x1',gl_searchInterval[1])
@@ -232,8 +231,7 @@ def question_4_3(T_max_d, **kwargs):
         
         resultat_verif = verification_EN15251(delta_t,**kwargs)
     if debug: 
-        end=time.time()
-        print(f"Fin des opérations. Temps écoulé: {end-start} secondes")
+        print(f"Fin des opérations.")
     return resultat_verif, delta_t
     ''
 

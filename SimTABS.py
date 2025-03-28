@@ -375,7 +375,7 @@ def cycles_apres_convergence(T0, FenetreDeTemps,**kwargs):
                 plt.title(label = f" température de confort jusqu'à stagnation (delta_t = {delta_t})")
                 plt.xlabel('nombre de cycles')
                 plt.ylabel('températures des objets')
-                plt.plot([0,i+2],np.full(2,max(T_total[0]+T_total[4])/2)) #plotter le maximum
+                plt.plot([0,i+2],np.full(2,max(T_total[0]+T_total[4])/2), linestyle = "--") #plotter le maximum
                 plt.show()
             return i+2 , T_total[:,-(1+journee_pas)]  #retourne le nombre de jours et les conditions au début du dernier jour
             
@@ -461,14 +461,5 @@ def question_3_6(**kwargs):
         cycles_apres_convergence(T0,FenetreDeTemps,     num_du_scenario = i+1,**kwargs)#LAISSER LA VIRGULE A LA FIN (requis pour kwargs soit fonctionnel (+ de 1 argument) )!!!
         
         
-#pour debug     
-def check_time(sous_question,*args,**kwargs):
-    questions = [print,question_3_2,question_3_3,question_3_4,question_3_5,question_3_6,calculTemperaturesEuler]
-    import time
-    start = time.time()
-    questions[sous_question-1](*args,**kwargs)
-    #calculTemperaturesEuler(FenetreDeTemps, T0, h)
-    end = time.time()
-    print(end-start)
-    
+
         
