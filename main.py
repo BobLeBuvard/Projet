@@ -153,3 +153,63 @@ def Recherchede_Delta_d(Td_max, intervalle, T0, h, G_interp):
     else:
         print("Échec de la recherche de Δt")
         return None
+    
+def kelvin(temp):
+    return (temp+273.15) 
+def celsius(temp):
+    return (temp-273.15)
+
+
+def scenario5(t,delta_t = None):
+    '''
+    En fonction d'une variable on peut créer un scénario de chauffe customisé
+
+    scénario à sa guise: on entre une array pour dire les heures durant lesquelles on veut chauffer, refroidir ou couper
+    
+    Cette fonction prend delta_t comme paramètre en compte, mais delta_t dans ce cas n'est pas une simple array
+
+    dans le scénario 5 en effet, delta_t est un tuple contenant un nombre: le mode de chauffe de base ( 1, 2 ou 3) et une array d'heures de chauffe
+     l'array d'heures de chauffe est une array plate 3xn  -> Par exemple si on veut faire chauffer entre 5 et 6h on met [3(type de chauffe),5(début),6(fin)]    
+    
+    Voici un exemple de delta_t
+
+            
+
+    delta_t = (1,np.array([ 3,5,6, 2,9,10, 3,15,18, 3,8,9])
+               ^            ^ ^ ^
+               |            | | |
+    (défaut éteint)   chaud-début-fin
+
+    '''
+
+    if type(delta_t) is not int:
+        default_mode,heatingcycle = delta_t
+    else:
+        print("il y a un problème de delta_t: delta_t n'est pas celui attendu (tuple) contenant un int et une flat_array")
+        heating_mode = False
+    if heatingcycle!= None:
+        matrice = heatingcycle.reshape(3, len(heatingcycle/3))
+        '''
+        exemple de matrice
+    mode    3  2  2  3 
+    début   5  9  15 8 
+    fin     6  10 18 9
+
+        '''
+        for i in range(np.shape[1]): # nombre de colonnes
+            if matrice[1,i] <= t <= matrice[2,i]:
+                heating_mode = matrice[0,i]
+                return heating_mode
+    #on a pas trouvé de valeur pour laquelle on veut chauffer ou refroidir.
+    return default_mode
+
+if debug:
+    plt.plot(t_total,T_total[0])
+    plt.show()
+
+
+def dessineDesCycles(cycles,**kwargs):
+    global gl_num_du_scenario,gl_T0,gl_FenetreDeTemps
+    num_du_scenario = kwargs.get('num_du_scenario',gl_num_du_scenario)
+    t,T = calculCycles(cycles,gl_T0,gl_FenetreDeTemps,**kwargs)
+    dessinemoassa(t,T,['T_room','T_t','T_cc','T_c1','T_c2'],xlabel='Temps (heures)',ylabel='Température(°K)',titre= f'Euler: scénario {num_du_scenario}')
