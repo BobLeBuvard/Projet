@@ -179,37 +179,36 @@ def max_a_stabilisation(delta_t,**kwargs):
     fonction qui rend le maximum stabilisé au dernier jour
     
     '''
-    global gl_T0,gl_FenetreDeTemps,gl_num_du_scenario
-    num_du_scenario = kwargs.get('num_du_scenario', gl_num_du_scenario)
-    T0 = kwargs.pop('T0',gl_T0)
+    global gl_T0,gl_FenetreDeTemps,gl_num_du_scenario   
     kwargs['q_3_5'] = False
     kwargs['delta_t'] = delta_t
     FenetreDeTemps = kwargs.pop('FenetreDeTemps',gl_FenetreDeTemps)
-    #le plot se fait ici
+    T0 = kwargs.pop('T0',gl_T0)
     
-    days_to_stabilize, T0_new = cycles_apres_convergence(T0,FenetreDeTemps,**kwargs) #T0_new est les conditions initiales du dernier jour 
-    
+    days_to_stabilize, T0_new = cycles_apres_convergence(T0,FenetreDeTemps,**kwargs) #T0_new est les conditions initiales du dernier jour + plot
     kwargs['T0'] = T0_new
     
     
     if days_to_stabilize == None:
-        return("erreur de stabilisation")
+        return("Erreur de stabilisation.")
+    
     delta_t = kwargs.pop('delta_t',0) # cas par défaut for the sake of it
     retour = T_max(delta_t,**kwargs)
-    if debug: print(f'maximum: {retour[0]}') 
+
+    if debug:
+        print(f'La température maximal au dernier jour est de : {retour[0]} °C.') 
+
     return retour
 
 def question_4_3(T_max_d, **kwargs):
     global gl_h, gl_searchInterval,tol_rac,gl_T0,gl_FenetreDeTemps
     kwargs['num_du_scenario'] = 4 
-    
-    kwargs['h'] = kwargs.get('h',gl_h)
-    kwargs['tol_rac'] = kwargs.get('tol_rac',tol_rac)
     kwargs['q_3_5'] = False
+    kwargs['tol_rac'] = kwargs.get('tol_rac',tol_rac)
+    kwargs['h'] = kwargs.get('h',gl_h)
+    x0,x1 = kwargs.get('search_x0',gl_searchInterval[0]),kwargs.get('search_x1',gl_searchInterval[1])
    
     Temp_Max_delta_t =  lambda delta_t: max_a_stabilisation(delta_t,**kwargs)[0] - T_max_d  
-    
-    x0,x1 = kwargs.get('search_x0',gl_searchInterval[0]),kwargs.get('search_x1',gl_searchInterval[1])
     
     delta_t ,statut = bissection(Temp_Max_delta_t,x0,x1,**kwargs)
     print(f'delta_t : {delta_t}')
@@ -231,9 +230,9 @@ def question_4_3(T_max_d, **kwargs):
         
         resultat_verif = verification_EN15251(delta_t,**kwargs)
     if debug: 
-        print(f"Fin des opérations.")
+        print("Fin des opérations.")
     return resultat_verif, delta_t
-    ''
+    
 
 
 '''commentaire supplémentaire: 
