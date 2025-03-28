@@ -3,31 +3,20 @@ import matplotlib.pyplot as plt
 import scipy as scp
 from PerteEtGain import g
 from config import *
-def kelvin(temp):
-    return (temp+273.15) 
-def celsius(temp):
-    return (temp-273.15)
+
 def dessinemoassa(t,T,index,xlabel = None, ylabel = None, titre= None):
-    ''' fonction qui plotte le graphe de ce qu'on lui a donné.
-     IN: 
-    
-     t -> array d'instant de temps (float64), dim(1,...)
-    
-     T -> array des températures (dim (1,5)) dans l'ordre [T_room, T_t, T_cc, T_c1,T_c2]
+    """
+    Trace un ou plusieurs graphes des températures en fonction du temps.
 
-     index -> un array de titre de graphe (comme la fonction peut en dessiner plusieurs d'un coup)
+    Paramètres :
+    - t (ndarray, shape (1, ...)) : Instants de temps.
+    - T (ndarray, shape (1, 5)) : Températures [T_room, T_t, T_cc, T_c1, T_c2].
+    - index (list) : Titres des graphes correspondant aux courbes tracées.
+    - Le reste est obvious.
 
-     xlabel -> nom de l'axe des abcisses, par défaut = None, il n'y en a pas
-
-     ylabel -> nom de l'axe des ordonnés, par défaut = None, il n'y en a pas
-
-     titre -> nom du graphique, par défaut = None, il n'y en a pas
-
-     OUT:
-
-     Graphique représentant les différentes choses demandées en paramètre
-    '''
-
+    Retour :
+    - Affiche le(s) graphique(s) demandé(s).
+    """
     plt.xlabel(xlabel, fontsize = 8) # Labélisation de l'axe des abscisses (copypaste du tuto)
     plt.ylabel(ylabel, fontsize = 8) # Labélisation de l'axe des ordonnées (copypaste du tuto)
     for i in range(T.shape[0]):  
@@ -36,7 +25,7 @@ def dessinemoassa(t,T,index,xlabel = None, ylabel = None, titre= None):
     plt.title(label = titre)
     plt.show()  
 
-#SCENARIOS POUR LA QUESTION 4
+#SCENARIOS POUR LA QUESTION 3.4
 # delta_t = None c'est pour singaler qu'il peut y avoir des arguments supplémentaires dans la fonction. Dans notre cas, delta_t
 
 def scenario1(t, delta_t = None):
@@ -75,72 +64,23 @@ def scenario4(t, delta_t =None ):
         heating_mode = 1 #éteint
     return heating_mode
 
-def scenario5(t,delta_t = None):
-    '''
-    En fonction d'une variable on peut créer un scénario de chauffe customisé
-
-    scénario à sa guise: on entre une array pour dire les heures durant lesquelles on veut chauffer, refroidir ou couper
-    
-    Cette fonction prend delta_t comme paramètre en compte, mais delta_t dans ce cas n'est pas une simple array
-
-    dans le scénario 5 en effet, delta_t est un tuple contenant un nombre: le mode de chauffe de base ( 1, 2 ou 3) et une array d'heures de chauffe
-     l'array d'heures de chauffe est une array plate 3xn  -> Par exemple si on veut faire chauffer entre 5 et 6h on met [3(type de chauffe),5(début),6(fin)]    
-    
-    Voici un exemple de delta_t
-
-            
-
-    delta_t = (1,np.array([ 3,5,6, 2,9,10, 3,15,18, 3,8,9])
-               ^            ^ ^ ^
-               |            | | |
-    (défaut éteint)   chaud-début-fin
-
-    '''
-
-    if type(delta_t) is not int:
-        default_mode,heatingcycle = delta_t
-    else:
-        print("il y a un problème de delta_t: delta_t n'est pas celui attendu (tuple) contenant un int et une flat_array")
-        heating_mode = False
-    if heatingcycle!= None:
-        matrice = heatingcycle.reshape(3, len(heatingcycle/3))
-        '''
-        exemple de matrice
-    mode    3  2  2  3 
-    début   5  9  15 8 
-    fin     6  10 18 9
-
-        '''
-        for i in range(np.shape[1]): # nombre de colonnes
-            if matrice[1,i] <= t <= matrice[2,i]:
-                heating_mode = matrice[0,i]
-                return heating_mode
-    #on a pas trouvé de valeur pour laquelle on veut chauffer ou refroidir.
-    return default_mode
-
 def scenario(t,num,delta_t = None): # delta_t = None définit s'il y a un argument supplémentaire (delta_t)
     '''
     on a défini 4 scénarios, cette fonction peut nous définir lequel on va utiliser pour notre fonction:
-    
-    num -> numéro du scénario
-    
-    t -> variable du scénario 
-
-    delta_t  -> intervalle de temps ( utile que pour le scénario 4 )
+    - num (int) : numéro du scénario
+    - t (float) : variable du scénario 
+    - delta_t (float) : intervalle de temps ( utile que pour le scénario 4 )
     '''
-    scenarios = [scenario1,scenario2,scenario3,scenario4,scenario5]
+    scenarios = [scenario1,scenario2,scenario3,scenario4]
 
     return scenarios[num-1](t,delta_t = delta_t)
 
 def T_w(heating_mode,T_t):
     '''
     prend en entrée 1 , 2 ou 3
-
-    heating_mode == 1 -> éteint (vaut T_t)
-
-    heating_mode == 2 -> refroidit (vaut 18°C)
-    
-    heating_mode == 3 -> en mode chauffe (vaut 28°C)
+    - heating_mode == 1 : éteint (vaut T_t)
+    - heating_mode == 2 : refroidit (vaut 18°C) 
+    - heating_mode == 3 : chauffe (vaut 28°C)
     
     '''
     if heating_mode == 3:
@@ -154,22 +94,21 @@ def T_w(heating_mode,T_t):
 #______________________________________________________________________________________________________#
                                          #question 3.1
 def odefunction(t, T,other_args):
+    
+    """
+    Calcule les cinq dérivées des températures à l'instant t.
+
+    Paramètres :
+    - t (float64) : Instant de temps.
+    - T (ndarray, shape (5,1)) : Températures [T_room, T_t, T_cc, T_c1, T_c2] (°C ou K, différences uniquement).
+
+    Retourne :
+    - dT (ndarray, shape (5,)) : Dérivées des températures à t.
+    """
+
+
     delta_t = other_args.get('delta_t',None)
-    Force_heating = other_args.get('Force_heating',False)
     num_du_scenario = other_args.get('num_du_scenario',1)
-    '''retourne une array contenant les cinq dérivées selon leur formule
-    
-    IN: 
-    
-    t -> instant de temps (float64)
-    
-    T -> array des températures (dim (5,1)) dans l'ordre [T_room, T_t, T_cc, T_c1,T_c2] -> celsius ou kelvins peu importe on fait que des différences de températures
-
-    OUT:
-
-    dT -> dérivées des températures à l'instant t (dim(5))
-
-    '''
     dT = np.empty(len(T), dtype=np.float64) # de même dimensions que T mais contient les dérivées
 
     #CALCUL DE dT_room
@@ -177,8 +116,8 @@ def odefunction(t, T,other_args):
                     
     #CALCUL DE dT_t 
 
-    heating_mode = scenario(t, num_du_scenario, delta_t=delta_t)
-    #if Force_heating != False: heating_mode = Force_heating # mettre en commentaire si inutilisé. accélère le calcul si inutilisé
+    heating_mode = scenario(t, num_du_scenario, delta_t)
+    
     dT[1] = inv_C[1]*( (-1/R_x)*(T[1]-T[2]) - (1/R_w)*(T[1] - T_w(heating_mode, T[1])) )
 
     #CALCUL DE dT_cc
@@ -196,44 +135,41 @@ def odefunction(t, T,other_args):
 #question 3.2 
 
 def calculTemperaturesEuler(FenetreDeTemps, T0, h,**kwargs):
-    '''
-    Fonction qui résoud une équation différentielle par la méthode d'Euler:
+    """
+    Résolution d'une équation différentielle par Euler.
 
-    IN:
+    Paramètres :
+    - FenetreDeTemps (ndarray, shape (2,)): Début et fin de la fenêtre de calcul (ex: [0, 24] pour 24h).
+    - T0 (ndarray, shape (5,1)): Conditions initiales des températures.
+    - h (int): Pas de temps pour la résolution.
 
-    FenetreDeTemps -> array de 2 éléments: le début (0) et la fin de la fenêtre de temps de calcul (généralement 24 pour 24h) de dimensions 1
-
-    T0 -> conditions initiales (arrray de dimensions (5,1) ) 
+    Retourne :
+    - t (ndarray, shape (1, 24/h)): Instants de calcul.
+    - T (ndarray, shape (5, 24/h)): Températures correspondantes.
+    """
     
-    h -> pas de temps nécessaire à la résolution avec Euler (entier)
-   
-    OUT:
+    #initialisation des matrices
+    n = int((FenetreDeTemps[1] - FenetreDeTemps[0]) / h) + 1   
+    t = np.linspace(FenetreDeTemps[0], FenetreDeTemps[1], n)
+    T = np.zeros((5, n))  
+    T[:, 0] = T0  
     
-    t -> un array des temps, dim(1,24/h)
-
-    T -> un array des température correspondantes aux temps utilsiés, dim(5,24/h)
-
-    '''
-    t0, tf = FenetreDeTemps
-
-    n = int((tf - t0) / h) + 1   # nombre de points de temps -> je préfère faire ainsi parce que on demande d'utiliser n , sinon je ferais T = np.zeros((5, len(t)))
-
-    t = np.linspace(t0, tf, n)  # on fait des temps discrets distancés de h entre t0 et tf 
-    T = np.zeros((5, n))  # 5*n températures en fonction du nombre de points de temps -> on est obligé de mettre sous cette forme 
-    T[:, 0] = T0  # conditions initiales
-        
+    #Méthode de Euler
     for i in range(1, n):
         dT = odefunction(t[i-1], T[:, i-1],kwargs)  #calcul des dérivées de tout pour chaque dernier élément de la colonne
-        T[:, i] = T[:, i-1] + h * dT  # application de Euler 
+        T[:, i] = T[:, i-1] + h * dT  
     return [t, T]
 
 def question_3_2(**kwargs):
+
+    #Initialisation des variables
     global gl_FenetreDeTemps,gl_h,gl_T0
     num_du_scenario = kwargs.get('num_du_scenario',gl_num_du_scenario) 
     FenetreDeTemps = kwargs.pop('FenetreDeTemps',gl_FenetreDeTemps) 
     T0 = kwargs.pop('T0',gl_T0) 
     h = kwargs.pop('h',gl_h) 
-    
+
+    #Calcul
     t,T = calculTemperaturesEuler(FenetreDeTemps,T0,h,**kwargs)
     dessinemoassa(t,T,['T_room','T_t','T_cc','T_c1','T_c2'],xlabel='Temps (heures)',ylabel='Température(°C)',titre= f'Euler: scénario {num_du_scenario}, pas h = {h}')
 
@@ -242,31 +178,38 @@ def question_3_2(**kwargs):
 
 def calculTemperaturesIVP(FenetreDeTemps, T0, rtol,**kwargs):
     
-    '''
-    Fonction qui résoud une équation différentielle par la méthode de Runge-Kutta (ode45):
+    """
+    Résout une équation différentielle par la méthode de Runge-Kutta (ode45).
 
-    IN:
+    Paramètres :
+    - FenetreDeTemps (ndarray, shape (2,)): Début et fin de la fenêtre de calcul (ex: [0, 24] pour 24h).
+    - T0 (ndarray, shape (5,)): Conditions initiales des températures.
+    - rtol (float): Tolérance de résolution (erreur maximale attendue).
+    - t_eval (ndarray) : Points d'évaluation forcés pour comparer avec Euler.
 
-    FenetreDeTemps -> array de 2 éléments: le début (0) et la fin de la fenêtre de temps de calcul (généralement 24 pour 24h) de (array dim(1))
+    Retour :
+    - Solution de l'ODE aux points spécifiés.
+    """
 
-    T0 -> conditions initiales (array dim(5,0) )
-    
-    rtol -> tolérance de résolution ( à quoi on doit s'attendre comme différence avec la véritable valeur)
-
-    t_eval -> paramètre pour forcer l'évaluation aux points de Euler pour pouvoir comparer à des t identiques. On pourrait interpoler mais je sais pas trop
-    '''
+    #Initialisation des variables
     t_eval = kwargs.get('t_eval',None)
+
+    #Calcul
     solution = scp.integrate.solve_ivp(odefunction, FenetreDeTemps, T0, rtol= rtol,t_eval = t_eval,args=(kwargs,)) # forcer d'évaluer aux valeurs de t de Euler pour le dernier paramètre si on veut comparer Solve_IVP et Euler
     return[solution.t, solution.y]
 
 def question_3_3(**kwargs):
+    #Initialisation des variables
     global gl_FenetreDeTemps,gl_h,gl_T0
     num_du_scenario = kwargs.get('num_du_scenario',gl_num_du_scenario) 
     FenetreDeTemps = kwargs.pop('FenetreDeTemps',gl_FenetreDeTemps) 
     T0 = kwargs.pop('T0',gl_T0) 
     kwargs.pop('h',gl_h) 
     
+    #Calcul
     t,T = calculTemperaturesIVP(FenetreDeTemps,T0,gl_default_tol,   **kwargs)
+
+    #Dessin
     dessinemoassa(t,T,['T_room','T_t','T_cc','T_c1','T_c2'],xlabel='Temps (heures)',ylabel='Température(°C)',titre= f'IVP: scénario {num_du_scenario}')
 
 
@@ -276,66 +219,89 @@ def question_3_3(**kwargs):
 '''tester la différence entre les deux fonctions pour des valeurs de h différentes -> tester la convergence de Euler avec solve_IVP'''
 def diff_entre_Euler_et_IVP():
     '''Fonction qui dessine des graphiques de la différence entre la résolution par Euler et par Runge-Kutta pour estimer leur convergence l'une vers l'autre'''
-
+    #Initialisation des variables
     h_de_test = [0.001,0.01,0.1,0.25,0.5,1,2]
+
+    #Calcul
     for i, h in enumerate(h_de_test):  #énumérer les éléments de h 
-        
         h = h_de_test[i]
         t_euler,T2 = calculTemperaturesEuler(gl_FenetreDeTemps,gl_T0,h)
-        t,T1 = calculTemperaturesIVP(gl_FenetreDeTemps,gl_T0, rtol=10e-10,t_eval=t_euler)
-        
-        
+        _,T1 = calculTemperaturesIVP(gl_FenetreDeTemps,gl_T0, rtol=10e-10,t_eval=t_euler)
         T = T1 -T2
         dessinemoassa(t_euler,T,['T_room','T_t','T_cc','T_c1','T_c2'],xlabel='Temps (heures)',ylabel='Température(°K)',titre= f'différence entre Euler et Runge avec h = {h_de_test[i]}')
-def question_3_4():
-    '''Fonction qui dessine des graphiques de la différence entre la résolution par Euler et par Runge-Kutta pour estimer leur convergence l'une vers l'autre'''
-    diff_entre_Euler_et_IVP() 
+
 
 def compare_avec_max(h_test,Max,**kwargs):
     
-    
-    '''Fonction pour comparer avec le maximum de précision. À supprimer après test.'''
+    #Initialisation des variables
     global gl_FenetreDeTemps,gl_T0
     FenetreDeTemps = kwargs.pop('FenetreDeTemps',gl_FenetreDeTemps) 
     T0 = kwargs.pop('T0',gl_T0) 
     
-    
-    
     # Calcul des températures avec différentes précisions
     t_euler, T1 = calculTemperaturesEuler(FenetreDeTemps, T0, h_test,**kwargs)
-    t_max, T2 = calculTemperaturesEuler(FenetreDeTemps, T0,Max ,**kwargs)
-    ratio_tol = int(h_test / Max)  # Assurer un entier pour l'indexation
-    n_points = min(len(T1[0]), len(T2[0]) // ratio_tol) # // pour division ronde (ex : 5//7 = 0 et 7//2 = 3)
-    
+    _, T2 = calculTemperaturesEuler(FenetreDeTemps, T0,Max ,**kwargs)
+    ratio_tol = int(h_test / Max) 
+    n_points = min(len(T1[0]), len(T2[0]) // ratio_tol) 
     difference_avec_max = np.zeros((T1.shape[0], n_points+1)) # n_points +1 car Euler compte le départ et l'arrivée
+    
     # Comparaison des valeurs
     for i in range(n_points):  
         difference_avec_max[:, i+1] = T2[:, i * ratio_tol] - T1[:, i]
-    
+
+    # Dessin
     dessinemoassa(t_euler, difference_avec_max,['T_room','T_t','T_cc','T_c1','T_c2'])
     return difference_avec_max
 
 
+def question_3_4():
+    '''Fonction qui dessine des graphiques de la différence entre la résolution par Euler et par Runge-Kutta pour estimer leur convergence l'une vers l'autre'''
+    diff_entre_Euler_et_IVP() 
+
 #______________________________________________________________________________________________________#
 #question 3.5
 
-def cycles_apres_convergence(T0, FenetreDeTemps,**kwargs):
-    '''
-    fonction qui va calculer itérativement chaque jour et va voir à partir de quand la température se stabilise entre les jours.
-
-    IN: 
-
-    T0 -> conditions initiales en celsius(array dim(5,1))
-
-    FenetreDeTemps -> durée d'un cycle
+def afficher_scenario(t_total, T_total, FenetreDeTemps, num_du_scenario, delta_t, q_3_5, debug, i):
+    """Affiche le scénario en fonction des paramètres."""
     
-    OUT :
+    if q_3_5:
+        for j in range(0, 5, 4):  # Prend les indices 0 et 4
+            plt.plot(
+                t_total / (FenetreDeTemps[1] - FenetreDeTemps[0]),
+                T_total[j],
+                label=['T_room', None, None, None, 'T_c2'][j]
+            )
 
-    Graphique des température sur la durée qui assure la convergence.
+        plt.title(f"T_room et T_c2 jusqu'à stagnation (sc.{num_du_scenario}) (delta_t = {round(delta_t, 2)})")
+        plt.xlabel('nombre de cycles')
+        plt.ylabel('températures des objets')
+        plt.legend(loc='best')
+        plt.show()
 
+    elif not q_3_5 and debug:
+        plt.plot(
+            t_total / (FenetreDeTemps[1] - FenetreDeTemps[0]),
+            (T_total[0] + T_total[4]) / 2
+        )
+        plt.title(f"Température de confort jusqu'à stagnation (delta_t = {delta_t})")
+        plt.xlabel('nombre de cycles')
+        plt.ylabel('températures des objets')
+        plt.plot([0, i + 2], np.full(2, max(T_total[0] + T_total[4]) / 2))  # Trace la ligne du max
+        plt.show()
+    
+def cycles_apres_convergence(T0, FenetreDeTemps,**kwargs):
+    """
+    Calcule itérativement les températures journalières jusqu'à stabilisation.
 
-    '''
-    #unpack kwargs pour n'en garder que les éléments utiles dans cete partie de code
+    Paramètres :
+    - T0 (ndarray, shape (5,1)) : Conditions initiales en °C.
+    - FenetreDeTemps (liste de dimensions 2) : Durée d'un cycle.
+
+    Retour :
+    - Affiche un graphique montrant l'évolution des températures jusqu'à convergence.
+    """
+
+    #Initialisation des variables
     global gl_h,tol_temp,max_jours,gl_num_du_scenario
     kwargs['h'] = kwargs.get('h',gl_h)
     kwargs['T0'] = T0
@@ -346,9 +312,10 @@ def cycles_apres_convergence(T0, FenetreDeTemps,**kwargs):
     tol_temp = kwargs.pop('tol_temp',tol_temp)
     num_du_scenario = kwargs.get('num_du_scenario',gl_num_du_scenario)
     delta_t = kwargs.get('delta_t',0)
-    
-    # calculer les 2 premiers jours
     journee_pas = round((FenetreDeTemps[1]-FenetreDeTemps[0])/h)
+    
+    # Calcul
+    # calculer les 2 premiers jours
     t,T = calculCycles(2,**kwargs)
     T_total = np.copy(T)
     t_total = np.copy(t)
@@ -356,71 +323,50 @@ def cycles_apres_convergence(T0, FenetreDeTemps,**kwargs):
     kwargs.pop('h')
     kwargs.pop('T0')
     kwargs.pop('FenetreDeTemps')
+    # Calculer itérativement les jours nécessaire à la stabilisation.
     for i  in range(max_jours-2):
-        
         if abs(T_total[0, -1] - T_total[0, -(1+journee_pas)]) < tol_temp:
             if debug: print(f"a convergé après {i+2} jours")
-            if q_3_5:
-                for j in range(0,5,4):
-                    plt.plot(t_total/(FenetreDeTemps[1]-FenetreDeTemps[0]),T_total[j], label = ['T_room',None,None,None,'T_c2'][j])
-                    
-                
-                plt.title(label = f"T_room et T-c2 jusqu'à stagnation (sc.{num_du_scenario})(delta_t = {round(delta_t,ndigits=2)})")#garder que 2 chiffres après la virgule
-                plt.xlabel('nombre de cycles')
-                plt.ylabel('températures des objets')
-                plt.legend(loc = 'best')
-                plt.show()
-            if  q_3_5==False and debug==True:
-                plt.plot(t_total/(FenetreDeTemps[1]-FenetreDeTemps[0]),(T_total[0]+T_total[4])/2)
-                plt.title(label = f" température de confort jusqu'à stagnation (delta_t = {delta_t})")
-                plt.xlabel('nombre de cycles')
-                plt.ylabel('températures des objets')
-                plt.plot([0,i+2],np.full(2,max(T_total[0]+T_total[4])/2), linestyle = "--") #plotter le maximum
-                plt.show()
-            return i+2 , T_total[:,-(1+journee_pas)]  #retourne le nombre de jours et les conditions au début du dernier jour
-            
+
+            # Dessin
+            afficher_scenario(t_total, T_total, FenetreDeTemps, num_du_scenario, delta_t, q_3_5, debug, i)
+            return i+2 , T_total[:,-(1+journee_pas)]  #retourne le nombre de jours et les conditions au début du dernier jour 
+        
         else:
+            # Calculer un jour supplémentaire
             t,T = calculTemperaturesEuler(FenetreDeTemps, T_total[:,-1] , h ,**kwargs)
-            #ajouter le dernier jour à T_total et t_total
+            # Ajouter le dernier jour à T_total et t_total
             T_total = np.concatenate((T_total,T),axis = 1)
             t_total = np.concatenate((t_total,t+(i+2)*(FenetreDeTemps[1]-FenetreDeTemps[0])))
             if debug : print(f"n'a pas convergé après {i+2} jours")
     print(f"n'a pas convergé après {max_jours} jours, ajoutez plus de jours")
-    
-    if debug:
-        plt.plot(t_total,T_total[0])
-        plt.show()
-    
     return None, None
 
 
 def calculCycles(cycles,**kwargs):
-    '''
+    """
+    Calcule les températures sur plusieurs cycles en utilisant la méthode d'Euler.
 
-    Fonction qui calcule un nombre de cycles de chauffe (sur plusieurs jours potentiellement) et qui retourne des données plottables. avec le calcul de températures par Euler
-    
-    IN: 
+    Paramètres :
+    - cycles (int) : Nombre de cycles d'évaluation.
+    - T0 (ndarray, shape (1,5)) : Températures initiales [T_room, T_t, T_cc, T_c1, T_c2].
+    - FenetreDeTemps (list ou ndarray, shape (2,)) : Début et fin d'un cycle (ex: [0, 24] pour 24h).
+    - h (float64) : Intervalle entre les instants de calcul.
 
-    cycles: nombre de cycles d'évaluation (int)
-
-    T0-> températures initiales sous forme d'array de dimensions(1,5) avec les éléments [T_room, T_t, T_cc, T_c1,T_c2]
+    Retour :
+    - t (ndarray) : Temps d'évaluation (array de shape (1, intervalle/h)).
+    - T (ndarray, shape (5, cycles*h + 1)) : Températures calculées sur tous les cycles.
+    """
     
-    FenetreDeTemps: durée d'un cycle sous forme d'array/liste [t0,tf] (ex: [0,24] -> cycle de 24h)
-    
-    h-> intervalle entre les instants de calcul de température (float64)
-
-    OUT: 
-    
-    t->  temps d'évaluation (array de array dim(1) de longueur -> intervalle/h )
-    
-    T-> array de dimensions (5, cycles*h +1)
-        '''
+    # Initialisation des variables
     global gl_h,gl_T0,gl_FenetreDeTemps
     T0 = kwargs.pop('T0',gl_T0)
     FenetreDeTemps = kwargs.pop('FenetreDeTemps',gl_FenetreDeTemps)
     h = kwargs.pop('h',gl_h) #on le retire de kwargs parce qu'on n'en veut plus dedans
     T_Total = np.empty((5, 0))  # 5 lignes, 0 colonnes
     t_Total = np.array([])
+
+    # Calcul
     for i in range(cycles):
         if i > 0:
             t = t[:-1]
@@ -431,35 +377,26 @@ def calculCycles(cycles,**kwargs):
         t_Total = np.concatenate((t_Total,(t + ((FenetreDeTemps[1]-FenetreDeTemps[0])*i) )))
         
         T0 = T[:, -1] #prendre les 5 dernières valeurs de l'itération précédentes comme valeurs initiales -> la dernière colonne de t et T
-
-    
-
     return(t_Total,T_Total)
 
-def dessineDesCycles(cycles,**kwargs):
-    global gl_num_du_scenario,gl_T0,gl_FenetreDeTemps
-    num_du_scenario = kwargs.get('num_du_scenario',gl_num_du_scenario)
-    t,T = calculCycles(cycles,gl_T0,gl_FenetreDeTemps,**kwargs)
-    dessinemoassa(t,T,['T_room','T_t','T_cc','T_c1','T_c2'],xlabel='Temps (heures)',ylabel='Température(°K)',titre= f'Euler: scénario {num_du_scenario}')
-
 def question_3_5(**kwargs):
+    # Initialisation des variables
     global gl_T0, gl_FenetreDeTemps
     T0 = kwargs.pop('T0',gl_T0)
     FenetreDeTemps = kwargs.pop('FenetreDeTemps',gl_FenetreDeTemps)
-    '''fonction qui va dessiner le graphe tes températures d'une journée jusqu'à arriver à un état stationnaire'''
+
+    # Calcul
     cycles_apres_convergence(T0, FenetreDeTemps,**kwargs)
-
-
 
 #______________________________________________________________________________________________________#
 # question 3.6
 def question_3_6(**kwargs):
+    """ Compare les différents scénarios. """
+    # Initialisation des variables
     global gl_T0,gl_FenetreDeTemps
     T0,FenetreDeTemps = gl_T0,gl_FenetreDeTemps 
     kwargs.pop('num_du_scenario',None)
-    for i in range(3):
-        cycles_apres_convergence(T0,FenetreDeTemps,     num_du_scenario = i+1,**kwargs)#LAISSER LA VIRGULE A LA FIN (requis pour kwargs soit fonctionnel (+ de 1 argument) )!!!
-        
-        
 
-        
+    # Calcul
+    for i in range(3):
+        cycles_apres_convergence(T0,FenetreDeTemps,     num_du_scenario = i+1,**kwargs)     
