@@ -52,7 +52,7 @@ def question_4_1(**kwargs):
     t_max_seconde = t_max * 3600
 
     # Dessin
-    print(f"maximum de température de confort: {MAX}°C à t = {t_max_seconde}s, c'est à dire {t_max}h")#print la température max sur l'intervalle en degrés celsius
+    print(f"maximum de température de confort: {MAX}°C à t = {t_max_seconde}s, c'est-à-dire {t_max}h")#print la température max sur l'intervalle en degrés celsius
     plt.xlabel(f"temps ({FenetreDeTemps[1] - FenetreDeTemps[0]}h)") # Labélisation de l'axe des ordonnées (copypaste du tuto)
     plt.ylabel("température optimale ") # Labélisation de l'axe des abscisses (copypaste du tuto)
     plt.title(label = f'Température de confort sur {FenetreDeTemps[1]-FenetreDeTemps[0]}h : delta_t = {delta_t}')
@@ -108,7 +108,7 @@ def question_4_2(T_max_d,**kwargs):
     if isinstance(delta_t, tuple): # c'est un tuple uniquement s'il y a eu une erreur.
         print("fin avortée")
         return delta_t[1]
-    print(f"delta_t correspondant aux critères demandés {delta_t}")
+    print(f"delta_t correspondant aux critères demandés : {delta_t}h.")
 
     # Dessin (paresseux)
     question_4_1(T_max_d = T_max_d,delta_t = delta_t, **kwargs)
@@ -218,6 +218,7 @@ def question_4_3(T_max_d, **kwargs):
         delta_t = kwargs.pop('delta_t',0) #fallback on sait jamais
         
         resultat_verif = verification_EN15251(delta_t,**kwargs)
+        print(f"Le delta pour atteindre une température de {T_max_d}°C est de {delta_t}h.")
     if debug: 
         print("Fin des opérations.")
     return resultat_verif, delta_t

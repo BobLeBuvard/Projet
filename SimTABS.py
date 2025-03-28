@@ -171,7 +171,7 @@ def question_3_2(**kwargs):
     # Calcul
     t,T = calculTemperaturesEuler(FenetreDeTemps,T0,h,**kwargs)
     dessinemoassa(t,T,['T_room','T_t','T_cc','T_c1','T_c2'],xlabel='Temps (heures)',ylabel='Température(°C)',titre= f'Euler: scénario {num_du_scenario}, pas h = {h}')
-
+    return [t,T]
 #______________________________________________________________________________________________________#
 #question 3.3
 
@@ -268,8 +268,7 @@ def afficher_scenario(t_total, T_total, FenetreDeTemps, num_du_scenario, delta_t
             plt.plot(
                 t_total / (FenetreDeTemps[1] - FenetreDeTemps[0]),
                 T_total[j],
-                label=['T_room', None, None, None, 'T_c2'][j],
-                linestyle = "--"
+                label=['T_room', None, None, None, 'T_c2'][j]
             )
 
         plt.title(f"T_room et T_c2 jusqu'à stagnation (sc.{num_du_scenario}) (delta_t = {round(delta_t, 2)})")
