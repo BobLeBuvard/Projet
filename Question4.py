@@ -1,14 +1,7 @@
 import matplotlib.pyplot as plt
-from RechercheRacine import bissection, hybride,secante
+from RechercheRacine import bissection
 import numpy as np
 from SimTABS import*
-
-
-def fonctiondroite(hauteur, label = None):
-    global gl_FenetreDeTemps
-    '''fonction qui va plot y = 0 sur le graphique'''
-    plt.plot(np.arange(gl_FenetreDeTemps[1]-gl_FenetreDeTemps[0]+1),np.zeros(gl_FenetreDeTemps[1]-gl_FenetreDeTemps[0]+1) + hauteur , label = label)
-
 
 #______________________________________________________________________________________________________#
 # question 4.1
@@ -16,20 +9,17 @@ def fonctiondroite(hauteur, label = None):
 
 def T_max(delta_t, **kwargs):
     '''
-    Fonction qui calcule le maximum de température de confort d'un cycle (avec un delta T donné)
-    
+    Fonction qui calcule le maximum de température de confort d'un cycle (avec un delta T donné).\n
     Fonction à annuler : T_max(delta_t) - T_dmax 
 
-    IN:
-
-    delta_t -> durée de chauffage après 4h. (float64)
-
-    **kwargs -> se référer aux arguments qu'on peut mettre
+    Paramètres :
+    - delta_t : durée de chauffage après 4h. (float64)
+    - **kwargs : se référer aux arguments qu'on peut mettre
     
-    OUT:
-    
+    Retour : 
     - Différence entre Tmax obtenu et Tmax souhaité.
     '''
+    # Initialisation des variables
     global gl_h,gl_T0
     kwargs['delta_t'] = delta_t #ajout aux arguments si ce n'est pas déjà le cas
     T0 =kwargs.pop('T0',gl_T0)
@@ -39,40 +29,37 @@ def T_max(delta_t, **kwargs):
     FenetreDeTemps = kwargs.pop('FenetreDeTemps',gl_FenetreDeTemps)
     MAX = 0
 
+    # Calcul
     t, T = calculTemperaturesEuler(FenetreDeTemps, T0,h,**kwargs)
     T_confort = (T[0, :] + T[4, :]) / 2  # T_room = T[0], T_c2 = T[4]
     if no_max: 
         return t,T_confort
     MAX = np.max(T_confort)
-    return MAX, t, T_confort #si on ne veut pas de max --> no_max=True ben on ne le calcule pas.
+    return MAX, t, T_confort #si on ne veut pas de max -: no_max=True ben on ne le calcule pas.
 
 
 def question_4_1(**kwargs):
-    '''
-    
-    fonction qui dessine le max de température de confort en apellant T_max et en plottant les températures adéquates.
-    
-    delta_t en heures
-    
-    '''
-
+    '''fonction qui dessine le max de température de confort en apellant T_max et en plottant les températures adéquates.'''
+    # Initialisation des variables
     delta_t = kwargs.pop('delta_t',0)
     T_max_d = kwargs.pop('T_max_d',0)
+
+    # Calcul
     MAX,t,T_confort = T_max(delta_t, **kwargs)
     indice_max = np.where(T_confort  == MAX)[0][0]
-
-# Récupérer le temps t correspondant à ce maximum
+    # Récupérer le temps t correspondant à ce maximum
     t_max = t[indice_max]
     t_max_seconde = t_max * 3600
+
+    # Dessin
     print(f"maximum de température de confort: {MAX}°C à t = {t_max_seconde}s, c'est à dire {t_max}h")#print la température max sur l'intervalle en degrés celsius
     plt.xlabel(f"temps ({FenetreDeTemps[1] - FenetreDeTemps[0]}h)") # Labélisation de l'axe des ordonnées (copypaste du tuto)
     plt.ylabel("température optimale ") # Labélisation de l'axe des abscisses (copypaste du tuto)
-    plt.title(label = f'Température de confort sur {FenetreDeTemps[1]-FenetreDeTemps[0]}h -> delta_t = {delta_t}')
+    plt.title(label = f'Température de confort sur {FenetreDeTemps[1]-FenetreDeTemps[0]}h : delta_t = {delta_t}')
     plt.plot(t,T_confort ,label= "température de confort")
     plt.axhline(y=T_max_d, color="red", linestyle="--", label="T_max_d") 
     plt.plot(4,T_max_d,'.', label = f'début de la période de chauffe ({4}h)')
     plt.plot(4+delta_t,T_max_d,'.', label = f'fin de la période de chauffe ({4+delta_t}h)')
-    
     plt.legend( loc='best')
     plt.show()
     return MAX
@@ -81,54 +68,54 @@ def question_4_1(**kwargs):
 #______________________________________________________________________________________________________#
 #question 4.2
 def recherche_delta_t (T_max_d,**kwargs):
-    
-    '''
-        fonction qui va rechercher le delta_t tel que l'on ne dépassera jamais T_max_d sur un cycle de 24h
-
-        IN:
-    
-        T_max_d (float) -> Température maximale désirée en celsius.
+    """
+        Fonction qui va rechercher le delta_t tel que l'on ne dépassera jamais T_max_d sur un cycle de 24h\n
+        Paramètres:
+        - T_max_d (float) : Température maximale désirée en celsius.
+        - **kwargs (dict) : se référer aux arguments qu'on peut mettre
         
-        **kwargs -> se référer aux arguments qu'on peut mettre
-        
-         OUT:
+        Retour :
+        - delta_t (float) : Période delta_t nécessaire pour ne pas dépasser T_max_d.
+    """
 
-        delta_t (float) -> Période delta_t nécessaire pour ne pas dépasser T_max_d.
-    '''
+    # Initialisation des variables
     global gl_h, tol_rac, gl_searchInterval
     kwargs.setdefault('h', gl_h)
     kwargs.setdefault('tol_rac', tol_rac)
+    x0,x1 = kwargs.get('search_x0',gl_searchInterval[0]),kwargs.get('search_x1',gl_searchInterval[1])
     kwargs.pop('delta_t',None) #on efface le delta_t des kwargs pour la recherche 
     kwargs['T_max_d'] = T_max_d #on ajoute T_max_d aux arguments pour T_max
     kwargs['num_du_scenario'] = 4
-    f_difference = lambda delta_t: T_max(delta_t,**kwargs)[0] - T_max_d 
-    '''
-     fonction qui fait la différence entre T_max qui varie en fonction de delta et T_max_d qui est choisie abritrairement, il faut en 
-     rechercher la racine pour pouvoir trouver delta_t
-    '''
- 
-    x0,x1 = kwargs.get('search_x0',gl_searchInterval[0]),kwargs.get('search_x1',gl_searchInterval[1])
-    delta_t ,statut = bissection(f_difference,x0,x1,**kwargs) #delta_t est compris entre 0h et 20h 
     
+    # Fonction à annuler
+    f_difference = lambda delta_t: T_max(delta_t,**kwargs)[0] - T_max_d 
+
+    # Calcul
+    delta_t ,statut = bissection(f_difference,x0,x1,**kwargs) 
     if statut !=0 : 
         print('erreur, problème de racine') 
         return (-1, statut)
     return delta_t
 
 def question_4_2(T_max_d,**kwargs):
-    kwargs.pop('num_du_scenario',0) # on veut pas de numéro du scénario
-    '''T_max_d en degrés celsius'''
+
+    # Initialisation des variables    
     global gl_h
+    
     kwargs.setdefault('h', gl_h)
-    delta_t = recherche_delta_t(T_max_d,**kwargs)
     kwargs['delta_t'] = delta_t
     kwargs['T_max_d'] = T_max_d
     kwargs['num_du_scenario'] = 4
 
-    if isinstance(delta_t, tuple):
+    # Calcul
+
+    delta_t = recherche_delta_t(T_max_d,**kwargs)   
+    if isinstance(delta_t, tuple): # c'est un tuple uniquement s'il y a eu une erreur.
         print("fin avortée")
         return delta_t[1]
     print(f"delta_t correspondant aux critères demandés {delta_t}")
+
+    # Dessin (paresseux)
     question_4_1(**kwargs)
     
 #______________________________________________________________________________________________________#
@@ -136,19 +123,32 @@ def question_4_2(T_max_d,**kwargs):
 
 
 
-#EN15251 est une array contenant t0 et tf et Tmin et Tmax -> [8,19,19.5,24]
+#EN15251 est une array contenant t0 et tf et Tmin et Tmax : [8,19,19.5,24]
 
 def verification_EN15251(delta_t,**kwargs):
+    """
+    Fonction vérifiant si une norme de conditions de travail est respectée. Par défaut c'est la norme EN15251.
+    """
+    # Initialisation des variables
     global tol_temp, norme
     EN15251 = kwargs.pop('EN15251',norme)
     tol_temp = kwargs.pop('tol_temp', tol_temp)
     kwargs['no_max'] = True
+    EstRespecté = True
 
-    '''
-    ATTENTION ICI tol c'est la tolérance en température pour savoir à quel point c'est convergé
-    '''
+    # Calcul
 
     t,T_confort  = T_max(delta_t,**kwargs)
+    for i in range(len(t)):
+        T_confort_i = T_confort[i]
+        if (EN15251[0]<= t[i]<=  EN15251[1]):            
+            if not(EN15251[2]-tol_temp <= T_confort_i <= EN15251[3]+tol_temp): #est ce que les extrémas sont pris avec ?
+                print("La norme EN15251 n'est pas respectée.")
+                EstRespecté = False
+    
+    print("La norme EN15251 est respectée.")
+
+    # Dessin
     plt.plot(t,T_confort, label = 'température de confort')
     for i in range(2): 
          plt.axhline(y=EN15251[i+2], linestyle="--", label =['température minimale','température maximale'][i], color=["blue", "red"][i])
@@ -162,14 +162,7 @@ def verification_EN15251(delta_t,**kwargs):
     
     plt.legend(fontsize="5", loc = 'lower right')
     plt.show()
-    for i in range(len(t)):
-        T_confort_i = T_confort[i]
-        if (EN15251[0]<= t[i]<=  EN15251[1]):            
-            if not(EN15251[2]-tol_temp <= T_confort_i <= EN15251[3]+tol_temp): #est ce que les extrémas sont pris avec ?
-                print("La norme EN15251 n'est pas respectée.")
-                return False
-    print("La norme EN15251 est respectée.")
-    return True
+    return EstRespecté
 
 
 
@@ -234,24 +227,7 @@ def question_4_3(T_max_d, **kwargs):
         print(f"Fin des opérations.")
     return resultat_verif, delta_t
     ''
-
-
-'''commentaire supplémentaire: 
-
-on demande à un moment:
-
-"Le système de pilotage doit être conçu de
-telle sorte que l'on puisse (1) chauffer/refroidir/mettre à l'arrêt en fonction d'un programme
-de 24h donné ou (2) démarrer le chauffage/refroidissement/mise `a l'arrêt en fonction de
-certaines variables, par exemple une température de confort."
-
-pour pouvoir faire cela, on a plusieurs méthodes: Soit on rajoute un paramètre dans calculTemperaturesEuler qui s'appelle Force_heating,
-soit on peut utiliser le numéro de sénario 5 et jouer avec le paramètre delta_t le scénario adéquat.
-On ne peut pas changer correctement à la volée car CalculTempératuresEuler calcule sur une fenêtre de températures. 
-Ce qu'on pourrait faire par contre c'est à l'aide du paramètre delta_t et Force_heating anticiper ce qu'on voudrait 
-en fonction des conditions du jour précédent, et faire un scénario adapté. Ensuite il faudrait d'ailleurs 
-
-'''    
+   
 
 def plot_T_max_delta_t(**kwargs):
     global gl_searchInterval

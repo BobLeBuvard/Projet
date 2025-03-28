@@ -20,20 +20,19 @@ def dessinemoassa(t,T,index,xlabel = None, ylabel = None, titre= None):
     plt.xlabel(xlabel, fontsize = 8) # Labélisation de l'axe des abscisses (copypaste du tuto)
     plt.ylabel(ylabel, fontsize = 8) # Labélisation de l'axe des ordonnées (copypaste du tuto)
     for i in range(T.shape[0]):  
-        plt.plot(t, T[i], label=index[i])  # en fonction du nombre de variables dans T, on affiche plus ou moins de fonctions
+        plt.plot(t, T[i], label=index[i])  # En fonction du nombre de variables dans T, on affiche plus ou moins de fonctions
     plt.legend( loc='best', fontsize = 7)
     plt.title(label = titre)
     plt.show()  
 
-#SCENARIOS POUR LA QUESTION 3.4
-# delta_t = None c'est pour singaler qu'il peut y avoir des arguments supplémentaires dans la fonction. Dans notre cas, delta_t
+# SCENARIOS POUR LA QUESTION 3.4
 
 def scenario1(t, delta_t = None):
     '''4h de refroidissement et puis le chauffage est coupé'''
     if 0<= t <=4 :
-        heating_mode = 2 #refroidit
+        heating_mode = 2 # refroidit
     else:
-        heating_mode = 1 #éteint
+        heating_mode = 1 # éteint
     return heating_mode
 def scenario2(t, delta_t = None):
     ''' 4h de refroidissement,10h de chauffe et puis le chauffage est coupé '''
@@ -47,21 +46,21 @@ def scenario2(t, delta_t = None):
 def scenario3(t, delta_t = None): 
     '''12h de chauffe et puis 12h de refroidissement'''
     if 0<= t <=12 :
-        heating_mode = 3 #chauffe
+        heating_mode = 3 # chauffe
     else:
-        heating_mode = 2 #refroidit
+        heating_mode = 2 # refroidit
     return heating_mode
 def scenario4(t, delta_t =None ):
     if delta_t == None: delta_t = 0 #Par défaut zéro...
     if 0<= t <=4 :
         heating_mode = 2 # refroidit
     elif 4<t<= (4+ delta_t):
-        heating_mode = 3 #chauffe
+        heating_mode = 3 # chauffe
     elif((4+delta_t)<t<=24 ):
         heating_mode = 1 # éteint
     else:
-        #si t trop gand, osef de delta_t
-        heating_mode = 1 #éteint
+        # si t trop gand, osef de delta_t
+        heating_mode = 1 # éteint
     return heating_mode
 
 def scenario(t,num,delta_t = None): # delta_t = None définit s'il y a un argument supplémentaire (delta_t)
@@ -88,11 +87,11 @@ def T_w(heating_mode,T_t):
     elif heating_mode == 2: 
         return 18
     else:
-        return T_t #le dernier terme est annulé donc il faut que T_t - T_w = 0 -> T_w = T_t
+        return T_t # le dernier terme est annulé donc il faut que T_t - T_w = 0 -> T_w = T_t
 
 
 #______________________________________________________________________________________________________#
-                                         #question 3.1
+ #question 3.1
 def odefunction(t, T,other_args):
     
     """
@@ -111,22 +110,22 @@ def odefunction(t, T,other_args):
     num_du_scenario = other_args.get('num_du_scenario',1)
     dT = np.empty(len(T), dtype=np.float64) # de même dimensions que T mais contient les dérivées
 
-    #CALCUL DE dT_room
+    # CALCUL DE dT_room
     dT[0] = inv_C[0]*((-1/(R_r_moins_s + R_s_moins_c2))*(T[0]-T[4]) +g(t))
                     
-    #CALCUL DE dT_t 
+    # CALCUL DE dT_t 
 
     heating_mode = scenario(t, num_du_scenario, delta_t)
     
     dT[1] = inv_C[1]*( (-1/R_x)*(T[1]-T[2]) - (1/R_w)*(T[1] - T_w(heating_mode, T[1])) )
 
-    #CALCUL DE dT_cc
+    # CALCUL DE dT_cc
     dT[2] = inv_C[2]*( (-1/(R_cc_moins_c1))*(T[2]-T[3])- (1/R_x)*(T[2]-T[1]) + (1/R_c2_moins_cc)*(T[4] - T[2]))
 
-    #CALCUL DE dT_c1 
+    # CALCUL DE dT_c1 
     dT[3] = inv_C[3]*(-1/R_cc_moins_c1)*(T[3]-T[2])
 
-    #CALCUL DE dT_c2 
+    # CALCUL DE dT_c2 
     dT[4] = inv_C[4]* ((-1/R_c2_moins_cc)*(T[4]-T[2])+ (1/(R_r_moins_s + R_s_moins_c2))*(T[0] - T[4]))
     dT *= 3600
     return(dT)
@@ -148,13 +147,13 @@ def calculTemperaturesEuler(FenetreDeTemps, T0, h,**kwargs):
     - T (ndarray, shape (5, 24/h)): Températures correspondantes.
     """
     
-    #initialisation des matrices
+    # Initialisation des matrices
     n = int((FenetreDeTemps[1] - FenetreDeTemps[0]) / h) + 1   
     t = np.linspace(FenetreDeTemps[0], FenetreDeTemps[1], n)
     T = np.zeros((5, n))  
     T[:, 0] = T0  
     
-    #Méthode de Euler
+    # Méthode de Euler
     for i in range(1, n):
         dT = odefunction(t[i-1], T[:, i-1],kwargs)  #calcul des dérivées de tout pour chaque dernier élément de la colonne
         T[:, i] = T[:, i-1] + h * dT  
@@ -162,14 +161,14 @@ def calculTemperaturesEuler(FenetreDeTemps, T0, h,**kwargs):
 
 def question_3_2(**kwargs):
 
-    #Initialisation des variables
+    # Initialisation des variables
     global gl_FenetreDeTemps,gl_h,gl_T0
     num_du_scenario = kwargs.get('num_du_scenario',gl_num_du_scenario) 
     FenetreDeTemps = kwargs.pop('FenetreDeTemps',gl_FenetreDeTemps) 
     T0 = kwargs.pop('T0',gl_T0) 
     h = kwargs.pop('h',gl_h) 
 
-    #Calcul
+    # Calcul
     t,T = calculTemperaturesEuler(FenetreDeTemps,T0,h,**kwargs)
     dessinemoassa(t,T,['T_room','T_t','T_cc','T_c1','T_c2'],xlabel='Temps (heures)',ylabel='Température(°C)',titre= f'Euler: scénario {num_du_scenario}, pas h = {h}')
 
@@ -191,25 +190,25 @@ def calculTemperaturesIVP(FenetreDeTemps, T0, rtol,**kwargs):
     - Solution de l'ODE aux points spécifiés.
     """
 
-    #Initialisation des variables
+    # Initialisation des variables
     t_eval = kwargs.get('t_eval',None)
 
-    #Calcul
+    # Calcul
     solution = scp.integrate.solve_ivp(odefunction, FenetreDeTemps, T0, rtol= rtol,t_eval = t_eval,args=(kwargs,)) # forcer d'évaluer aux valeurs de t de Euler pour le dernier paramètre si on veut comparer Solve_IVP et Euler
     return[solution.t, solution.y]
 
 def question_3_3(**kwargs):
-    #Initialisation des variables
+    # Initialisation des variables
     global gl_FenetreDeTemps,gl_h,gl_T0
     num_du_scenario = kwargs.get('num_du_scenario',gl_num_du_scenario) 
     FenetreDeTemps = kwargs.pop('FenetreDeTemps',gl_FenetreDeTemps) 
     T0 = kwargs.pop('T0',gl_T0) 
     kwargs.pop('h',gl_h) 
     
-    #Calcul
+    # Calcul
     t,T = calculTemperaturesIVP(FenetreDeTemps,T0,gl_default_tol,   **kwargs)
 
-    #Dessin
+    # Dessin
     dessinemoassa(t,T,['T_room','T_t','T_cc','T_c1','T_c2'],xlabel='Temps (heures)',ylabel='Température(°C)',titre= f'IVP: scénario {num_du_scenario}')
 
 
@@ -219,10 +218,10 @@ def question_3_3(**kwargs):
 '''tester la différence entre les deux fonctions pour des valeurs de h différentes -> tester la convergence de Euler avec solve_IVP'''
 def diff_entre_Euler_et_IVP():
     '''Fonction qui dessine des graphiques de la différence entre la résolution par Euler et par Runge-Kutta pour estimer leur convergence l'une vers l'autre'''
-    #Initialisation des variables
+    # Initialisation des variables
     h_de_test = [0.001,0.01,0.1,0.25,0.5,1,2]
 
-    #Calcul
+    # Calcul
     for i, h in enumerate(h_de_test):  #énumérer les éléments de h 
         h = h_de_test[i]
         t_euler,T2 = calculTemperaturesEuler(gl_FenetreDeTemps,gl_T0,h)
@@ -233,7 +232,7 @@ def diff_entre_Euler_et_IVP():
 
 def compare_avec_max(h_test,Max,**kwargs):
     
-    #Initialisation des variables
+    # Initialisation des variables
     global gl_FenetreDeTemps,gl_T0
     FenetreDeTemps = kwargs.pop('FenetreDeTemps',gl_FenetreDeTemps) 
     T0 = kwargs.pop('T0',gl_T0) 
@@ -301,7 +300,7 @@ def cycles_apres_convergence(T0, FenetreDeTemps,**kwargs):
     - Affiche un graphique montrant l'évolution des températures jusqu'à convergence.
     """
 
-    #Initialisation des variables
+    # Initialisation des variables
     global gl_h,tol_temp,max_jours,gl_num_du_scenario
     kwargs['h'] = kwargs.get('h',gl_h)
     kwargs['T0'] = T0
@@ -319,7 +318,7 @@ def cycles_apres_convergence(T0, FenetreDeTemps,**kwargs):
     t,T = calculCycles(2,**kwargs)
     T_total = np.copy(T)
     t_total = np.copy(t)
-    #plus besoin de h dans kwargs -> on le retire
+    # plus besoin de h dans kwargs -> on le retire
     kwargs.pop('h')
     kwargs.pop('T0')
     kwargs.pop('FenetreDeTemps')
@@ -362,7 +361,7 @@ def calculCycles(cycles,**kwargs):
     global gl_h,gl_T0,gl_FenetreDeTemps
     T0 = kwargs.pop('T0',gl_T0)
     FenetreDeTemps = kwargs.pop('FenetreDeTemps',gl_FenetreDeTemps)
-    h = kwargs.pop('h',gl_h) #on le retire de kwargs parce qu'on n'en veut plus dedans
+    h = kwargs.pop('h',gl_h) # on le retire de kwargs parce qu'on n'en veut plus dedans
     T_Total = np.empty((5, 0))  # 5 lignes, 0 colonnes
     t_Total = np.array([])
 
@@ -376,7 +375,7 @@ def calculCycles(cycles,**kwargs):
         
         t_Total = np.concatenate((t_Total,(t + ((FenetreDeTemps[1]-FenetreDeTemps[0])*i) )))
         
-        T0 = T[:, -1] #prendre les 5 dernières valeurs de l'itération précédentes comme valeurs initiales -> la dernière colonne de t et T
+        T0 = T[:, -1] # prendre les 5 dernières valeurs de l'itération précédentes comme valeurs initiales -> la dernière colonne de t et T
     return(t_Total,T_Total)
 
 def question_3_5(**kwargs):
