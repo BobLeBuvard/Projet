@@ -153,7 +153,11 @@ def verification_EN15251(delta_t,**kwargs):
     plt.title(label = "graphique de la température de confort pendant la dernière journée")
     plt.xlabel('heures de la journée (h)')
     plt.ylabel('température (°C)')
-    points_to_plot = [('début de la période de chauffe (4h)',4,EN15251[2]),(f'fin de la période de chauffe ({4+delta_t}h)',4+delta_t,EN15251[2]),('début des heures de bureau',EN15251[0],EN15251[2]),('fin des heures de bureau',EN15251[1],EN15251[2])] 
+    points_to_plot = [ ('début de la période de chauffe (4h)',4,EN15251[2]),
+                      (f'fin de la période de chauffe ({4+delta_t}h)',4+delta_t,EN15251[2]),
+                      ('début des heures de bureau',EN15251[0],EN15251[2]),
+                      ('fin des heures de bureau',EN15251[1],EN15251[2])
+                      ] 
     for i in range(len(points_to_plot)):
         label,x,y = points_to_plot[i]
         plt.plot(x,y,'.', label = label)

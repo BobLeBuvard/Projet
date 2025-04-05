@@ -72,7 +72,7 @@ def scenario(t,num,delta_t = None): # delta_t = None définit s'il y a un argume
     '''
     scenarios = [scenario1,scenario2,scenario3,scenario4]
 
-    return scenarios[num-1](t,delta_t = delta_t)
+    return scenarios[num-1](t%24,delta_t = delta_t) # %24 si les cycles sont de plus de 24h
 
 def T_w(heating_mode,T_t):
     '''
@@ -98,11 +98,11 @@ def odefunction(t, T,other_args):
     Calcule les cinq dérivées des températures à l'instant t.
 
     Paramètres :
-    - t (float64) : Instant de temps.
+    - t (float64) : Instant de temps. (heures)
     - T (ndarray, shape (5,1)) : Températures [T_room, T_t, T_cc, T_c1, T_c2] (°C ou K, différences uniquement).
 
     Retourne :
-    - dT (ndarray, shape (5,)) : Dérivées des températures à t.
+    - dT (ndarray, shape (5,)) : Dérivées des températures à t (secondes)   .
     """
 
 
@@ -204,9 +204,9 @@ def question_3_3(**kwargs):
     FenetreDeTemps = kwargs.pop('FenetreDeTemps',gl_FenetreDeTemps) 
     T0 = kwargs.pop('T0',gl_T0) 
     kwargs.pop('h',gl_h) 
-    
+    IVP_tol = kwargs.pop('IVP_tol',gl_default_tol)
     # Calcul
-    t,T = calculTemperaturesIVP(FenetreDeTemps,T0,gl_default_tol,   **kwargs)
+    t,T = calculTemperaturesIVP(FenetreDeTemps,T0,IVP_tol,   **kwargs)
 
     # Dessin
     dessinemoassa(t,T,['T_room','T_t','T_cc','T_c1','T_c2'],xlabel='Temps (heures)',ylabel='Température(°C)',titre= f'IVP: scénario {num_du_scenario}')

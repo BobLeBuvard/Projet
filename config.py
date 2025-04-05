@@ -25,7 +25,7 @@ C_c1 = 50# Capacité de la partie supérieure béton (kJ/m²K)
 C_c2 = 10# Capacité de la partie inférieure béton (kJ/m²K)
 C_cc = 50 # Capacité de la partie centrale béton (kJ/m²K)
 C_w = 30 # Capacité de l'eau (kJ/m²K)
-C = np.array([C_room, C_w, C_cc, C_c1,C_c2])*1000 # kJ/m²K -> J/m²K
+C = np.array([C_room, C_w, C_cc, C_c1,C_c2])*1000        # kJ/m²K -> J/m²K
 inv_C = 1/C
 
 R_x = 0.025 #Résistance de contact entre les tubes & la partie centrale du béton (m²K/W)

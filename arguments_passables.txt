@@ -21,3 +21,5 @@ tol_bisect_hybride : la tolérance de la bissection dans le cas de la recherche 
 search_x0 : nouvelle borne
 
 search_x1 : nouvelle borne
+
+IVP_tol : la tolérance de solve_IVP
