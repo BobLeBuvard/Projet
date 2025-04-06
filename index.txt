@@ -92,7 +92,7 @@ question_4_3(T_max_d, **kwargs)
                                                                 PerteEtGain
 
 g(t)
-    -> si tu sais pas, va te pendre.
+    -> fonction perte & gain 
 
 
                                                                 RechercheRacine
@@ -120,6 +120,8 @@ searchInterval
 tol_rac 
 tol_temp 
 max_jours
+norme
+gl_num_du_scenario
 
 T de forme [T_room, T_t, T_cc, T_c1,T_c2]
 
@@ -143,4 +145,3 @@ debug
 
                                                                 arguments_passables
 
--> si tu sais pas t'en servir, tu es vraiment le roi des neuneus
