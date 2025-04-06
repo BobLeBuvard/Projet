@@ -293,96 +293,42 @@ def afficher_scenario(t_total, T_total, FenetreDeTemps, num_du_scenario, delta_t
         
         plt.legend(loc = 'best')
         plt.show()
+
+
+def cycles_stab(T0, FenetreDeTemps,**kwargs):
     
-def cycles_apres_convergence(T0, FenetreDeTemps,**kwargs):
-    """
-    Calcule itérativement les températures journalières jusqu'à stabilisation.
-
-    Paramètres :
-    - T0 (ndarray, shape (5,1)) : Conditions initiales en °C.
-    - FenetreDeTemps (liste de dimensions 2) : Durée d'un cycle.
-
-    Retour :
-    - Affiche un graphique montrant l'évolution des températures jusqu'à convergence.
-    """
-
     # Initialisation des variables
     global gl_h,tol_temp,max_jours,gl_num_du_scenario
-    kwargs['T0'] = T0
-    kwargs['FenetreDeTemps'] = FenetreDeTemps
-    kwargs['h'] = kwargs.get('h',gl_h)
-    h = kwargs.get('h')
+    
+    
+    h = kwargs.pop('h',gl_h)
+    
     num_du_scenario = kwargs.get('num_du_scenario',gl_num_du_scenario)
     delta_t = kwargs.get('delta_t',0)
     q_3_5 = kwargs.pop('q_3_5',True)
     max_jours = kwargs.pop('max_jours',max_jours)
     tol_temp = kwargs.pop('tol_temp',tol_temp)
-    journee_pas = round((FenetreDeTemps[1]-FenetreDeTemps[0])/h)
+    journee_pas = int((FenetreDeTemps[1]-FenetreDeTemps[0])/h)
+    
+    T_total = np.copy(T0).reshape(5,1)
+    t_total = np.array([FenetreDeTemps[0]])
     
     # Calcul
-    # calculer les 2 premiers jours
-    t,T = calculCycles(2,**kwargs)
-    T_total = np.copy(T)
-    t_total = np.copy(t)
-    # plus besoin de h dans kwargs -> on le retire
-    kwargs.pop('h')
-    kwargs.pop('T0')
-    kwargs.pop('FenetreDeTemps')
-    # Calculer itérativement les jours nécessaire à la stabilisation.
-    for i  in range(max_jours-2):
-        if abs(T_total[0, -1] - T_total[0, -(1+journee_pas)]) < tol_temp:
-            if debug: print(f"a convergé après {i+2} jours")
+    for i  in range(max_jours):
+        t,T = calculTemperaturesEuler(FenetreDeTemps, T_total[:,-1] , h ,**kwargs)
+        #ajoute à chaque fois ]0,24] si FenetreDeTemps = [0,24]
+        T_total = np.concatenate((T_total,T[:,1:]),axis = 1)
+        t_total = np.concatenate((t_total,t[1:]+(i)*(FenetreDeTemps[1]-FenetreDeTemps[0])))
+        
+        if abs(T[0, -1] - T_total[0,-(1+journee_pas)]) < tol_temp:
+            if debug: print(f"a stabilisé après {i+1} jours")
 
             # Dessin
             afficher_scenario(t_total, T_total, FenetreDeTemps, num_du_scenario, delta_t, q_3_5, debug, i)
-            return i+2 , T_total[:,-(1+journee_pas)]  #retourne le nombre de jours et les conditions au début du dernier jour 
-        
-        else:
-            # Calculer un jour supplémentaire
-            t,T = calculTemperaturesEuler(FenetreDeTemps, T_total[:,-1] , h ,**kwargs)
-            # Ajouter le dernier jour à T_total et t_total
-            T_total = np.concatenate((T_total,T),axis = 1)
-            t_total = np.concatenate((t_total,t+(i+2)*(FenetreDeTemps[1]-FenetreDeTemps[0])))
-            if debug : print(f"n'a pas convergé après {i+2} jours")
+            return i+1 , T_total[:,-(1+journee_pas)]  #retourne le nombre de jours et les conditions au début du dernier jour 
+        if debug : print(f"n'a pas stabilisé après {i+1} jours")
     print(f"n'a pas convergé après {max_jours} jours, ajoutez plus de jours")
     return None, None
-
-
-def calculCycles(cycles,**kwargs):
-    """
-    Calcule les températures sur plusieurs cycles en utilisant la méthode d'Euler.
-
-    Paramètres :
-    - cycles (int) : Nombre de cycles d'évaluation.
-    - T0 (ndarray, shape (1,5)) : Températures initiales [T_room, T_t, T_cc, T_c1, T_c2].
-    - FenetreDeTemps (list ou ndarray, shape (2,)) : Début et fin d'un cycle (ex: [0, 24] pour 24h).
-    - h (float64) : Intervalle entre les instants de calcul.
-
-    Retour :
-    - t (ndarray) : Temps d'évaluation (array de shape (1, intervalle/h)).
-    - T (ndarray, shape (5, cycles*h + 1)) : Températures calculées sur tous les cycles.
-    """
-    
-    # Initialisation des variables
-    global gl_h,gl_T0,gl_FenetreDeTemps
-    T0 = kwargs.pop('T0',gl_T0)
-    FenetreDeTemps = kwargs.pop('FenetreDeTemps',gl_FenetreDeTemps)
-    h = kwargs.pop('h',gl_h) # on le retire de kwargs parce qu'on n'en veut plus dedans
-    T_Total = np.empty((5, 0))  # 5 lignes, 0 colonnes
-    t_Total = np.array([])
-
-    # Calcul
-    for i in range(cycles):
-        if i > 0:
-            t = t[:-1]
-            T = T[:, :-1]
-        t, T = calculTemperaturesEuler(FenetreDeTemps, T0, h,**kwargs) #T0 est de dimensions [5,0]
-        T_Total = np.concatenate((T_Total,T), axis = 1) 
-        
-        t_Total = np.concatenate((t_Total,(t + ((FenetreDeTemps[1]-FenetreDeTemps[0])*i) )))
-        
-        T0 = T[:, -1] # prendre les 5 dernières valeurs de l'itération précédentes comme valeurs initiales -> la dernière colonne de t et T
-    return(t_Total,T_Total)
 
 def question_3_5(**kwargs):
     # Initialisation des variables
@@ -391,7 +337,7 @@ def question_3_5(**kwargs):
     FenetreDeTemps = kwargs.pop('FenetreDeTemps',gl_FenetreDeTemps)
 
     # Calcul
-    cycles_apres_convergence(T0, FenetreDeTemps,**kwargs)
+    cycles_stab(T0, FenetreDeTemps,**kwargs)
 
 #______________________________________________________________________________________________________#
 # question 3.6
@@ -404,4 +350,4 @@ def question_3_6(**kwargs):
 
     # Calcul
     for i in range(3):
-        cycles_apres_convergence(T0,FenetreDeTemps,     num_du_scenario = i+1,**kwargs)     
+        cycles_stab(T0,FenetreDeTemps,     num_du_scenario = i+1,**kwargs)     

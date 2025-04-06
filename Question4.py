@@ -180,7 +180,7 @@ def max_a_stabilisation(delta_t,**kwargs):
     FenetreDeTemps = kwargs.pop('FenetreDeTemps',gl_FenetreDeTemps)
     T0 = kwargs.pop('T0',gl_T0)
     
-    days_to_stabilize, T0_new = cycles_apres_convergence(T0,FenetreDeTemps,**kwargs) #T0_new est les conditions initiales du dernier jour + plot
+    days_to_stabilize, T0_new = cycles_stab(T0,FenetreDeTemps,**kwargs) #T0_new est les conditions initiales du dernier jour + plot
     kwargs['T0'] = T0_new
     
     
@@ -218,7 +218,7 @@ def question_4_3(T_max_d, **kwargs):
         T0 = kwargs.pop('T0',gl_T0)
         FenetreDeTemps = kwargs.pop('FenetreDeTemps',gl_FenetreDeTemps)
         
-        kwargs['T0']= cycles_apres_convergence(T0,FenetreDeTemps,**kwargs)[1] #Mise a jour de T0 pour les conditions du dernier jour
+        kwargs['T0']= cycles_stab(T0,FenetreDeTemps,**kwargs)[1] #Mise a jour de T0 pour les conditions du dernier jour
         
         #on doit a nouveau se débarasser de delta_t de kwargs
         delta_t = kwargs.pop('delta_t',0) #fallback on sait jamais

@@ -35,4 +35,4 @@ R_c2_moins_cc = 0.02
 R_r_moins_s = 0.1
 R_s_moins_c2 = 0.183
 
-debug = True
+debug = False

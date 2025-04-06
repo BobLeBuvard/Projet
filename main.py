@@ -1,11 +1,6 @@
 #DEPRECATED: NE PLUS UTILISER LES FONCTIONS QUI SONT ICI SAUF POUR DES TESTS DE RETROCOMPATIBILITE
-
 import numpy as np
-from config import * 
-import SimTABS_old
-import math
-from Question4 import T_max
-from RechercheRacine import bissection,secante
+
 
 def convergeEfficace(h, T0, tolerance, temp=0):
     """
@@ -49,7 +44,6 @@ def convergeEfficace(h, T0, tolerance, temp=0):
         t, T_add = SimTABS_old.calculCycles(1, T[:, -1], FenetreDeTemps, h)
 
         # Mise à jour des matrices
-        T_Total = np.concatenate((T_Total, T_add), axis=1)
         t_Total = np.concatenate((t_Total, t + 24 * j))
 
         # Ajout de la nouvelle température du dernier instant du jour
@@ -234,8 +228,8 @@ def calculTemperaturesEuler(FenetreDeTemps, T0, h ):
     T[:, 0] = T0  # conditions initiales
 
     for i in range(1, n):
-    dT = odefunction(t[i-1], T[:, i-1])  #calcul des dérivées de tout pour chaque dernier élément de la colonne
-    T[:, i] = T[:, i-1] + h * dT  # application de Euler 
+        dT = odefunction(t[i-1], T[:, i-1])  #calcul des dérivées de tout pour chaque dernier élément de la colonne
+        T[:, i] = T[:, i-1] + h * dT  # application de Euler 
     return [t, T]
 
 #question 3.3
@@ -273,7 +267,7 @@ def calculCycles(cycles,T0,FenetreDeTemps,h):
 
     T_Total = np.empty((5, 0))  # 5 lignes, 0 colonnes
     t_Total = np.array([])
-
+    t,T = 0,0
     for i in range(cycles):
 
         if i > 0:
@@ -462,64 +456,64 @@ sim= 2
 #TESTER LES EXERCICES
 
 if sim == 1:
-t,T = SimTABS_old.calculCycles(5,T0,FenetreDeTemps,h)
+    t,T = SimTABS_old.calculCycles(5,T0,FenetreDeTemps,h)
 
 #question 3.4
 elif sim ==2:
-'''tester la différence entre les deux fonctions pour des valeurs de h différentes -> tester la convergence de Euler avec solve_IVP'''
-h_de_test = [0.001, 0.01,0.1,0.25,0.5,1,24]
-for i in range(len(h_de_test)):
-    test(h_de_test[i])        
+    '''tester la différence entre les deux fonctions pour des valeurs de h différentes -> tester la convergence de Euler avec solve_IVP'''
+    h_de_test = [0.001, 0.01,0.1,0.25,0.5,1,24]
+    for i in range(len(h_de_test)):
+        test(h_de_test[i])        
 
 elif sim == 3:
-'''calcul de température par Euler'''
-t,T = SimTABS_old.calculTemperaturesEuler(FenetreDeTemps,T0,h)
-
+    '''calcul de température par Euler'''
+    t,T = SimTABS_old.calculTemperaturesEuler(FenetreDeTemps,T0,h)
+    
 
 
 elif sim == 4: 
-'''Calcul par solve_IVP'''
-h = 'méthode de solve_IVP'
-t,T = SimTABS_old.calculTemperaturesIVP(FenetreDeTemps,T0, rtol=10e-10)
+    '''Calcul par solve_IVP'''
+    h = 'méthode de solve_IVP'
+    t,T = SimTABS_old.calculTemperaturesIVP(FenetreDeTemps,T0, rtol=10e-10)
 
 
 elif sim ==5:
-h = 0.01
-''' calcul de la différence de température par tranches de 24h --> NECESSITE UN h DIVISEUR DE 24 ( ex: 0.1, 0.01, ou autre )'''
-t,T = SimTABS_old.calculCycles(16,T0,FenetreDeTemps,h)
-T_converge = SimTABS_old.converge(h,T,0.01)
-t2 = t[:len(T_converge)] # les  premiers éléments de t2
-plt.plot (t2,T_converge)
-plt.title(label = 'graphique de la différence de température entre deux jours au cours du temps')
-plt.plot()
-plt.show() 
-#main.dessinemoassa(t,T,['T_room','T_t','T_cc','T_c1','T_c2','undefined','undefined'],ylabel='Température(T)',xlabel ='Temps (t)' ,titre = str(h))
+    h = 0.01
+    ''' calcul de la différence de température par tranches de 24h --> NECESSITE UN h DIVISEUR DE 24 ( ex: 0.1, 0.01, ou autre )'''
+    t,T = SimTABS_old.calculCycles(16,T0,FenetreDeTemps,h)
+    T_converge = SimTABS_old.converge(h,T,0.01)
+    t2 = t[:len(T_converge)] # les  premiers éléments de t2
+    plt.plot (t2,T_converge)
+    plt.title(label = 'graphique de la différence de température entre deux jours au cours du temps')
+    plt.plot()
+    plt.show() 
+    #main.dessinemoassa(t,T,['T_room','T_t','T_cc','T_c1','T_c2','undefined','undefined'],ylabel='Température(T)',xlabel ='Temps (t)' ,titre = str(h))
 
 elif sim == 6:
-'''tester la différence entre les résolutions par Euler pour des valeurs de h différentes '''
-h_de_test = [0.001, 0.01,0.1,0.25] #0.001 pas utile puisque 0.01 l'approche suffisemment bien
-for i in range(len(h_de_test) -1 ):
-    t_euler2,T2 = SimTABS_old.calculTemperaturesEuler(FenetreDeTemps,T0,h_de_test[i])   
-    t_euler1,T1 = SimTABS_old.calculTemperaturesEuler(FenetreDeTemps,T0,h_de_test[i+1])
-    for i in range(5):
-        plt.plot(t_euler1,T1[i])
-        plt.plot(t_euler2,T2[i])
-        plt.show()
+    '''tester la différence entre les résolutions par Euler pour des valeurs de h différentes '''
+    h_de_test = [0.001, 0.01,0.1,0.25] #0.001 pas utile puisque 0.01 l'approche suffisemment bien
+    for i in range(len(h_de_test) -1 ):
+        t_euler2,T2 = SimTABS_old.calculTemperaturesEuler(FenetreDeTemps,T0,h_de_test[i])   
+        t_euler1,T1 = SimTABS_old.calculTemperaturesEuler(FenetreDeTemps,T0,h_de_test[i+1])
+        for i in range(5):
+            plt.plot(t_euler1,T1[i])
+            plt.plot(t_euler2,T2[i])
+            plt.show()
 
 
 
 
 if debug and (sim !=2) and (sim !=6)  : 
-#T = T - 273.15 #remise en celsius
-plt.ylabel('Température(°K)', fontsize = 8) # Labélisation de l'axe des ordonnées (copypaste du tuto)
-plt.xlabel('Temps (heures)', fontsize = 8) # Labélisation de l'axe des abscisses (copypaste du tuto)
-index = ['T_room','T_t','T_cc','T_c1','T_c2','undefined','undefined'] 
-for i in range(T.shape[0]):  
-    plt.plot(t, T[i], label=index[i])  # en fonction du nombre de variables dans T, on affiche plus ou moins de fonctions
-plt.legend( loc='best')
-plt.title(label = str(h))
-plt.show()  
-
+    #T = T - 273.15 #remise en celsius
+    plt.ylabel('Température(°K)', fontsize = 8) # Labélisation de l'axe des ordonnées (copypaste du tuto)
+    plt.xlabel('Temps (heures)', fontsize = 8) # Labélisation de l'axe des abscisses (copypaste du tuto)
+    index = ['T_room','T_t','T_cc','T_c1','T_c2','undefined','undefined'] 
+    for i in range(T.shape[0]):  
+        plt.plot(t, T[i], label=index[i])  # en fonction du nombre de variables dans T, on affiche plus ou moins de fonctions
+    plt.legend( loc='best')
+    plt.title(label = str(h))
+    plt.show()  
+    
 
 def fonctiondroite(hauteur, label = None):
     '''fonction qui va plot y = 0 sur le graphique'''
@@ -608,3 +602,135 @@ def hybride(f,x0,x1,**kwargs):
     racine,statut = secante(f, x0, x1,tol= tol, max_iter=30)
     return[racine,statut]
     
+def nbr_jours_stab(**kwargs):
+    global gl_T0, gl_FenetreDeTemps
+    T0 = kwargs.pop('T0', gl_T0)
+    FenetreDeTemps = kwargs.pop('FenetreDeTemps', gl_FenetreDeTemps)
+    kwargs['num_du_scenario'] = 4
+    kwargs["q_3_5"] = False
+
+    delta_t_test = np.linspace(0.44, 0.45, 30)
+    jours_list = []
+
+    for delta_t in delta_t_test:
+        # Met à jour delta_t dans les kwargs à chaque itération
+        kwargs['delta_t'] = delta_t
+        nb_jours, _ = cycles_stab(T0, FenetreDeTemps, **kwargs)
+        jours_list.append(nb_jours)
+
+    plt.plot(delta_t_test, jours_list, marker='o')
+    plt.xlabel('delta_t')
+    plt.ylabel('Nombre de jours avant stabilisation')
+    plt.title('Stabilisation en fonction de delta_t')
+    plt.grid(True)
+    plt.show()
+    return 0
+
+def pasdemandé(**kwargs):
+    global gl_T0,gl_FenetreDeTemps,gl_num_du_scenario   
+    kwargs['q_3_5'] = False
+    kwargs['delta_t'] = 0
+    FenetreDeTemps = kwargs.pop('FenetreDeTemps',gl_FenetreDeTemps)
+    T0 = kwargs.pop('T0',gl_T0)
+    
+    days_to_stabilize, T0_new = cycles_apres_convergence(T0,FenetreDeTemps,**kwargs) #T0_new est les conditions initiales du dernier jour + plot
+    kwargs['T0'] = T0_new
+    kwargs.pop('delta_t')
+    question_4_2(24, **kwargs)
+    return 0 
+
+def cycles_apres_convergence(T0, FenetreDeTemps,**kwargs):
+    """
+    Calcule itérativement les températures journalières jusqu'à stabilisation.
+
+    Paramètres :
+    - T0 (ndarray, shape (5,1)) : Conditions initiales en °C.
+    - FenetreDeTemps (liste de dimensions 2) : Durée d'un cycle.
+
+    Retour :
+    - Affiche un graphique montrant l'évolution des températures jusqu'à convergence.
+    """
+
+    # Initialisation des variables
+    global gl_h,tol_temp,max_jours,gl_num_du_scenario
+    h = kwargs.get('h',gl_h)
+    num_du_scenario = kwargs.get('num_du_scenario',gl_num_du_scenario)
+    delta_t = kwargs.get('delta_t',0)
+    q_3_5 = kwargs.pop('q_3_5',True)
+    max_jours = kwargs.pop('max_jours',max_jours)
+    tol_temp = kwargs.pop('tol_temp',tol_temp)
+    journee_pas = int((FenetreDeTemps[1]-FenetreDeTemps[0])/h)
+    
+    
+    # Calcul
+    # calculer un premier jour
+    t,T = calculTemperaturesEuler(FenetreDeTemps, T0, h, **kwargs)
+    #ajoute [0,24] si FenetreDeTemps = [0,24]
+    T_total = np.copy(T)
+    t_total = np.copy(t)
+    
+    # Calculer itérativement les jours nécessaire à la stabilisation.
+    for i  in range(max_jours-1):
+        #ajoute à chaque fois ]0,24] si FenetreDeTemps = [0,24]
+        
+        print(abs(T_total[0, -1] - T_total[0, -(1+journee_pas)]))
+        if abs(T_total[0, -1] - T_total[0, -(1+journee_pas)]) < tol_temp:
+            if debug: print(f"a convergé après {i+1} jours")
+            # Dessin
+            afficher_scenario(t_total, T_total, FenetreDeTemps, num_du_scenario, delta_t, q_3_5, debug, i)
+            return i+1 , T_total[:,-(1+journee_pas)],T_total  #retourne le nombre de jours et les conditions au début du dernier jour 
+        
+        else:
+            # Calculer un jour supplémentaire
+            t,T = calculTemperaturesEuler(FenetreDeTemps, T_total[:,-1] , h ,**kwargs)
+            # Ajouter le dernier jour à T_total et t_total
+            T_total = np.concatenate((T_total,T[:,1:]),axis = 1)
+            t_total = np.concatenate((t_total[1:],t+(i+1)*(FenetreDeTemps[1]-FenetreDeTemps[0])))
+            if debug : print(f"n'a pas convergé après {i+1} jours")
+            
+    print(f"n'a pas convergé après {max_jours} jours, ajoutez plus de jours")
+    return None, None
+
+
+
+
+
+def calculCycles(cycles,**kwargs):
+    """
+    Calcule les températures sur plusieurs cycles en utilisant la méthode d'Euler.
+
+    Paramètres :
+    - cycles (int) : Nombre de cycles d'évaluation.
+    - T0 (ndarray, shape (1,5)) : Températures initiales [T_room, T_t, T_cc, T_c1, T_c2].
+    - FenetreDeTemps (list ou ndarray, shape (2,)) : Début et fin d'un cycle (ex: [0, 24] pour 24h).
+    - h (float64) : Intervalle entre les instants de calcul.
+
+    Retour :
+    - t (ndarray) : Temps d'évaluation (array de shape (1, intervalle/h)).
+    - T (ndarray, shape (5, cycles*h + 1)) : Températures calculées sur tous les cycles.
+    """
+    
+    # Initialisation des variables
+    global gl_h,gl_T0,gl_FenetreDeTemps
+    T0 = kwargs.pop('T0',gl_T0)
+    FenetreDeTemps = kwargs.pop('FenetreDeTemps',gl_FenetreDeTemps)
+    h = kwargs.pop('h',gl_h) # on le retire de kwargs parce qu'on n'en veut plus dedans
+    T_total = np.copy(T0).reshape(5,1)  # 5 lignes, 0 colonnes
+    t_total = np.array([FenetreDeTemps[0]/h])
+    t,T = 0,0
+    # Calcul
+    for i in range(cycles):
+        if i > 0:
+            t = t[:-1]
+            T = T[:, :-1]
+        t, T = calculTemperaturesEuler(FenetreDeTemps, T0, h,**kwargs) #T0 est de dimensions [5,0]
+        T_total = np.concatenate((T_total,T[:,1:]), axis = 1) 
+        
+        t_total = np.concatenate((t_total,(t[1:] + ((FenetreDeTemps[1]-FenetreDeTemps[0])*i) )))
+        
+        T0 = T[:, -1] # prendre les 5 dernières valeurs de l'itération précédentes comme valeurs initiales -> la dernière colonne de t et T
+    return(t_total,T_total)
+
+
+
+   
