@@ -110,7 +110,7 @@ def question_4_2(T_max_d,**kwargs):
     if isinstance(delta_t, tuple): # c'est un tuple uniquement s'il y a eu une erreur.
         print("fin avortée")
         return delta_t[1]
-    print(f"delta_t correspondant aux critères demandés : {delta_t}h.")
+    print(f"delta_t correspondant aux critères demandés : {delta_t}h, soit {delta_t*3600} secondes.")
 
     # Dessin (paresseux)
     question_4_1(T_max_d = T_max_d,delta_t = delta_t, **kwargs)
@@ -226,7 +226,7 @@ def question_4_3(T_max_d, **kwargs):
         delta_t = kwargs.pop('delta_t',0) #fallback on sait jamais
         
         resultat_verif = verification_EN15251(delta_t,**kwargs)
-        print(f"Le delta pour atteindre une température de {T_max_d}°C est de {delta_t}h.")
+        print(f"Le delta pour atteindre une température de {T_max_d}°C est de {delta_t}h, soit {delta_t*3600} secondes.")
     if debug: 
         print("Fin des opérations.")
     return resultat_verif, delta_t
