@@ -39,14 +39,9 @@ question_3_4()
 compare_avec_max(h_test,Max,**kwargs)
     -> compare différents h entre eux. h_test c'est le test et Max, c'est le h de référence ( ex: 0.00001)
 
-cycles_apres_convergence(T0, FenetreDeTemps,**kwargs)
+cycles_stab(T0, FenetreDeTemps,**kwargs)
     -> compte le nombre de jours requis pour que la stabilisation soit atteinte. retourne le nombre de jours pour stabiliser et les conditions au début du dernier jour
-    -> peut plot pour la question 3.5 ou pour la question 4.2- 4.3 également. 
-
-calculCycles(cycles,**kwargs)
-    -> calcule le nombre de cycles demandé dans le premier argument. Admet des cycles plus petits que 24h si besoin. 
-    -> retourne la totalité des températures et des temps évaluéscsous forme d'arrays.
-
+         
 dessineDesCycles(cycles,**kwargs) 
     -> utilise calculCycles mais le plotte en plus de ça
 

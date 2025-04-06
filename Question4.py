@@ -41,8 +41,10 @@ def T_max(delta_t, **kwargs):
 def question_4_1(**kwargs):
     '''fonction qui dessine le max de température de confort en apellant T_max et en plottant les températures adéquates.'''
     # Initialisation des variables
+    global gl_num_du_scenario
     delta_t = kwargs.pop('delta_t',0)
     T_max_d = kwargs.pop('T_max_d',0)
+    num_du_scenario = kwargs.get('num_du_scenario',gl_num_du_scenario)
 
     # Calcul
     MAX,t,T_confort = T_max(delta_t, **kwargs)
@@ -55,7 +57,7 @@ def question_4_1(**kwargs):
     print(f"maximum de température de confort: {MAX}°C à t = {t_max_seconde}s, c'est-à-dire {t_max}h")#print la température max sur l'intervalle en degrés celsius
     plt.xlabel(f"temps ({FenetreDeTemps[1] - FenetreDeTemps[0]}h)") # Labélisation de l'axe des ordonnées (copypaste du tuto)
     plt.ylabel("température optimale ") # Labélisation de l'axe des abscisses (copypaste du tuto)
-    plt.title(label = f'Température de confort sur {FenetreDeTemps[1]-FenetreDeTemps[0]}h : delta_t = {delta_t}')
+    plt.title(label = f'Température de confort sur {FenetreDeTemps[1]-FenetreDeTemps[0]}h : (sc.{num_du_scenario}) (delta_t = {delta_t})')
     plt.plot(t,T_confort ,label= "température de confort")
     plt.axhline(y=T_max_d, color="red", linestyle="--", label="T_max_d") 
     plt.plot(4,T_max_d,'.', label = f'début de la période de chauffe ({4}h)')

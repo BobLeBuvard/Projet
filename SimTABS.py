@@ -249,7 +249,7 @@ def compare_avec_max(h_test,Max,**kwargs):
         difference_avec_max[:, i+1] = T2[:, i * ratio_tol] - T1[:, i]
 
     # Dessin
-    dessinemoassa(t_euler, difference_avec_max,['T_room','T_t','T_cc','T_c1','T_c2'])
+    dessinemoassa(t_euler, difference_avec_max,['T_room','T_t','T_cc','T_c1','T_c2'], "Temps (heures)", "Température (°K)", f"difference entre pas = {h_test} et {Max}")
     return difference_avec_max
 
 
