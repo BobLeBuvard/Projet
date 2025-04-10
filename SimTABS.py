@@ -260,7 +260,7 @@ def question_3_4():
 #______________________________________________________________________________________________________#
 #question 3.5
 
-def afficher_scenario(t_total, T_total, FenetreDeTemps, num_du_scenario, delta_t, q_3_5, debug, i):
+def afficher_scenario(t_total, T_total, FenetreDeTemps, num_du_scenario, delta_t, q_3_5, debug, i,isIVP):
     """Affiche le scénario en fonction des paramètres."""
     
     if q_3_5:
@@ -270,8 +270,9 @@ def afficher_scenario(t_total, T_total, FenetreDeTemps, num_du_scenario, delta_t
                 T_total[j],
                 label=['T_room', None, None, None, 'T_c2'][j]
             )
-
-        plt.title(f"T_room et T_c2 jusqu'à stagnation (sc.{num_du_scenario}) (delta_t = {round(delta_t, 2)})")
+        if isIVP: isIVP = 'IVP' 
+        else: isIVP = 'Euler'
+        plt.title(f"T_room et T_c2 jusqu'à stagnation (sc.{num_du_scenario}) (delta_t = {round(delta_t, 2)}) ({isIVP})")
         plt.xlabel('nombre de cycles')
         plt.ylabel('températures des objets')
         plt.legend(loc='best')
@@ -298,7 +299,7 @@ def afficher_scenario(t_total, T_total, FenetreDeTemps, num_du_scenario, delta_t
 def cycles_stab(T0, FenetreDeTemps,**kwargs):
     
     # Initialisation des variables
-    global gl_h,tol_temp,max_jours,gl_num_du_scenario
+    global gl_h,tol_temp,max_jours,gl_num_du_scenario,gl_default_tol
     
     
     h = kwargs.pop('h',gl_h)
@@ -308,27 +309,33 @@ def cycles_stab(T0, FenetreDeTemps,**kwargs):
     q_3_5 = kwargs.pop('q_3_5',True)
     max_jours = kwargs.pop('max_jours',max_jours)
     tol_temp = kwargs.pop('tol_temp',tol_temp)
-    journee_pas = int((FenetreDeTemps[1]-FenetreDeTemps[0])/h)
-    
+    journee_pas = [FenetreDeTemps[0]]
     T_total = np.copy(T0).reshape(5,1)
     t_total = np.array([FenetreDeTemps[0]])
-    
+    isIVP = kwargs.pop('isIVP',False)
+    IVP_tol = kwargs.pop('IVP_tol',gl_default_tol)
     # Calcul
     for i  in range(max_jours):
-        t,T = calculTemperaturesEuler(FenetreDeTemps, T_total[:,-1] , h ,**kwargs)
+        
+        if isIVP: 
+            t,T = calculTemperaturesIVP(FenetreDeTemps, T_total[:,-1] ,IVP_tol,**kwargs)
+        else: 
+            t,T = calculTemperaturesEuler(FenetreDeTemps, T_total[:,-1] , h ,**kwargs)
         #ajoute à chaque fois ]0,24] si FenetreDeTemps = [0,24]
+    
         T_total = np.concatenate((T_total,T[:,1:]),axis = 1)
         t_total = np.concatenate((t_total,t[1:]+(i)*(FenetreDeTemps[1]-FenetreDeTemps[0])))
+        journee_pas.append(len(t))
         
-        if abs(T[0, -1] - T_total[0,-(1+journee_pas)]) < tol_temp:
+        if abs(T[0, -1] - T_total[0,-(journee_pas[-1])]) < tol_temp:
             if debug: print(f"a stabilisé après {i+1} jours")
 
             # Dessin
-            afficher_scenario(t_total, T_total, FenetreDeTemps, num_du_scenario, delta_t, q_3_5, debug, i)
-            return i+1 , T_total[:,-(1+journee_pas)]  #retourne le nombre de jours et les conditions au début du dernier jour 
+            afficher_scenario(t_total, T_total, FenetreDeTemps, num_du_scenario, delta_t, q_3_5, debug, i,isIVP)
+            return i+1 , T_total[:,-(1+journee_pas[-1])]  #retourne le nombre de jours et les conditions au début du dernier jour 
         if debug : print(f"n'a pas stabilisé après {i+1} jours")
     print(f"n'a pas convergé après {max_jours} jours, ajoutez plus de jours")
-    return None, None
+    return t_total,T_total
 
 def question_3_5(**kwargs):
     # Initialisation des variables
@@ -337,8 +344,8 @@ def question_3_5(**kwargs):
     FenetreDeTemps = kwargs.pop('FenetreDeTemps',gl_FenetreDeTemps)
 
     # Calcul
-    cycles_stab(T0, FenetreDeTemps,**kwargs)
-
+    return cycles_stab(T0, FenetreDeTemps,**kwargs)
+    
 #______________________________________________________________________________________________________#
 # question 3.6
 def question_3_6(**kwargs):

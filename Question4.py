@@ -20,17 +20,20 @@ def T_max(delta_t, **kwargs):
     - Différence entre Tmax obtenu et Tmax souhaité.
     '''
     # Initialisation des variables
-    global gl_h,gl_T0
+    global gl_h,gl_T0,FenetreDeTemps
     kwargs['delta_t'] = delta_t #ajout aux arguments si ce n'est pas déjà le cas
     T0 =kwargs.pop('T0',gl_T0)
     no_max = kwargs.pop('no_max', False)
     h = kwargs.pop('h',gl_h)
-    global FenetreDeTemps
     FenetreDeTemps = kwargs.pop('FenetreDeTemps',gl_FenetreDeTemps)
+    isIVP = kwargs.pop('isIVP',False)
     MAX = 0
 
     # Calcul
-    t, T = calculTemperaturesEuler(FenetreDeTemps, T0,h,**kwargs)
+    if isIVP:
+        t, T = calculTemperaturesIVP(FenetreDeTemps, T0, IVP_tol, kwargs)
+    else:
+        t, T = calculTemperaturesEuler(FenetreDeTemps, T0,h,**kwargs)
     T_confort = (T[0, :] + T[4, :]) / 2  # T_room = T[0], T_c2 = T[4]
     if no_max: 
         return t,T_confort
@@ -251,3 +254,5 @@ def plot_T_max_delta_t(**kwargs):
     plt.legend()
     plt.grid(True)
     plt.show()
+    return 0 
+   

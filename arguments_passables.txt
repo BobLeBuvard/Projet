@@ -23,3 +23,5 @@ search_x0 : nouvelle borne
 search_x1 : nouvelle borne
 
 IVP_tol : la tolérance de solve_IVP
+
+isIVP : si on se sert de IVP pour les calculs ou de Euler.
