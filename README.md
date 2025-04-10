@@ -1,4 +1,7 @@
 # Info_Python
+
+# THIS PROJECT IS ACHIVED AND NO MORE SUPPORTED 
+
 Projet d'intro aux méthodes numériques de- 2024-2025
 Utilisons un truc qui est pratique: Visual Studio Code ( en tout cas pour mettre à jour nos programmes. )
 Comment faire pour pouvoir faire du code à plusieurs: 
