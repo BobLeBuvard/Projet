@@ -44,8 +44,10 @@ def T_max(delta_t, **kwargs):
 def question_4_1(**kwargs):
     '''fonction qui dessine le max de température de confort en apellant T_max et en plottant les températures adéquates.'''
     # Initialisation des variables
+    global gl_num_du_scenario
     delta_t = kwargs.pop('delta_t',0)
     T_max_d = kwargs.pop('T_max_d',0)
+    num_du_scenario = kwargs.get('num_du_scenario',gl_num_du_scenario)
 
     # Calcul
     MAX,t,T_confort = T_max(delta_t, **kwargs)
@@ -58,7 +60,7 @@ def question_4_1(**kwargs):
     print(f"maximum de température de confort: {MAX}°C à t = {t_max_seconde}s, c'est-à-dire {t_max}h")#print la température max sur l'intervalle en degrés celsius
     plt.xlabel(f"temps ({FenetreDeTemps[1] - FenetreDeTemps[0]}h)") # Labélisation de l'axe des ordonnées (copypaste du tuto)
     plt.ylabel("température optimale ") # Labélisation de l'axe des abscisses (copypaste du tuto)
-    plt.title(label = f'Température de confort sur {FenetreDeTemps[1]-FenetreDeTemps[0]}h : delta_t = {delta_t}')
+    plt.title(label = f'Température de confort sur {FenetreDeTemps[1]-FenetreDeTemps[0]}h : (sc.{num_du_scenario}) (delta_t = {delta_t})')
     plt.plot(t,T_confort ,label= "température de confort")
     plt.axhline(y=T_max_d, color="red", linestyle="--", label="T_max_d") 
     plt.plot(4,T_max_d,'.', label = f'début de la période de chauffe ({4}h)')
@@ -111,7 +113,7 @@ def question_4_2(T_max_d,**kwargs):
     if isinstance(delta_t, tuple): # c'est un tuple uniquement s'il y a eu une erreur.
         print("fin avortée")
         return delta_t[1]
-    print(f"delta_t correspondant aux critères demandés : {delta_t}h.")
+    print(f"delta_t correspondant aux critères demandés : {delta_t}h, soit {delta_t*3600} secondes.")
 
     # Dessin (paresseux)
     question_4_1(T_max_d = T_max_d,delta_t = delta_t, **kwargs)
@@ -227,7 +229,7 @@ def question_4_3(T_max_d, **kwargs):
         delta_t = kwargs.pop('delta_t',0) #fallback on sait jamais
         
         resultat_verif = verification_EN15251(delta_t,**kwargs)
-        print(f"Le delta pour atteindre une température de {T_max_d}°C est de {delta_t}h.")
+        print(f"Le delta pour atteindre une température de {T_max_d}°C est de {delta_t}h, soit {delta_t*3600} secondes.")
     if debug: 
         print("Fin des opérations.")
     return resultat_verif, delta_t
